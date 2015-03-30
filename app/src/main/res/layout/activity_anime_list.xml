@@ -1,0 +1,61 @@
+<android.support.v4.widget.DrawerLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_animelist"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".AnimeListActivity" >
+
+    <!-- Normales Layout -->
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginBottom="10dp"
+        android:orientation="vertical" >
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:weightSum="2" >
+
+            <Spinner
+                android:id="@+id/animelist_listSelectionSpinner"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:layout_weight="1"
+                android:entries="@array/animelist_selection" />
+
+            <Spinner
+                android:id="@+id/animelist_listSortSpinner"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:layout_weight="1"
+                android:entries="@array/animelist_sort" />
+        </LinearLayout>
+
+        <ListView
+            android:id="@+id/animelist_list"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:divider="@drawable/action_bar_bg"
+            android:dividerHeight="1dp"
+            android:listSelector="@drawable/my_list_selector"
+            android:orientation="vertical" />
+    </LinearLayout>
+
+    <!-- Layout des Navigation Drawers -->
+
+    <ListView
+        android:id="@+id/nav_animelist_list"
+        android:layout_width="240dp"
+        android:layout_height="match_parent"
+        android:layout_gravity="left"
+        android:background="#383838"
+        android:choiceMode="singleChoice"
+        android:divider="#F8F8FF"
+        android:dividerHeight="1dp"
+        android:listSelector="@drawable/my_list_selector"
+        tools:ignore="RtlHardcoded" />
+
+</android.support.v4.widget.DrawerLayout>

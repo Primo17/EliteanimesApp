@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:id="@+id/dialog_animelist_rate"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    tools:ignore="HardcodedText,TextFields,Deprecated" >
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="5dp"
+        android:layout_marginTop="5dp"
+        android:orientation="horizontal"
+        android:weightSum="2" >
+
+        <Spinner
+            android:id="@+id/dialog_animelist_rate_category"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:layout_marginRight="5dp"
+            android:layout_weight="1"
+            android:entries="@array/dialog_animelist_rate_category"
+            tools:ignore="RtlHardcoded" />
+
+        <Spinner
+            android:id="@+id/dialog_animelist_rate_score"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:layout_weight="1" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="5dp"
+        android:layout_marginTop="5dp"
+        android:orientation="horizontal"
+        android:gravity="center_horizontal"
+        android:weightSum="2" >
+
+        <EditText
+            android:id="@+id/dialog_animelist_rate_fortschritt"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_marginRight="5dp"
+            android:layout_weight="1"
+            android:inputType="numberSigned"
+            android:maxLength="3" />
+
+        <EditText
+            android:id="@+id/dialog_animelist_rate_folgenzahl"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:editable="false"
+            android:maxLength="3" />
+    </LinearLayout>
+
+</LinearLayout>

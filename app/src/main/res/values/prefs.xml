@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools">
+
+    <string name="pref_save_password">Passwort speichern</string>
+    <string name="pref_save_password_summ">Falls Benutzername beim Login gespeichert wird</string>
+    <string name="pref_keep_screen_on">Bildschirm-Timeout</string>
+    <string name="pref_keep_screen_on_summary">Bei Lade-Dialogen deaktivieren</string>
+    <string name="pref_auto_login">Automatischer Login</string>
+    <string name="pref_auto_login_summ">Nur bei gespeicherten Login-Daten</string>
+    <string name="pref_category_allgemein">Allgemein</string>
+    <string name="pref_category_animelist">Animeliste</string>
+    <string name="pref_animelist_category">Kategorie</string>
+    <string name="pref_animelist_category_summ">Standardmäßige Anzeige für die Kategorie der Animelisten</string>
+    <string name="pref_animelist_category_dialog_title">Kategorie der Animeliste</string>
+    <string name="pref_animelist_category_default">Komplett</string>
+    <string name="pref_animelist_sort">Sortierung</string>
+    <string name="pref_animelist_sort_summ">Standardmäßige Anzeige für die Sortierung der Animelisten</string>
+    <string name="pref_animelist_sort_dialog_title">Sortieren nach...</string>
+    <string name="pref_animelist_sort_default">Bewertung</string>
+    <string name="pref_notifications">Benachrichtigungen</string>
+    <string name="pref_notifications_summary">Stumme Benachrichtigungen zur Laufzeit aktivieren</string>
+
+</resources>

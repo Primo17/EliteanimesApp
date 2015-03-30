@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <color name="eared">#990300</color>
+    <color name="eared_start">#8a0808</color>
+    <color name="eared_end">#ca0b0b</color>
+    <color name="own_bg">#ffffff</color>
+    <color name="eared_heller">#cd0d0d</color>
+
+</resources>

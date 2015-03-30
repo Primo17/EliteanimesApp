@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools">
+
+    <string name="app_name" tools:ignore="MissingTranslation">EliteAnimes</string>
+    <string name="title_activity_profil_beschreibung">ProfilBeschreibungActivity</string>
+    <string name="title_activity_freunde">Freunde</string>
+    <string name="title_activity_profil">Profil</string>
+    <string name="title_activity_fremdes_profil">Profil</string>
+    <string name="title_activity_kommentar">Kommentare</string>
+    <string name="title_activity_neuer_kommentar">NeuerKommentarActivity</string>
+    <string name="title_activity_info">Info</string>
+    <string name="title_activity_pn">Nachrichten</string>
+    <string name="title_activity_neue_pn">NeuePNActivity</string>
+    <string name="title_activity_kontoeinstellungen">Konto</string>
+    <string name="title_activity_search">User-Suche</string>
+    <string name="title_activity_anime_list">Animeliste</string>
+    <string name="title_activity_foren">Forum</string>
+    <string name="title_activity_settings">Einstellungen</string>
+    <string name="title_activity_threads">Themen</string>
+    <string name="title_activity_posts">Beiträge</string>
+    <string name="title_activity_new_post">Neuer Beitrag</string>
+
+</resources>

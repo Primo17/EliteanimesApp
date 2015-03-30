@@ -1,0 +1,377 @@
+<android.support.v4.widget.DrawerLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_profil"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ProfilActivity" >
+
+    <!-- Normales Layout -->
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" >
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical" >
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:weightSum="2" >
+
+                <ImageView
+                    android:id="@+id/profilbild_eigenes"
+                    android:layout_width="120dp"
+                    android:layout_height="120dp"
+                    android:layout_gravity="center"
+                    android:layout_marginLeft="5dp"
+                    android:layout_marginTop="8dp"
+                    android:layout_weight="1"
+                    android:contentDescription="@string/eigenes_profilbild"
+                    tools:ignore="RtlHardcoded" />
+
+                <TableLayout
+                    android:id="@+id/profil_table"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_marginRight="2dp"
+                    android:layout_marginTop="5dp"
+                    android:layout_weight="1"
+                    android:shrinkColumns="1"
+                    tools:ignore="RtlHardcoded">
+
+                    <TableRow
+                        android:id="@+id/profil_row1"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center_horizontal" >
+
+                        <TextView
+                            android:id="@+id/profil_benutzername"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginLeft="5dp"
+                            android:layout_marginRight="10dp"
+                            android:text="@string/profil_benutzername"
+                            android:textSize="14sp"
+                            android:visibility="invisible"
+                            tools:ignore="RtlHardcoded">
+                        </TextView>
+
+                        <TextView
+                            android:id="@+id/profil_antw1"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textSize="14sp" >
+                        </TextView>
+                    </TableRow>
+
+                    <TableRow
+                        android:id="@+id/profil_row2"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center_horizontal" >
+
+                        <TextView
+                            android:id="@+id/profil_status"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginLeft="5dp"
+                            android:layout_marginRight="10dp"
+                            android:text="@string/profil_status"
+                            android:textSize="14sp"
+                            android:visibility="invisible"
+                            tools:ignore="RtlHardcoded">
+                        </TextView>
+
+                        <TextView
+                            android:id="@+id/profil_antw2"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textSize="14sp" >
+                        </TextView>
+                    </TableRow>
+
+                    <TableRow
+                        android:id="@+id/profil_row3"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center_horizontal" >
+
+                        <TextView
+                            android:id="@+id/profil_gruppe"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginLeft="5dp"
+                            android:layout_marginRight="10dp"
+                            android:text="@string/profil_gruppe"
+                            android:textSize="14sp"
+                            android:visibility="invisible"
+                            tools:ignore="RtlHardcoded">
+                        </TextView>
+
+                        <TextView
+                            android:id="@+id/profil_antw3"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textSize="14sp" >
+                        </TextView>
+                    </TableRow>
+
+                    <TableRow
+                        android:id="@+id/profil_row4"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center_horizontal" >
+
+                        <TextView
+                            android:id="@+id/profil_geschlecht"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginLeft="5dp"
+                            android:layout_marginRight="10dp"
+                            android:text="@string/profil_geschlecht"
+                            android:textSize="14sp"
+                            android:visibility="invisible"
+                            tools:ignore="RtlHardcoded">
+                        </TextView>
+
+                        <TextView
+                            android:id="@+id/profil_antw4"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textSize="14sp" >
+                        </TextView>
+                    </TableRow>
+
+                    <TableRow
+                        android:id="@+id/profil_row5"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center_horizontal" >
+
+                        <TextView
+                            android:id="@+id/profil_alter"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginLeft="5dp"
+                            android:layout_marginRight="10dp"
+                            android:text="@string/profil_alter"
+                            android:textSize="14sp"
+                            android:visibility="invisible"
+                            tools:ignore="RtlHardcoded">
+                        </TextView>
+
+                        <TextView
+                            android:id="@+id/profil_antw5"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textSize="14sp" >
+                        </TextView>
+                    </TableRow>
+
+                    <TableRow
+                        android:id="@+id/profil_row6"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center_horizontal" >
+
+                        <TextView
+                            android:id="@+id/profil_single"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginLeft="5dp"
+                            android:layout_marginRight="10dp"
+                            android:text="@string/profil_single"
+                            android:textSize="14sp"
+                            android:visibility="invisible"
+                            tools:ignore="RtlHardcoded">
+                        </TextView>
+
+                        <TextView
+                            android:id="@+id/profil_antw6"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textSize="14sp" >
+                        </TextView>
+                    </TableRow>
+
+                    <TableRow
+                        android:id="@+id/profil_row7"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center_horizontal" >
+
+                        <TextView
+                            android:id="@+id/profil_wohnort"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginLeft="5dp"
+                            android:layout_marginRight="10dp"
+                            android:text="@string/profil_wohnort"
+                            android:textSize="14sp"
+                            android:visibility="invisible"
+                            tools:ignore="RtlHardcoded">
+                        </TextView>
+
+                        <TextView
+                            android:id="@+id/profil_antw7"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textSize="14sp" >
+                        </TextView>
+                    </TableRow>
+
+                    <TableRow
+                        android:id="@+id/profil_row8"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center_horizontal" >
+
+                        <TextView
+                            android:id="@+id/profil_dabei"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginLeft="5dp"
+                            android:layout_marginRight="10dp"
+                            android:text="@string/profil_dabei"
+                            android:textSize="14sp"
+                            android:visibility="invisible"
+                            tools:ignore="RtlHardcoded">
+                        </TextView>
+
+                        <TextView
+                            android:id="@+id/profil_antw8"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textSize="14sp" >
+                        </TextView>
+                    </TableRow>
+                </TableLayout>
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/profil_link_content"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="15dp"
+                android:orientation="vertical"
+                android:visibility="invisible" >
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="@drawable/action_bar_bg" />
+
+                <TextView
+                    android:id="@+id/profil_beschreibung"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/my_list_selector"
+                    android:clickable="true"
+                    android:gravity="center_horizontal"
+                    android:onClick="onNavigationClick"
+                    android:paddingBottom="10dp"
+                    android:paddingTop="10dp"
+                    android:text="@string/profil_beschreibung"
+                    android:textColor="@drawable/text_color_selector"
+                    android:textSize="19sp" />
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="@drawable/action_bar_bg" />
+
+                <TextView
+                    android:id="@+id/profil_kommentare"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/my_list_selector"
+                    android:clickable="true"
+                    android:gravity="center_horizontal"
+                    android:onClick="onNavigationClick"
+                    android:paddingBottom="10dp"
+                    android:paddingTop="10dp"
+                    android:text="@string/profil_kommentare"
+                    android:textColor="@drawable/text_color_selector"
+                    android:textSize="19sp" />
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="@drawable/action_bar_bg" />
+
+                <TextView
+                    android:id="@+id/profil_animeliste"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/my_list_selector"
+                    android:clickable="true"
+                    android:gravity="center_horizontal"
+                    android:onClick="onNavigationClick"
+                    android:paddingBottom="10dp"
+                    android:paddingTop="10dp"
+                    android:text="@string/profil_animeliste"
+                    android:textColor="@drawable/text_color_selector"
+                    android:textSize="19sp" />
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="@drawable/action_bar_bg" />
+
+                <TextView
+                    android:id="@+id/profil_freunde"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/my_list_selector"
+                    android:clickable="true"
+                    android:gravity="center_horizontal"
+                    android:onClick="onNavigationClick"
+                    android:paddingBottom="10dp"
+                    android:paddingTop="10dp"
+                    android:text="@string/profil_freunde"
+                    android:textColor="@drawable/text_color_selector"
+                    android:textSize="19sp" />
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="@drawable/action_bar_bg" />
+
+                <TextView
+                    android:id="@+id/profil_pns"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/my_list_selector"
+                    android:clickable="true"
+                    android:gravity="center_horizontal"
+                    android:onClick="onNavigationClick"
+                    android:paddingBottom="10dp"
+                    android:paddingTop="10dp"
+                    android:text="@string/profil_pns"
+                    android:textColor="@drawable/text_color_selector"
+                    android:textSize="19sp" />
+            </LinearLayout>
+        </LinearLayout>
+    </ScrollView>
+
+    <!-- Layout des Navigation Drawers -->
+
+    <ListView
+        android:id="@+id/nav_profil_list"
+        android:layout_width="240dp"
+        android:layout_height="match_parent"
+        android:layout_gravity="left"
+        android:background="#383838"
+        android:choiceMode="singleChoice"
+        android:divider="#F8F8FF"
+        android:dividerHeight="1dp"
+        android:listSelector="@drawable/my_list_selector"
+        tools:ignore="RtlHardcoded" />
+
+</android.support.v4.widget.DrawerLayout>

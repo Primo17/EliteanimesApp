@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:id="@+id/navigation_drawer_item"
+    android:layout_height="60dp" >
+
+    <ImageView
+        android:id="@+id/nav_item_icon"
+        android:layout_width="25dp"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_centerVertical="true"
+        android:layout_marginBottom="20dp"
+        android:layout_marginLeft="12dp"
+        android:layout_marginRight="12dp"
+        android:layout_marginTop="20dp"
+        android:contentDescription="icon"
+        tools:ignore="HardcodedText,RtlHardcoded" />
+
+    <TextView
+        android:id="@+id/nav_item_title"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_centerVertical="true"
+        android:layout_marginBottom="20dp"
+        android:layout_marginTop="20dp"
+        android:layout_toRightOf="@id/nav_item_icon"
+        android:paddingLeft="2dp"
+        android:paddingRight="40dp"
+        android:textColor="#F8F8FF"
+        android:textSize="18sp" />
+
+    <TextView
+        android:id="@+id/nav_item_counter"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_centerVertical="true"
+        android:layout_marginBottom="20dp"
+        android:layout_marginRight="15dp"
+        android:layout_marginTop="20dp"
+        android:background="@drawable/counter_bg"
+        android:textColor="#DCDCDC"
+        android:textSize="18sp" />
+
+</RelativeLayout>

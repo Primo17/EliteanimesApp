@@ -1,0 +1,80 @@
+<android.support.v4.widget.DrawerLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_login"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".LoginActivity" >
+
+    <!-- Normales Layout -->
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center_vertical"
+        android:orientation="vertical" >
+
+        <EditText
+            android:id="@+id/login_benutzername"
+            android:layout_width="230dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginBottom="10dp"
+            android:hint="@string/login_benutzername"
+            android:inputType="text" />
+
+        <EditText
+            android:id="@+id/login_passwort"
+            android:layout_width="230dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginBottom="10dp"
+            android:layout_marginTop="10dp"
+            android:hint="@string/login_passwort"
+            android:inputType="textPassword" >
+        </EditText>
+
+        <Button
+            android:id="@+id/login_button"
+            android:layout_width="230dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginBottom="10dp"
+            android:layout_marginTop="10dp"
+            android:background="@drawable/action_bar_bg"
+            android:minHeight="45dp"
+            android:text="@string/login_button"
+            android:textColor="@android:color/white" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_horizontal"
+            android:orientation="horizontal" >
+
+            <TextView
+                android:id="@+id/login_speichern"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/login_speichern"
+                android:textSize="15sp" />
+
+            <CheckBox
+                android:id="@+id/login_check"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+        </LinearLayout>
+    </LinearLayout>
+    
+    <!-- Layout des Navigation Drawers -->
+	<ListView
+	    android:id="@+id/nav_login_list"
+	    android:layout_width="240dp"
+	    android:layout_height="match_parent"
+	    android:layout_gravity="left"
+	    android:choiceMode="singleChoice"
+	    android:divider="#F8F8FF"
+	    android:background="#383838"
+	    android:dividerHeight="1dp"
+	    android:listSelector="@drawable/my_list_selector"
+        tools:ignore="RtlHardcoded" />
+</android.support.v4.widget.DrawerLayout>

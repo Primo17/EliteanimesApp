@@ -1,0 +1,11 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:support="http://schemas.android.com/apk/res-auto" >
+
+    <item
+        android:id="@+id/foren_aktualisieren"
+        android:icon="@drawable/ic_action_refresh"
+        android:orderInCategory="100"
+        android:title="@string/aktualisieren"
+        support:showAsAction="always"/>
+
+</menu>

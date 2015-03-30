@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:id="@+id/freundesliste_layout"
+    android:layout_height="45dp" >
+
+    <ImageView
+        android:id="@+id/icon"
+        android:layout_width="15dp"
+        android:layout_height="match_parent"
+        android:layout_alignParentLeft="true"
+        android:layout_centerVertical="true"
+        android:layout_marginRight="5dp"
+        android:contentDescription="@string/status"
+        android:src="@drawable/offline"
+        tools:ignore="RtlHardcoded">
+    </ImageView>
+
+    <TextView
+        android:id="@+id/freund_name"
+        android:layout_width="150dp"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_toRightOf="@id/icon"
+        android:maxWidth="150dp"
+        android:textSize="16sp" >
+    </TextView>
+
+    <TextView
+        android:id="@+id/freund_alter"
+        android:layout_width="40dp"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_marginLeft="5dp"
+        android:layout_toRightOf="@id/freund_name"
+        android:textSize="16sp" >
+    </TextView>
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_centerVertical="true"
+        android:layout_marginLeft="5dp"
+        android:layout_marginRight="5dp"
+        android:orientation="vertical" >
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/freund_zuletzt_online"
+            android:textSize="12sp" />
+
+        <TextView
+            android:id="@+id/freund_zuletzt_online"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="16sp" />
+    </LinearLayout>
+
+</RelativeLayout>

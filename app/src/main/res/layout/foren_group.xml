@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:id="@+id/foren_group"
+    android:background="@color/eared_heller"
+    android:orientation="horizontal" >
+
+    <TextView
+        android:id="@+id/foren_group_name"
+        android:layout_width="match_parent"
+        android:layout_height="?android:attr/listPreferredItemHeight"
+        android:layout_marginLeft="40dp"
+        android:layout_marginRight="2dp"
+        android:gravity="left|center_vertical"
+        android:textColor="@android:color/white"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        tools:ignore="RtlHardcoded" />
+
+</LinearLayout>

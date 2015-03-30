@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:id="@+id/freundschaftsanfrage"
+    android:layout_height="match_parent" >
+
+    <TextView
+        android:id="@+id/anfrage_name"
+        android:layout_width="130dp"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_centerVertical="true"
+        android:layout_marginLeft="5dp"
+        android:layout_marginRight="5dp"
+        android:maxWidth="150dp"
+        android:textSize="16sp"
+        tools:ignore="RtlHardcoded" />
+
+    <TextView
+        android:id="@+id/anfrage_alter"
+        android:layout_width="40dp"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_marginRight="5dp"
+        android:layout_toRightOf="@id/anfrage_name"
+        android:textSize="16sp" />
+
+    <RadioGroup
+        android:id="@+id/anfrage_radiogroup"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_centerVertical="true"
+        android:layout_toRightOf="@id/anfrage_alter"
+        android:orientation="vertical" >
+
+        <RadioButton
+            android:id="@+id/anfrage_annehmen"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:focusable="false"
+            android:focusableInTouchMode="false"
+            android:onClick="onRadioButtonClicked"
+            android:text="@string/accept_friend" />
+
+        <RadioButton
+            android:id="@+id/anfrage_ablehnen"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:focusable="false"
+            android:focusableInTouchMode="false"
+            android:onClick="onRadioButtonClicked"
+            android:text="@string/decline_friend" >
+        </RadioButton>
+    </RadioGroup>
+
+</RelativeLayout>

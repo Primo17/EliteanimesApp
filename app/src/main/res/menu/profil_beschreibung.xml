@@ -1,0 +1,29 @@
+<menu xmlns:tools="http://schemas.android.com/tools"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:support="http://schemas.android.com/apk/res-auto" >
+
+    <item
+        android:id="@+id/profil_beschreibung_aktualisieren"
+        android:icon="@drawable/ic_action_refresh"
+        android:orderInCategory="100"
+        android:title="@string/aktualisieren"
+        support:showAsAction="always"
+        tools:ignore="AlwaysShowAction" />
+    <item
+        android:id="@+id/profil_beschreibung_overflow"
+        android:icon="@drawable/ic_action_overflow"
+        android:orderInCategory="101"
+        android:title="@string/overflow"
+        support:showAsAction="always"
+        tools:ignore="AlwaysShowAction">
+        <menu>
+            <item
+                android:id="@+id/profil_beschreibung_spoiler"
+                android:icon="@drawable/ic_action_expand"
+                android:orderInCategory="102"
+                android:title="@string/comment_spoiler"
+                support:showAsAction="never"/>
+        </menu>
+    </item>
+
+</menu>

@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
+
+    <PreferenceCategory
+        android:key="pref_category_allgemein"
+        android:title="@string/pref_category_allgemein" >
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:key="pref_save_password"
+            android:summary="@string/pref_save_password_summ"
+            android:title="@string/pref_save_password" />
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:dependency="pref_save_password"
+            android:key="pref_auto_login"
+            android:summary="@string/pref_auto_login_summ"
+            android:title="@string/pref_auto_login" />
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:key="pref_keep_screen_on"
+            android:summary="@string/pref_keep_screen_on_summary"
+            android:title="@string/pref_keep_screen_on" />
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:key="pref_notifications"
+            android:title="@string/pref_notifications"
+            android:summary="@string/pref_notifications_summary" />
+    </PreferenceCategory>
+    <PreferenceCategory
+        android:key="pref_category_animelist"
+        android:title="@string/pref_category_animelist" >
+        <ListPreference
+            android:defaultValue="@string/pref_animelist_category_default"
+            android:dialogTitle="@string/pref_animelist_category_dialog_title"
+            android:entries="@array/animelist_selection"
+            android:entryValues="@array/animelist_selection"
+            android:key="pref_animelist_category"
+            android:summary="@string/pref_animelist_category_summ"
+            android:title="@string/pref_animelist_category" />
+        <ListPreference
+            android:defaultValue="@string/pref_animelist_sort_default"
+            android:dialogTitle="@string/pref_animelist_sort_dialog_title"
+            android:entries="@array/pref_animelist_sort_entries"
+            android:entryValues="@array/pref_animelist_sort_entries"
+            android:key="pref_animelist_sort"
+            android:summary="@string/pref_animelist_sort_summ"
+            android:title="@string/pref_animelist_sort" />
+    </PreferenceCategory>
+
+</PreferenceScreen>

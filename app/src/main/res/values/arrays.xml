@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools">
+
+    <string-array name="nav_drawer_items">
+        <item>Profil</item>
+        <item>Kommentare</item>
+        <item>Nachrichten</item>
+        <item>Freunde</item>
+        <item>Animeliste</item>
+        <item>Forum</item>
+        <item>Suche</item>
+        <item>Konto</item>
+        <item>Einstellungen</item>
+        <item>Info</item>
+        <item>Logout</item>
+    </string-array>
+    <string-array name="animelist_selection">
+        <item>Komplett</item>
+        <item>Am Schauen</item>
+        <item>Kurz Aufgehört</item>
+        <item>Abgebrochen</item>
+        <item>Geplant</item>
+    </string-array>
+    <string-array name="animelist_sort">
+        <item>nach Bewertung sortieren</item>
+        <item>nach Alphabet sortieren</item>
+    </string-array>
+    <string-array name="pref_animelist_sort_entries">
+        <item>Bewertung</item>
+        <item>Alphabet</item>
+    </string-array>
+    <string-array name="dialog_animelist_rate_category">
+        <item>Am Schauen</item>
+        <item>Komplett</item>
+        <item>Kurz Aufgehört</item>
+        <item>Abgebrochen</item>
+        <item>Geplant</item>
+    </string-array>
+
+</resources>

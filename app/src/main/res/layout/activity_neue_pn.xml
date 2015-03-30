@@ -1,0 +1,85 @@
+<android.support.v4.widget.DrawerLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_neue_pn"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".NeuePNActivity" >
+
+    <!-- Normales Layout -->
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" >
+
+        <EditText
+            android:id="@+id/neue_pn_textfeld"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:gravity="left|center"
+            android:hint="@string/new_pn_text"
+            android:inputType="textMultiLine"
+            android:minLines="2"
+            tools:ignore="RtlHardcoded" />
+
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_above="@id/neue_pn_textfeld" >
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical" >
+
+                <TextView
+                    android:id="@+id/neue_pn_betreff"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentLeft="true"
+                    android:layout_alignParentTop="true"
+                    android:layout_marginLeft="7dp"
+                    android:textSize="16sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/neue_pn_datum"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentRight="true"
+                    android:layout_below="@id/neue_pn_betreff"
+                    android:layout_marginRight="7dp"
+                    android:textSize="16sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/neue_pn_text"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/neue_pn_datum"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_marginBottom="5dp"
+                    android:layout_marginLeft="7dp"
+                    android:layout_marginRight="7dp"
+                    android:layout_marginTop="5dp"
+                    android:autoLink="web"
+                    android:linksClickable="true"
+                    android:textIsSelectable="true"
+                    android:textSize="18sp" />
+            </RelativeLayout>
+        </ScrollView>
+    </RelativeLayout>
+    <!-- Layout des Navigation Drawers -->
+
+    <ListView
+        android:id="@+id/nav_neue_pn_list"
+        android:layout_width="240dp"
+        android:layout_height="match_parent"
+        android:layout_gravity="left"
+        android:background="#383838"
+        android:choiceMode="singleChoice"
+        android:divider="#F8F8FF"
+        android:dividerHeight="1dp"
+        android:listSelector="@drawable/my_list_selector" />
+
+</android.support.v4.widget.DrawerLayout>

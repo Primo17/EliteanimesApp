@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:id="@+id/forum_posts"
+    android:paddingBottom="5dp"
+    android:paddingTop="5dp" >
+
+    <LinearLayout
+        android:id="@+id/forum_posts_leftroot"
+        android:layout_width="100dp"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_marginBottom="5dp"
+        android:layout_marginLeft="5dp"
+        android:layout_marginRight="5dp"
+        android:layout_marginTop="5dp"
+        android:orientation="vertical"
+        tools:ignore="RtlHardcoded">
+
+        <ImageView
+            android:id="@+id/forum_posts_image"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:layout_marginBottom="5dp"
+            android:contentDescription="@string/foren_detail_image"
+            android:src="@drawable/noava" />
+
+        <TextView
+            android:id="@+id/forum_posts_username"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Primordial"
+            android:textSize="14sp"
+            tools:ignore="HardcodedText" />
+
+        <TextView
+            android:id="@+id/forum_posts_usergeschlecht"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Männlich"
+            android:textSize="14sp" />
+
+        <TextView
+            android:id="@+id/forum_posts_useronline"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Online"
+            android:textSize="14sp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/forum_registriert_seit"
+            android:textSize="12sp" />
+
+        <TextView
+            android:id="@+id/forum_posts_userdate"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="26.09.2014"
+            android:textSize="14sp" />
+    </LinearLayout>
+
+    <View
+        android:id="@+id/forum_posts_vline"
+        android:layout_width="0.5dp"
+        android:layout_height="match_parent"
+        android:layout_alignParentTop="true"
+        android:layout_toRightOf="@id/forum_posts_leftroot"
+        android:background="#000000"
+        android:minHeight="100dp" />
+
+    <TextView
+        android:id="@+id/forum_posts_date"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="3dp"
+        android:layout_marginLeft="5dp"
+        android:layout_marginRight="5dp"
+        android:layout_marginTop="3dp"
+        android:layout_toRightOf="@id/forum_posts_vline"
+        android:gravity="center_vertical"
+        android:text="07.09.2014 um 14:12 Uhr"
+        android:textSize="14sp" />
+
+    <TextView
+        android:id="@+id/forum_posts_editiert"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/forum_posts_date"
+        android:layout_marginLeft="5dp"
+        android:layout_marginRight="5dp"
+        android:layout_toRightOf="@id/forum_posts_vline"
+        android:gravity="center_vertical"
+        android:text="Insgesamt 1 mal editiert. Das letzte mal am 23.08.2014 um 14:26 Uhr von Anilea"
+        android:textSize="12sp"
+        android:textStyle="italic"
+        android:visibility="gone" />
+
+    <View
+        android:id="@+id/forum_posts_hline"
+        android:layout_width="match_parent"
+        android:layout_height="0.5dp"
+        android:layout_below="@id/forum_posts_editiert"
+        android:layout_toRightOf="@id/forum_posts_vline"
+        android:background="#000000" />
+
+    <TextView
+        android:id="@+id/forum_posts_content"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/forum_posts_hline"
+        android:layout_marginBottom="5dp"
+        android:layout_marginLeft="5dp"
+        android:layout_marginRight="5dp"
+        android:layout_marginTop="3dp"
+        android:layout_toRightOf="@id/forum_posts_vline"
+        android:textSize="14sp" />
+
+    <View
+        android:id="@+id/forum_posts_hline2"
+        android:layout_width="match_parent"
+        android:layout_height="0.5dp"
+        android:layout_below="@id/forum_posts_content"
+        android:layout_toRightOf="@id/forum_posts_vline"
+        android:background="#000000"
+        android:visibility="gone" />
+
+    <TextView
+        android:id="@+id/forum_posts_signatur"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/forum_posts_hline2"
+        android:layout_marginBottom="5dp"
+        android:layout_marginLeft="5dp"
+        android:layout_marginRight="5dp"
+        android:layout_marginTop="3dp"
+        android:layout_toRightOf="@id/forum_posts_vline"
+        android:textSize="12sp"
+        android:visibility="gone" />
+
+</RelativeLayout>

@@ -1,0 +1,13 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:support="http://schemas.android.com/apk/res-auto"
+    tools:context="de.btcdev.eliteanimesapp.AnimeListActivity" >
+
+    <item
+        android:id="@+id/animelist_aktualisieren"
+        android:icon="@drawable/ic_action_refresh"
+        android:orderInCategory="100"
+        android:title="@string/aktualisieren"
+        support:showAsAction="always"/>
+</menu>

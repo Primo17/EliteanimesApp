@@ -1,0 +1,241 @@
+package de.btcdev.eliteanimesapp.gui;
+
+import java.util.ArrayList;
+
+import android.content.Intent;
+import android.content.SharedPreferences;
+import android.graphics.Typeface;
+import android.os.AsyncTask;
+import android.os.Bundle;
+import android.preference.PreferenceManager;
+import android.view.Gravity;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.view.ViewGroup.LayoutParams;
+import android.view.WindowManager;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
+import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.LinearLayout;
+import android.widget.ListView;
+import android.widget.TextView;
+import android.widget.Toast;
+import de.btcdev.eliteanimesapp.R;
+import de.btcdev.eliteanimesapp.data.Benutzer;
+import de.btcdev.eliteanimesapp.data.EAException;
+import de.btcdev.eliteanimesapp.data.EAParser;
+import de.btcdev.eliteanimesapp.data.Konfiguration;
+import de.btcdev.eliteanimesapp.data.Netzwerk;
+import de.btcdev.eliteanimesapp.data.NewsThread;
+
+public class SearchActivity extends ParentActivity implements
+		OnItemClickListener, OnClickListener {
+
+	private EditText eingabe;
+	private Button searchButton;
+	private SearchTask task;
+	private ArrayList<Benutzer> liste;
+
+	@Override
+	protected void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		setContentView(R.layout.activity_search);
+		bar = getSupportActionBar();
+		netzwerk = Netzwerk.instance(this);
+		eaParser = new EAParser(null);
+		eingabe = (EditText) findViewById(R.id.search_eingabe);
+		searchButton = (Button) findViewById(R.id.search_button);
+		searchButton.setOnClickListener(this);
+
+		if (savedInstanceState != null) {
+			liste = savedInstanceState.getParcelableArrayList("Suche");
+			viewZuweisung(liste);
+		}
+		handleNavigationDrawer(R.id.nav_search, R.id.nav_search_list,
+				"User-Suche", null);
+	}
+
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		// Inflate the menu; this adds items to the action bar if it is present.
+		getMenuInflater().inflate(R.menu.search, menu);
+		return true;
+	}
+
+	/**
+	 * Wird aufgerufen, wenn die Activity pausiert wird. Ein laufender
+	 * SearchTask wird dabei abgebrochen.
+	 */
+	@SuppressWarnings("deprecation")
+	@Override
+	protected void onPause() {
+		if (task != null) {
+			task.cancel(true);
+		}
+		removeDialog(load_dialog);
+		super.onPause();
+	}
+
+	/**
+	 * Speichert die Daten der Suche.
+	 * 
+	 * @param savedInstanceState
+	 *            vom System erzeugtes Bundle zum Speichern der Daten
+	 */
+	@Override
+	public void onSaveInstanceState(Bundle savedInstanceState) {
+		savedInstanceState.putParcelableArrayList("Suche", liste);
+	}
+
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		if (mDrawerToggle.onOptionsItemSelected(item))
+			return true;
+		switch (item.getItemId()) {
+		default:
+			return super.onOptionsItemSelected(item);
+		}
+	}
+
+	@Override
+	public void onItemClick(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
+		if (arg0.getId() == R.id.nav_search_list) {
+			if (arg2 == navigation_suche)
+				mDrawerLayout.closeDrawer(Gravity.LEFT);
+			else
+				super.onItemClick(arg0, arg1, arg2, arg3);
+		} else if (arg0.getId() == R.id.search_liste) {
+			if (arg2 <= liste.size()) {
+				Benutzer benutzer = liste.get(arg2);
+				if (benutzer.getName().equals(
+						Konfiguration.getBenutzername(getApplicationContext()))) {
+					Intent intent = new Intent(this,
+							de.btcdev.eliteanimesapp.gui.ProfilActivity.class);
+					startActivity(intent);
+				} else {
+					Intent intent = new Intent(
+							this,
+							de.btcdev.eliteanimesapp.gui.FremdesProfilActivity.class);
+					intent.putExtra("Benutzer", benutzer.getName());
+					intent.putExtra("UserID",
+							Integer.parseInt(benutzer.getId()));
+					startActivity(intent);
+				}
+			}
+		}
+	}
+
+	@Override
+	public void onClick(View arg0) {
+		if (arg0.getId() == R.id.search_button) {
+			String text = eingabe.getText().toString();
+			if (text != null && !text.isEmpty()) {
+				// suchen
+				task = new SearchTask(text);
+				task.execute("");
+			}
+		}
+	}
+
+	public void viewZuweisung(ArrayList<Benutzer> result) {
+		liste = result;
+		LinearLayout lin = (LinearLayout) findViewById(R.id.search_layout);
+		if (liste == null || liste.isEmpty()) {
+			TextView text = new TextView(this);
+			text.setTextSize(16);
+			text.setTypeface(text.getTypeface(), Typeface.BOLD);
+			text.setText("Die Suche ergab keine Treffer.");
+			text.setGravity(Gravity.CENTER_HORIZONTAL | Gravity.CENTER_VERTICAL);
+			lin.addView(text, 1, new LayoutParams(LayoutParams.MATCH_PARENT,
+					LayoutParams.MATCH_PARENT));
+		} else {
+			if (lin.getChildCount() != 2) {
+				lin.removeViewAt(1);
+			}
+			ListView searchList = (ListView) findViewById(R.id.search_liste);
+			ArrayAdapter<Benutzer> adapter = new ArrayAdapter<Benutzer>(this,
+					android.R.layout.simple_list_item_1, liste);
+			searchList.setAdapter(adapter);
+			searchList.setOnItemClickListener(this);
+		}
+	}
+
+	public class SearchTask extends
+			AsyncTask<String, String, ArrayList<Benutzer>> {
+
+		String name;
+
+		public SearchTask(String name) {
+			this.name = name;
+		}
+
+		@Override
+		protected ArrayList<Benutzer> doInBackground(String... params) {
+			String input;
+			netzwerk = Netzwerk.instance(getApplicationContext());
+			eaParser = new EAParser(null);
+			new NewsThread(getApplicationContext()).start();
+			ArrayList<Benutzer> result;
+			try {
+				if (isCancelled())
+					return null;
+				input = netzwerk.searchUser(name);
+				if (isCancelled())
+					return null;
+				result = eaParser.getSearchedUsers(input);
+				if (isCancelled())
+					return null;
+				return result;
+			} catch (EAException e) {
+				publishProgress("Exception", e.getMessage());
+			}
+			return null;
+		}
+
+		@Override
+		protected void onCancelled() {
+			getWindow().clearFlags(
+					WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+			super.onCancelled();
+		}
+
+		@SuppressWarnings("deprecation")
+		@Override
+		protected void onPostExecute(ArrayList<Benutzer> result) {
+			try {
+				dismissDialog(load_dialog);
+			} catch (IllegalArgumentException e) {
+
+			}
+			getWindow().clearFlags(
+					WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+			viewZuweisung(result);
+		}
+
+		@SuppressWarnings("deprecation")
+		@Override
+		protected void onPreExecute() {
+			super.onPreExecute();
+			SharedPreferences defaultprefs = PreferenceManager
+					.getDefaultSharedPreferences(getApplicationContext());
+			if (defaultprefs.getBoolean("pref_keep_screen_on", true))
+				getWindow().addFlags(
+						WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+			showDialog(load_dialog);
+		}
+
+		@Override
+		protected void onProgressUpdate(String... values) {
+			if (values[0].equals("Exception")) {
+				if (values[1] != null)
+					Toast.makeText(getApplicationContext(), values[1],
+							Toast.LENGTH_LONG).show();
+			}
+
+		}
+	}
+}

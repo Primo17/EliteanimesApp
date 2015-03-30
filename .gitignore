@@ -27,3 +27,4 @@ proguard/
 *.log
 
 app/build.gradle
+app/src/main/assets/api.properties

@@ -140,7 +140,6 @@ public class PostActivity extends ParentActivity implements
 			long id) {
 		if (parent.getId() == R.id.threads_spinner) {
 			if (seite != position + 1) {
-				System.out.println("seite: " + seite + " pos: " + position);
 				seite = position + 1;
 				postTask = new PostTask();
 				postTask.execute("");
@@ -342,6 +341,8 @@ public class PostActivity extends ParentActivity implements
 					if (isCancelled())
 						return null;
 					pageCount = eaParser.getForumPostsPageCount(input);
+					if(pageCount == 0)
+						pageCount++;
 					if (isCancelled())
 						return null;
 					postList = eaParser.getForumPosts(input);

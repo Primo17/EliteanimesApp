@@ -152,7 +152,6 @@ public class ForenActivity extends ParentActivity implements
 				&& childPosition < forenAdapter.getChildrenCount(groupPosition)) {
 			Forum forum = (Forum) forenAdapter.getChild(groupPosition,
 					childPosition);
-			// TODO intent erstellen und starten
 			Intent intent = new Intent(this,
 					de.btcdev.eliteanimesapp.gui.ThreadActivity.class);
 			intent.putExtra("forum", forum);

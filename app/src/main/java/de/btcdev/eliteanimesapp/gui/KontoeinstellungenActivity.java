@@ -141,6 +141,16 @@ public class KontoeinstellungenActivity extends ParentActivity implements
 		return true;
 	}
 
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		if (mDrawerToggle.onOptionsItemSelected(item))
+			return true;
+		switch (item.getItemId()) {
+			default:
+				return super.onOptionsItemSelected(item);
+		}
+	}
+
 	/**
 	 * Speichert die Freundschaftsanfragen und blockierten User
 	 * 

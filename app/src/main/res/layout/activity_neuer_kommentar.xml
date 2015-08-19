@@ -33,7 +33,7 @@
 
     <ListView
         android:id="@+id/nav_neuer_kommentar_list"
-        android:layout_width="240dp"
+        android:layout_width="280dp"
         android:layout_height="match_parent"
         android:layout_gravity="left"
         android:background="#383838"

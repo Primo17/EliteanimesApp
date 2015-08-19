@@ -17,12 +17,16 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
+            android:background="#eeeeee"
             android:weightSum="2" >
 
             <Spinner
                 android:id="@+id/animelist_listSelectionSpinner"
                 android:layout_width="match_parent"
                 android:layout_height="48dp"
+                android:layout_marginBottom="5dp"
+                android:layout_marginRight="5dp"
+                android:layout_marginTop="5dp"
                 android:layout_weight="1"
                 android:entries="@array/animelist_selection" />
 
@@ -30,6 +34,9 @@
                 android:id="@+id/animelist_listSortSpinner"
                 android:layout_width="match_parent"
                 android:layout_height="48dp"
+                android:layout_marginBottom="5dp"
+                android:layout_marginRight="5dp"
+                android:layout_marginTop="5dp"
                 android:layout_weight="1"
                 android:entries="@array/animelist_sort" />
         </LinearLayout>
@@ -48,7 +55,7 @@
 
     <ListView
         android:id="@+id/nav_animelist_list"
-        android:layout_width="240dp"
+        android:layout_width="280dp"
         android:layout_height="match_parent"
         android:layout_gravity="left"
         android:background="#383838"

@@ -1,7 +1,5 @@
 package de.btcdev.eliteanimesapp.adapter;
 
-import java.util.ArrayList;
-
 import android.content.Context;
 import android.graphics.Typeface;
 import android.text.Html;
@@ -12,6 +10,9 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.util.TypedValue;
+
+import java.util.ArrayList;
 
 import de.btcdev.eliteanimesapp.R;
 import de.btcdev.eliteanimesapp.data.EAParser;
@@ -35,7 +36,8 @@ public class KommentarAdapter extends BaseAdapter {
             TextView more = new TextView(context);
             more.setText("\n"
                     + context.getResources().getString(R.string.comments_more));
-            more.setHeight(70);
+            int px = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, 60, context.getResources().getDisplayMetrics());
+            more.setHeight(px);
             more.setTypeface(more.getTypeface(), Typeface.BOLD);
             more.setGravity(Gravity.CENTER_HORIZONTAL);
             return more;

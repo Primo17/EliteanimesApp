@@ -173,11 +173,6 @@ public class KommentarActivity extends ParentActivity implements
 			ListView list = (ListView) findViewById(R.id.kommentarliste);
 			kommentarAdapter = new KommentarAdapter(this, result, spoilerArray);
 			list.setAdapter(kommentarAdapter);
-			// list.setSelection(5 * (seitenzahl - 1) - 1);
-			// if (commentlist.size() % 5 == 0)
-			// seitenzahl = commentlist.size() / 5;
-			// else
-			// seitenzahl = commentlist.size() / 5 + 1;
 			list.setOnItemClickListener(this);
 			registerForContextMenu(list);
 		}

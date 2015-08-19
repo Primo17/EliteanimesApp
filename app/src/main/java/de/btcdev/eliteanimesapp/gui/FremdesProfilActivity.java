@@ -36,6 +36,7 @@ public class FremdesProfilActivity extends ParentActivity implements
 	private String aktuellerUser;
 	private int userID;
 	private Menu menu;
+	private int isFriend;
 
 	/**
 	 * Das UI wird erzeugt, Netzwerk, Cache und Parser werden aus der
@@ -107,6 +108,23 @@ public class FremdesProfilActivity extends ParentActivity implements
 	public boolean onCreateOptionsMenu(Menu menu) {
 		// Inflate the menu; this adds items to the action bar if it is present.
 		getMenuInflater().inflate(R.menu.fremdes_profil, menu);
+		if (menu != null) {
+			// waiting
+			if (isFriend == 2) {
+				menu.findItem(R.id.fremdes_profil_add).setVisible(true);
+				menu.findItem(R.id.fremdes_profil_delete).setVisible(false);
+			}
+			// friend
+			else if (isFriend == 1) {
+				menu.findItem(R.id.fremdes_profil_add).setVisible(false);
+				menu.findItem(R.id.fremdes_profil_delete).setVisible(true);
+			}
+			// no friend
+			else if (isFriend == 0) {
+				menu.findItem(R.id.fremdes_profil_add).setVisible(true);
+				menu.findItem(R.id.fremdes_profil_delete).setVisible(false);
+			}
+		}
 		return true;
 	}
 
@@ -172,7 +190,7 @@ public class FremdesProfilActivity extends ParentActivity implements
 	 *            Profil, das angezeigt werden soll
 	 */
 	public void viewZuweisung(Profil profilNeu) {
-		supportInvalidateOptionsMenu();
+
 		Profil profil = profilNeu;
 		if (profilNeu != null) {
 			TextView frag1 = (TextView) findViewById(R.id.profil_benutzername);
@@ -210,23 +228,8 @@ public class FremdesProfilActivity extends ParentActivity implements
 			antw6.setText(profil.getSingle());
 			antw7.setText(profil.getWohnort());
 			antw8.setText(profil.getDabei());
-			if (menu != null) {
-				// waiting
-				if (profil.getFriend() == 2) {
-					menu.findItem(R.id.fremdes_profil_add).setVisible(true);
-					menu.findItem(R.id.fremdes_profil_delete).setVisible(false);
-				}
-				// friend
-				else if (profil.getFriend() == 1) {
-					menu.findItem(R.id.fremdes_profil_add).setVisible(false);
-					menu.findItem(R.id.fremdes_profil_delete).setVisible(true);
-				}
-				// no friend
-				else if (profil.getFriend() == 0) {
-					menu.findItem(R.id.fremdes_profil_add).setVisible(true);
-					menu.findItem(R.id.fremdes_profil_delete).setVisible(false);
-				}
-			}
+			isFriend = profil.getFriend();
+			supportInvalidateOptionsMenu();
 			bild.setImageBitmap(profil.getProfilbild());
 			bild.setAdjustViewBounds(true);
 			bild.setMaxHeight(200);

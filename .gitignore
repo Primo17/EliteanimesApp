@@ -24,7 +24,8 @@ local.properties
 # Log Files
 *.log
 
-.idea/
+/.idea/workspace.xml
+/.idea/libraries
 
 app/src/main/assets/api.properties
 api.properties

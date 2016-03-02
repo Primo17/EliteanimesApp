@@ -28,7 +28,3 @@ proguard/
 
 app/build.gradle
 app/src/main/assets/api.properties
-
-api.properties
-
-.idea/

@@ -15,15 +15,15 @@ public class SearchUserDeserializer implements JsonDeserializer<User> {
 	@Override
 	public User deserialize(JsonElement json, Type typeOfT,
 							JsonDeserializationContext context) throws JsonParseException {
-		JsonObject obj;
+		JsonObject jsonObject;
 		try {
-			obj = json.getAsJsonObject();
+			jsonObject = json.getAsJsonObject();
 		} catch (IllegalStateException e) {
 			throw new JsonParseException("invalid");
 		}
-		if (obj.has("name") && obj.has("id")) {
-			User user = new User(obj.get("name").getAsString());
-			user.setId(obj.get("id").getAsString());
+		if (jsonObject.has("name") && jsonObject.has("id")) {
+			User user = new User(jsonObject.get("name").getAsString());
+			user.setId(jsonObject.get("id").getAsString());
 			return user;
 		} else {
 			throw new JsonParseException("invalid");

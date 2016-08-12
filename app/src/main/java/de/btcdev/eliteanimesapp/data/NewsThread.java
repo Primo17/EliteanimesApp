@@ -4,13 +4,10 @@ import android.content.Context;
 
 public class NewsThread extends Thread {
 
-	@SuppressWarnings("unused")
-	private Context context;
 	private EAParser eaParser;
 	private NetworkService networkService;
 
 	public NewsThread(Context context) {
-		this.context = context;
 		networkService = NetworkService.instance(context);
 		eaParser = new EAParser(null);
 	}

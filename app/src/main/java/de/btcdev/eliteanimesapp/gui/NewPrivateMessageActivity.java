@@ -25,19 +25,19 @@ import de.btcdev.eliteanimesapp.data.PrivateMessage;
 public class NewPrivateMessageActivity extends ParentActivity implements
 		OnItemClickListener {
 
-	private EditText pnEingabe;
+	private EditText privateMessageInputView;
 	private PrivateMessage privateMessage;
-	private boolean spoiler;
-	private NewPNTask pnTask;
-	private boolean send = false;
+	private boolean showSpoiler;
+	private PrivateMessageTask privateMessageTask;
+	private boolean sendMode;
 	private String privateMessageInput;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_neue_pn);
-		bar = getSupportActionBar();
-		bar.setTitle("Neue Nachricht");
+		actionBar = getSupportActionBar();
+		actionBar.setTitle("Neue Nachricht");
 		networkService = NetworkService.instance(this);
 		eaParser = new EAParser(null);
 		if (savedInstanceState != null) {
@@ -60,21 +60,21 @@ public class NewPrivateMessageActivity extends ParentActivity implements
 				}).start();
 			}
 		}
-		bar.setSubtitle(privateMessage.getBenutzername());
-		viewZuweisung(privateMessage);
+		actionBar.setSubtitle(privateMessage.getUserName());
+		fillViews(privateMessage);
 		handleNavigationDrawer(R.id.nav_neue_pn, R.id.nav_neue_pn_list,
-				"Neue Nachricht", privateMessage.getBenutzername());
+				"Neue Nachricht", privateMessage.getUserName());
 	}
 
 	/**
-	 * Wird aufgerufen, wenn die Activity pausiert wird. Ein laufender NewPNTask
+	 * Wird aufgerufen, wenn die Activity pausiert wird. Ein laufender PrivateMessageTask
 	 * wird dabei abgebrochen.
 	 */
 	@SuppressWarnings("deprecation")
 	@Override
 	protected void onPause() {
-		if (pnTask != null) {
-			pnTask.cancel(true);
+		if (privateMessageTask != null) {
+			privateMessageTask.cancel(true);
 		}
 		removeDialog(load_dialog);
 		super.onPause();
@@ -82,7 +82,7 @@ public class NewPrivateMessageActivity extends ParentActivity implements
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
-		// Inflate the menu; this adds items to the action bar if it is present.
+		// Inflate the menu; this adds items to the action actionBar if it is present.
 		getMenuInflater().inflate(R.menu.neue_pn, menu);
 		return true;
 	}
@@ -93,18 +93,18 @@ public class NewPrivateMessageActivity extends ParentActivity implements
 			return true;
 		switch (item.getItemId()) {
 		case R.id.new_pn_send:
-			send = true;
-			privateMessageInput = pnEingabe.getText().toString();
-			pnTask = new NewPNTask();
-			pnTask.execute("");
+			sendMode = true;
+			privateMessageInput = privateMessageInputView.getText().toString();
+			privateMessageTask = new PrivateMessageTask();
+			privateMessageTask.execute("");
 			return true;
 		case R.id.new_pn_delete:
-			pnTask = new NewPNTask();
-			pnTask.execute("delete");
+			privateMessageTask = new PrivateMessageTask();
+			privateMessageTask.execute("delete");
 			return true;
 		case R.id.new_pn_profil:
-			String name = privateMessage.getBenutzername();
-			int userid = privateMessage.getUserid();
+			String name = privateMessage.getUserName();
+			int userid = privateMessage.getUserId();
 			Intent intent = new Intent(this,
 					UserProfileActivity.class);
 			intent.putExtra("User", name);
@@ -112,8 +112,8 @@ public class NewPrivateMessageActivity extends ParentActivity implements
 			startActivity(intent);
 			return true;
 		case R.id.new_pn_spoiler:
-			spoiler = !spoiler;
-			viewZuweisung(privateMessage);
+			showSpoiler = !showSpoiler;
+			fillViews(privateMessage);
 			return true;
 		default:
 			return super.onOptionsItemSelected(item);
@@ -152,27 +152,27 @@ public class NewPrivateMessageActivity extends ParentActivity implements
 		}
 	}
 
-	public void viewZuweisung(PrivateMessage privateMessage) {
-		TextView betreff = (TextView) findViewById(R.id.neue_pn_betreff);
-		TextView datum = (TextView) findViewById(R.id.neue_pn_datum);
-		TextView text = (TextView) findViewById(R.id.neue_pn_text);
-		pnEingabe = (EditText) findViewById(R.id.neue_pn_textfeld);
-		betreff.setText(privateMessage.getBetreff());
-		datum.setText(privateMessage.getDate());
-		String temp = privateMessage.getText();
-		temp = new EAParser(this).showSpoiler(spoiler, temp);
-		temp = temp.replace("\r", "");
-		temp = temp.replace("\t", "");
-		temp = "<html><head></head><body> ----- " + privateMessage.getBenutzername()
-				+ " schrieb: ----- <br> " + temp + " </body></html>";
-		text.setText(Html.fromHtml(temp));
-		privateMessage.setGelesen(true);
+	public void fillViews(PrivateMessage privateMessage) {
+		TextView subjectView = (TextView) findViewById(R.id.neue_pn_betreff);
+		TextView dateView = (TextView) findViewById(R.id.neue_pn_datum);
+		TextView messageContentView = (TextView) findViewById(R.id.neue_pn_text);
+		privateMessageInputView = (EditText) findViewById(R.id.neue_pn_textfeld);
+		subjectView.setText(privateMessage.getSubject());
+		dateView.setText(privateMessage.getDate());
+		String messageContent = privateMessage.getMessage();
+		messageContent = new EAParser(this).showSpoiler(showSpoiler, messageContent);
+		messageContent = messageContent.replace("\r", "");
+		messageContent = messageContent.replace("\t", "");
+		messageContent = "<html><head></head><body> ----- " + privateMessage.getUserName()
+				+ " schrieb: ----- <br> " + messageContent + " </body></html>";
+		messageContentView.setText(Html.fromHtml(messageContent));
+		privateMessage.setRead(true);
 	}
 
 	/**
 	 * Klasse für das Herunterladen der Informationen. Erbt von AsyncTask.
 	 */
-	public class NewPNTask extends AsyncTask<String, String, String> {
+	public class PrivateMessageTask extends AsyncTask<String, String, String> {
 
 		@Override
 		protected String doInBackground(String... params) {
@@ -181,7 +181,7 @@ public class NewPrivateMessageActivity extends ParentActivity implements
 			eaParser = new EAParser(null);
 			if (params[0].equals("")) {
 				// Alte Nachricht soll abgerufen werden
-				if (!send) {
+				if (!sendMode) {
 					try {
 						input = networkService.getPrivateMessage(privateMessage.getId());
 						new NewsThread(getApplicationContext()).start();
@@ -195,9 +195,9 @@ public class NewPrivateMessageActivity extends ParentActivity implements
 				// Neue Nachricht soll abgeschickt werden
 				else {
 					try {
-						String erfolg = networkService.answerPrivateMessage(privateMessage.getId(), privateMessageInput);
+						String result = networkService.answerPrivateMessage(privateMessage.getId(), privateMessageInput);
 						eaParser = new EAParser(null);
-						return eaParser.checkPrivateMessage(erfolg);
+						return eaParser.checkPrivateMessage(result);
 					} catch (EAException e) {
 						publishProgress("Exception", e.getMessage());
 					}
@@ -230,8 +230,8 @@ public class NewPrivateMessageActivity extends ParentActivity implements
 			getWindow().clearFlags(
 					WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 			if (result == null) {
-				if (!send) {
-					viewZuweisung(privateMessage);
+				if (!sendMode) {
+					fillViews(privateMessage);
 				} else {
 					Toast.makeText(getBaseContext(),
 							"PrivateMessage konnte nicht gesendet werden.",

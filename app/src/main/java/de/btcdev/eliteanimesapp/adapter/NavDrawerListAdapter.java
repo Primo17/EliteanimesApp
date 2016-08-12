@@ -60,11 +60,11 @@ public class NavDrawerListAdapter extends BaseAdapter {
 		textTitle.setText(navDrawerItems.get(position).getTitle());
 
 		if (navDrawerItems.get(position).getCounterVisibility()) {
-			if(position == ParentActivity.navigation_kommentare)
+			if(position == ParentActivity.NAVIGATION_COMMENTS)
 				textCount.setText(""+ Configuration.getNewCommentCount());
-			else if(position == ParentActivity.navigation_pns)
+			else if(position == ParentActivity.NAVIGATION_PRIVATE_MESSAGES)
 				textCount.setText(""+ Configuration.getNewMessageCount());
-//			textCount.setText(navDrawerItems.get(position).getCount());
+//			textCount.setMessage(navDrawerItems.get(position).getCount());
 		} else {
 			textCount.setVisibility(View.GONE);
 		}

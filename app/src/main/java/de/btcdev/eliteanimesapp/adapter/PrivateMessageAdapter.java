@@ -50,10 +50,10 @@ public class PrivateMessageAdapter extends BaseAdapter {
         TextView sender = (TextView) rowView.findViewById(R.id.pn_absender);
         TextView date = (TextView) rowView.findViewById(R.id.pn_datum);
         PrivateMessage privateMessage = privateMessages.get(position);
-        subject.setText(Html.fromHtml(privateMessage.getBetreff()));
-        if (!privateMessage.getGelesen())
+        subject.setText(Html.fromHtml(privateMessage.getSubject()));
+        if (!privateMessage.isRead())
             subject.setTypeface(Typeface.DEFAULT_BOLD);
-        sender.setText(Html.fromHtml(privateMessage.getBenutzername()));
+        sender.setText(Html.fromHtml(privateMessage.getUserName()));
         date.setText(privateMessage.getDate());
         return rowView;
     }

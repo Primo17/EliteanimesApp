@@ -152,11 +152,11 @@ public class BoardAdapter extends BaseExpandableListAdapter {
                     .findViewById(R.id.statistik_users);
             StringBuilder builder = new StringBuilder();
             builder.append("Wir haben ingesamt <b>");
-            builder.append(statistics.getAnzahlUser());
+            builder.append(statistics.getUserCount());
             builder.append("</b> Mitglieder, die in <b>");
-            builder.append(statistics.getAnzahlThreads());
+            builder.append(statistics.getThreadCount());
             builder.append("</b> Themen <b>");
-            builder.append(statistics.getAnzahlPosts());
+            builder.append(statistics.getPostCount());
             builder.append("</b> Beiträge geschrieben haben.");
             count.setText(Html.fromHtml(builder.toString()));
             builder = new StringBuilder();
@@ -166,14 +166,14 @@ public class BoardAdapter extends BaseExpandableListAdapter {
             member.setText(Html.fromHtml(builder.toString()));
             builder = new StringBuilder();
             builder.append("Zurzeit sind <b>");
-            builder.append(statistics.getAnzahlOnline());
+            builder.append(statistics.getOnlineCount());
             builder.append(" User</b> online:");
             online.setText(Html.fromHtml(builder.toString()));
             builder = new StringBuilder();
-            ArrayList<Statistics.StatistikUser> statusers = statistics
+            ArrayList<Statistics.StatisticsUser> statusers = statistics
                     .getUsersOnline();
             int length = statusers.size();
-            Statistics.StatistikUser u;
+            Statistics.StatisticsUser u;
             for (int i = 0; i < length; i++) {
                 u = statusers.get(i);
                 builder.append(u.getStyledName());

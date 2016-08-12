@@ -4,48 +4,48 @@ import java.util.ArrayList;
 
 public class Statistics {
 
-    private int anzahlUser;
-    private int anzahlThreads;
-    private int anzahlPosts;
-    private int anzahlOnline;
+    private int userCount;
+    private int threadCount;
+    private int postCount;
+    private int onlineCount;
     private int lastUserId;
     private String lastUserName;
-    private ArrayList<StatistikUser> usersOnline;
+    private ArrayList<StatisticsUser> usersOnline;
 
     public Statistics() {
 
     }
 
-    public int getAnzahlUser() {
-        return anzahlUser;
+    public int getUserCount() {
+        return userCount;
     }
 
-    public void setAnzahlUser(int anzahlUser) {
-        this.anzahlUser = anzahlUser;
+    public void setUserCount(int userCount) {
+        this.userCount = userCount;
     }
 
-    public int getAnzahlThreads() {
-        return anzahlThreads;
+    public int getThreadCount() {
+        return threadCount;
     }
 
-    public void setAnzahlThreads(int anzahlThreads) {
-        this.anzahlThreads = anzahlThreads;
+    public void setThreadCount(int threadCount) {
+        this.threadCount = threadCount;
     }
 
-    public int getAnzahlPosts() {
-        return anzahlPosts;
+    public int getPostCount() {
+        return postCount;
     }
 
-    public void setAnzahlPosts(int anzahlPosts) {
-        this.anzahlPosts = anzahlPosts;
+    public void setPostCount(int postCount) {
+        this.postCount = postCount;
     }
 
-    public int getAnzahlOnline() {
-        return anzahlOnline;
+    public int getOnlineCount() {
+        return onlineCount;
     }
 
-    public void setAnzahlOnline(int anzahlOnline) {
-        this.anzahlOnline = anzahlOnline;
+    public void setOnlineCount(int onlineCount) {
+        this.onlineCount = onlineCount;
     }
 
     public int getLastUserId() {
@@ -64,21 +64,21 @@ public class Statistics {
         this.lastUserName = lastUserName;
     }
 
-    public ArrayList<StatistikUser> getUsersOnline() {
+    public ArrayList<StatisticsUser> getUsersOnline() {
         return usersOnline;
     }
 
-    public void setUsersOnline(ArrayList<StatistikUser> usersOnline) {
+    public void setUsersOnline(ArrayList<StatisticsUser> usersOnline) {
         this.usersOnline = usersOnline;
     }
 
-    public static class StatistikUser {
+    public static class StatisticsUser {
         public int id;
         public String name;
         public int level;
         public boolean donator;
 
-        public StatistikUser() {
+        public StatisticsUser() {
 
         }
 

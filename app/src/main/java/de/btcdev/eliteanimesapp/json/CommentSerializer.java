@@ -12,13 +12,13 @@ import de.btcdev.eliteanimesapp.data.Comment;
 public class CommentSerializer implements JsonSerializer<Comment> {
 	public JsonElement serialize(Comment src, Type typeOfSrc,
 								 JsonSerializationContext context) {
-		JsonObject object = new JsonObject();
-		object.addProperty("cid", src.getId());
-		object.addProperty("name", src.getUserName());
-		object.addProperty("date", src.getDate());
-		object.addProperty("uid", src.getUserId());
-		object.addProperty("image", src.getAvatarURL());
-		object.addProperty("text", src.getText());
-		return object;
+		JsonObject jsonObject = new JsonObject();
+		jsonObject.addProperty("cid", src.getId());
+		jsonObject.addProperty("name", src.getUserName());
+		jsonObject.addProperty("date", src.getDate());
+		jsonObject.addProperty("uid", src.getUserId());
+		jsonObject.addProperty("image", src.getAvatarURL());
+		jsonObject.addProperty("text", src.getText());
+		return jsonObject;
 	}
 }

@@ -30,63 +30,62 @@ import de.btcdev.eliteanimesapp.json.JsonErrorException;
 public class UserProfileActivity extends ParentActivity implements
 		OnItemClickListener {
 
-	private ProfileCache profilcache;
-	private ImageView bild;
-	private ProfilTask profilTask;
-	private String aktuellerUser;
-	private int userID;
-	private Menu menu;
+	private ProfileCache profileCache;
+	private ImageView avatarView;
+	private ProfileTask profileTask;
+	private String currentUser;
+	private int currentUserId;
 	private int isFriend;
 
 	/**
 	 * Das UI wird erzeugt, NetworkService, Cache und Parser werden aus der
-	 * Configuration geladen. Anschließend wird ein neuer ProfilTask gestartet,
+	 * Configuration geladen. Anschließend wird ein neuer ProfileTask gestartet,
 	 * falls das Profile noch nicht vollständig ist. Falls doch, wird gleich
-	 * viewZuweisung aufgerufen.
+	 * fillViews aufgerufen.
 	 */
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		if (savedInstanceState != null) {
-			aktuellerUser = savedInstanceState.getString("User");
-			userID = savedInstanceState.getInt("UserID");
+			currentUser = savedInstanceState.getString("User");
+			currentUserId = savedInstanceState.getInt("UserID");
 		} else {
 			Intent intent = getIntent();
-			Bundle intentdata = intent.getExtras();
-			aktuellerUser = intentdata.getString("User");
-			userID = intentdata.getInt("UserID");
+			Bundle bundle = intent.getExtras();
+			currentUser = bundle.getString("User");
+			currentUserId = bundle.getInt("UserID");
 		}
 		setContentView(R.layout.activity_fremdes_profil);
-		bild = (ImageView) findViewById(R.id.profilbild_eigenes);
-		bar = getSupportActionBar();
-		bar.setTitle("Profile");
-		bar.setSubtitle(aktuellerUser);
+		avatarView = (ImageView) findViewById(R.id.profilbild_eigenes);
+		actionBar = getSupportActionBar();
+		actionBar.setTitle("Profile");
+		actionBar.setSubtitle(currentUser);
 
 		networkService = NetworkService.instance(this);
 		eaParser = new EAParser(this);
-		profilcache = ProfileCache.instance();
-		Profile temp = profilcache.contains(aktuellerUser);
+		profileCache = ProfileCache.instance();
+		Profile temp = profileCache.contains(currentUser);
 
 		handleNavigationDrawer(R.id.nav_fremdes_profil,
-				R.id.nav_fremdes_profil_list, "Profile", aktuellerUser);
+				R.id.nav_fremdes_profil_list, "Profile", currentUser);
 
 		if (temp != null && temp.isComplete())
-			viewZuweisung(temp);
+			fillViews(temp);
 		else {
-			profilTask = new ProfilTask();
-			profilTask.execute("");
+			profileTask = new ProfileTask();
+			profileTask.execute("");
 		}
 	}
 
 	/**
 	 * Wird aufgerufen, wenn die Activity pausiert wird. Ein laufender
-	 * ProfilTask wird dabei abgebrochen.
+	 * ProfileTask wird dabei abgebrochen.
 	 */
 	@SuppressWarnings("deprecation")
 	@Override
 	protected void onPause() {
-		if (profilTask != null) {
-			profilTask.cancel(true);
+		if (profileTask != null) {
+			profileTask.cancel(true);
 		}
 		removeDialog(load_dialog);
 		super.onPause();
@@ -100,13 +99,13 @@ public class UserProfileActivity extends ParentActivity implements
 	 */
 	@Override
 	public void onSaveInstanceState(Bundle savedInstanceState) {
-		savedInstanceState.putString("User", aktuellerUser);
-		savedInstanceState.putInt("UserID", userID);
+		savedInstanceState.putString("User", currentUser);
+		savedInstanceState.putInt("UserID", currentUserId);
 	}
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
-		// Inflate the menu; this adds items to the action bar if it is present.
+		// Inflate the menu; this adds items to the action actionBar if it is present.
 		getMenuInflater().inflate(R.menu.fremdes_profil, menu);
 		if (menu != null) {
 			// waiting
@@ -137,7 +136,7 @@ public class UserProfileActivity extends ParentActivity implements
 			refresh();
 			return true;
 		case R.id.fremdes_profil_add:
-			Profile p = profilcache.contains(aktuellerUser);
+			Profile p = profileCache.contains(currentUser);
 			if (p.getFriend() == 2) {
 				Toast.makeText(this,
 						"Eine vorige Anfrage wurde noch nicht bestätigt.",
@@ -148,7 +147,7 @@ public class UserProfileActivity extends ParentActivity implements
 						try {
 							networkService = NetworkService
 									.instance(getApplicationContext());
-							networkService.addFriend("" + userID);
+							networkService.addFriend("" + currentUserId);
 						} catch (Exception e) {
 
 						}
@@ -161,12 +160,12 @@ public class UserProfileActivity extends ParentActivity implements
 			}
 			return true;
 		case R.id.fremdes_profil_delete:
-			Profile profile = profilcache.contains(aktuellerUser);
+			Profile profile = profileCache.contains(currentUser);
 			new Thread(new Runnable() {
 				public void run() {
 					try {
 						networkService = NetworkService.instance(getApplicationContext());
-						networkService.deleteFriend("" + userID);
+						networkService.deleteFriend("" + currentUserId);
 					} catch (Exception e) {
 
 					}
@@ -189,7 +188,7 @@ public class UserProfileActivity extends ParentActivity implements
 	 * @param profileNeu
 	 *            Profile, das angezeigt werden soll
 	 */
-	public void viewZuweisung(Profile profileNeu) {
+	public void fillViews(Profile profileNeu) {
 
 		Profile profile = profileNeu;
 		if (profileNeu != null) {
@@ -217,23 +216,23 @@ public class UserProfileActivity extends ParentActivity implements
 			frag6.setVisibility(View.VISIBLE);
 			frag7.setVisibility(View.VISIBLE);
 			frag8.setVisibility(View.VISIBLE);
-			antw1.setText(profile.getBenutzername());
-			if (profile.getOnline())
+			antw1.setText(profile.getUserName());
+			if (profile.isOnline())
 				antw2.setText("Online");
 			else
 				antw2.setText("Offline");
-			antw3.setText(profile.getGruppe());
-			antw4.setText(profile.getGeschlecht());
-			antw5.setText(profile.getAlter());
+			antw3.setText(profile.getGroup());
+			antw4.setText(profile.getSex());
+			antw5.setText(profile.getAge());
 			antw6.setText(profile.getSingle());
-			antw7.setText(profile.getWohnort());
-			antw8.setText(profile.getDabei());
+			antw7.setText(profile.getResidence());
+			antw8.setText(profile.getRegisteredSince());
 			isFriend = profile.getFriend();
 			supportInvalidateOptionsMenu();
-			bild.setImageBitmap(profile.getProfilbild());
-			bild.setAdjustViewBounds(true);
-			bild.setMaxHeight(200);
-			bild.setMaxWidth(200);
+			avatarView.setImageBitmap(profile.getAvatar());
+			avatarView.setAdjustViewBounds(true);
+			avatarView.setMaxHeight(200);
+			avatarView.setMaxWidth(200);
 
 			LinearLayout linkContent = (LinearLayout) findViewById(R.id.profil_link_content);
 			linkContent.setVisibility(View.VISIBLE);
@@ -244,8 +243,8 @@ public class UserProfileActivity extends ParentActivity implements
 	 * Aktualisiert die Activity, indem alle Daten neu geladen werden.
 	 */
 	public void refresh() {
-		profilTask = new ProfilTask();
-		profilTask.execute("");
+		profileTask = new ProfileTask();
+		profileTask.execute("");
 	}
 
 	/**
@@ -272,28 +271,28 @@ public class UserProfileActivity extends ParentActivity implements
 		if (v.getId() == R.id.profil_beschreibung) {
 			Intent intent = new Intent(
 					this,
-					ProfileDescritpionActivity.class);
-			intent.putExtra("User", aktuellerUser);
-			intent.putExtra("UserID", userID);
+					ProfileDescriptionActivity.class);
+			intent.putExtra("User", currentUser);
+			intent.putExtra("UserID", currentUserId);
 			startActivity(intent);
 		} else if (v.getId() == R.id.profil_kommentare) {
 			Intent intent = new Intent(this,
 					CommentActivity.class);
-			intent.putExtra("User", aktuellerUser);
-			intent.putExtra("UserID", userID);
+			intent.putExtra("User", currentUser);
+			intent.putExtra("UserID", currentUserId);
 			startActivity(intent);
 		} else if (v.getId() == R.id.profil_freunde) {
 			Intent intent = new Intent(this,
 					FriendActivity.class);
-			intent.putExtra("User", aktuellerUser);
-			intent.putExtra("UserID", userID);
+			intent.putExtra("User", currentUser);
+			intent.putExtra("UserID", currentUserId);
 			startActivity(intent);
 
 		} else if (v.getId() == R.id.profil_animeliste) {
 			Intent intent = new Intent(this,
 					de.btcdev.eliteanimesapp.gui.AnimeListActivity.class);
-			intent.putExtra("User", aktuellerUser);
-			intent.putExtra("UserID", userID);
+			intent.putExtra("User", currentUser);
+			intent.putExtra("UserID", currentUserId);
 			startActivity(intent);
 		}
 	}
@@ -301,7 +300,7 @@ public class UserProfileActivity extends ParentActivity implements
 	/**
 	 * Klasse für das Herunterladen der Informationen. Erbt von AsyncTask.
 	 */
-	public class ProfilTask extends AsyncTask<String, String, Profile> {
+	public class ProfileTask extends AsyncTask<String, String, Profile> {
 
 		/**
 		 * Lädt im Hintergrund übers NetworkService die Profilinformationen und parst
@@ -323,7 +322,7 @@ public class UserProfileActivity extends ParentActivity implements
 			try {
 				if (this.isCancelled())
 					return null;
-				input = networkService.getProfile(aktuellerUser, userID);
+				input = networkService.getProfile(currentUser, currentUserId);
 				if (this.isCancelled())
 					return null;
 				new NewsThread(getApplicationContext()).start();
@@ -341,7 +340,7 @@ public class UserProfileActivity extends ParentActivity implements
 		}
 
 		/**
-		 * Die viewZuweisung wird mit den erhaltenen Daten aufgerufen, der
+		 * Die fillViews wird mit den erhaltenen Daten aufgerufen, der
 		 * LoadDialog wird geschlossen.
 		 * 
 		 * @param profile
@@ -350,7 +349,7 @@ public class UserProfileActivity extends ParentActivity implements
 		@SuppressWarnings("deprecation")
 		@Override
 		protected void onPostExecute(Profile profile) {
-			viewZuweisung(profile);
+			fillViews(profile);
 			try {
 				dismissDialog(load_dialog);
 			} catch (IllegalArgumentException e) {

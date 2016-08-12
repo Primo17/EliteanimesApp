@@ -27,7 +27,7 @@
             android:label="@string/title_activity_profil" >
         </activity>
         <activity
-            android:name=".gui.ProfileDescritpionActivity"
+            android:name=".gui.ProfileDescriptionActivity"
             android:label="@string/title_activity_profil_beschreibung" >
         </activity>
         <activity

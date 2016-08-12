@@ -25,45 +25,45 @@ import de.btcdev.eliteanimesapp.data.NewsThread;
 /**
  * Activity zur Anzeige einer Profilbeschreibung
  */
-public class ProfileDescritpionActivity extends ParentActivity implements
+public class ProfileDescriptionActivity extends ParentActivity implements
 		OnItemClickListener {
 
-	private String aktuellerUser = null;
-	private int userID = 0;
-	private boolean spoiler = false;
-	private ProfilBeschreibungTask task = null;
-	private String beschreibung;
-	private WebView webview;
+	private String currentUser = null;
+	private int userId = 0;
+	private boolean showSpoiler;
+	private ProfileDescriptionTask profileDescriptionTask = null;
+	private String description;
+	private WebView webView;
 
 	/**
 	 * ActionBar wird erzeugt, NetworkService und Parser werden aus der Configuration
-	 * geladen. Anschließend wird ein neuer ProfilBeschreibungTask aufgerufen.
+	 * geladen. Anschließend wird ein neuer ProfileDescriptionTask aufgerufen.
 	 */
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		if (savedInstanceState != null) {
-			aktuellerUser = savedInstanceState.getString(aktuellerUser);
-			userID = savedInstanceState.getInt("UserID");
-			spoiler = savedInstanceState.getBoolean("Spoiler");
+			currentUser = savedInstanceState.getString(currentUser);
+			userId = savedInstanceState.getInt("UserID");
+			showSpoiler = savedInstanceState.getBoolean("Spoiler");
 		} else {
 			Intent intent = getIntent();
 			Bundle intentdata = intent.getExtras();
-			aktuellerUser = intentdata.getString("User");
-			userID = intentdata.getInt("UserID");
+			currentUser = intentdata.getString("User");
+			userId = intentdata.getInt("UserID");
 		}
 		setContentView(R.layout.activity_profil_beschreibung);
-		ActionBar bar = getSupportActionBar();
-		bar.setTitle("Über");
-		bar.setSubtitle(aktuellerUser);
+		ActionBar actionBar = getSupportActionBar();
+		actionBar.setTitle("Über");
+		actionBar.setSubtitle(currentUser);
 
 		networkService = NetworkService.instance(this);
 		eaParser = new EAParser(null);
 
-		task = new ProfilBeschreibungTask();
-		task.execute("");
+		profileDescriptionTask = new ProfileDescriptionTask();
+		profileDescriptionTask.execute("");
 		handleNavigationDrawer(R.id.nav_profil_beschreibung,
-				R.id.nav_profil_beschreibung_list, "Über", aktuellerUser);
+				R.id.nav_profil_beschreibung_list, "Über", currentUser);
 	}
 
 	/**
@@ -71,27 +71,27 @@ public class ProfileDescritpionActivity extends ParentActivity implements
 	 */
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
-		// Inflate the menu; this adds items to the action bar if it is present.
+		// Inflate the menu; this adds items to the action actionBar if it is present.
 		getMenuInflater().inflate(R.menu.profil_beschreibung, menu);
 		return true;
 	}
 
 	@Override
 	protected void onSaveInstanceState(Bundle outState) {
-		outState.putString("User", aktuellerUser);
-		outState.putInt("UserID", userID);
-		outState.putBoolean("Spoiler", spoiler);
+		outState.putString("User", currentUser);
+		outState.putInt("UserID", userId);
+		outState.putBoolean("Spoiler", showSpoiler);
 	}
 
 	/**
 	 * Wird aufgerufen, wenn die Activity pausiert wird. Ein laufender
-	 * ProfilBeschreibungTask wird abgebrochen.
+	 * ProfileDescriptionTask wird abgebrochen.
 	 */
 	@SuppressWarnings("deprecation")
 	@Override
 	protected void onPause() {
-		if (task != null) {
-			task.cancel(true);
+		if (profileDescriptionTask != null) {
+			profileDescriptionTask.cancel(true);
 		}
 		removeDialog(load_dialog);
 		super.onPause();
@@ -106,10 +106,10 @@ public class ProfileDescritpionActivity extends ParentActivity implements
 			refresh();
 			return true;
 		case R.id.profil_beschreibung_spoiler:
-			spoiler = !spoiler;
+			showSpoiler = !showSpoiler;
 			EAParser parser = new EAParser(this);
-			webview.loadDataWithBaseURL("http://www.eliteanimes.com",
-					parser.showSpoiler(spoiler, beschreibung), "text/html",
+			webView.loadDataWithBaseURL("http://www.eliteanimes.com",
+					parser.showSpoiler(showSpoiler, description), "text/html",
 					"utf-8", null);
 		default:
 			return super.onOptionsItemSelected(item);
@@ -140,31 +140,31 @@ public class ProfileDescritpionActivity extends ParentActivity implements
 	 * Die Anzeige wird mit den geladenen Informationen erstellt. Momentan:
 	 * Einfaches Workaround, das nicht auf Größe von Bildern achtet.
 	 * 
-	 * @param profilBeschreibung
+	 * @param profileDescription
 	 *            geladene Profilbeschreibung, die angezeigt werden soll
 	 */
 	@SuppressWarnings("deprecation")
-	public void viewZuweisung(String profilBeschreibung) {
-		this.beschreibung = profilBeschreibung;
-		webview = (WebView) findViewById(R.id.beschreibung_anzeige);
-		WebSettings settings = webview.getSettings();
+	public void fillViews(String profileDescription) {
+		this.description = profileDescription;
+		webView = (WebView) findViewById(R.id.beschreibung_anzeige);
+		WebSettings settings = webView.getSettings();
 		settings.setDefaultZoom(ZoomDensity.FAR);
 		settings.setBuiltInZoomControls(true);
 		EAParser parser = new EAParser(this);
-		webview.loadDataWithBaseURL("http://www.eliteanimes.com",
-				parser.showSpoiler(spoiler, beschreibung), "text/html",
+		webView.loadDataWithBaseURL("http://www.eliteanimes.com",
+				parser.showSpoiler(showSpoiler, description), "text/html",
 				"utf-8", null);
 	}
 
 	public void refresh() {
-		task = new ProfilBeschreibungTask();
-		task.execute("");
+		profileDescriptionTask = new ProfileDescriptionTask();
+		profileDescriptionTask.execute("");
 	}
 
 	/**
 	 * Klasse für das Herunterladen der Profilbeschreibung. Erbt von AsyncTask.
 	 */
-	public class ProfilBeschreibungTask extends
+	public class ProfileDescriptionTask extends
 			AsyncTask<String, String, String> {
 
 		/**
@@ -182,8 +182,8 @@ public class ProfileDescritpionActivity extends ParentActivity implements
 			try {
 				if (isCancelled())
 					return null;
-				String input = networkService.getProfileDescription(aktuellerUser,
-						userID);
+				String input = networkService.getProfileDescription(currentUser,
+						userId);
 				if (isCancelled())
 					return null;
 				new NewsThread(getApplicationContext()).start();
@@ -197,7 +197,7 @@ public class ProfileDescritpionActivity extends ParentActivity implements
 		}
 
 		/**
-		 * Ruft die viewZuweisung mit der erhaltenen Profilbeschreibung auf und
+		 * Ruft die fillViews mit der erhaltenen Profilbeschreibung auf und
 		 * schließt den LoadDialog.
 		 * 
 		 * @param string
@@ -206,7 +206,7 @@ public class ProfileDescritpionActivity extends ParentActivity implements
 		@SuppressWarnings("deprecation")
 		@Override
 		protected void onPostExecute(String string) {
-			viewZuweisung(string);
+			fillViews(string);
 			try {
 				dismissDialog(load_dialog);
 			} catch (IllegalArgumentException e) {

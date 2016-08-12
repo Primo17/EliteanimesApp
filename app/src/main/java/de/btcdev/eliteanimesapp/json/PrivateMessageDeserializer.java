@@ -13,28 +13,28 @@ import de.btcdev.eliteanimesapp.data.PrivateMessage;
 public class PrivateMessageDeserializer implements JsonDeserializer<PrivateMessage> {
 	public PrivateMessage deserialize(JsonElement json, Type typeOfT,
 									  JsonDeserializationContext context) throws JsonParseException {
-		JsonObject object;
+		JsonObject jsonObject;
 		try {
-			object = json.getAsJsonObject();
+			jsonObject = json.getAsJsonObject();
 		} catch (IllegalStateException e) {
 			throw new JsonParseException("invalid");
 		}
 		// ist der String ein gültiger JSON-String?
-		if (object.has("id") && object.has("subject") && object.has("date")
-				&& object.has("readed") && object.has("f_uid")
-				&& object.has("f_uname") && object.has("pm")) {
-			PrivateMessage n = new PrivateMessage(object.get("id").getAsInt());
-			n.setBenutzername(object.get("f_uname").getAsString());
-			n.setBetreff(object.get("subject").getAsString());
-			n.setDate(object.get("date").getAsString());
-			int gelesen = object.get("readed").getAsInt();
-			if (gelesen == 1)
-				n.setGelesen(true);
+		if (jsonObject.has("id") && jsonObject.has("subject") && jsonObject.has("date")
+				&& jsonObject.has("readed") && jsonObject.has("f_uid")
+				&& jsonObject.has("f_uname") && jsonObject.has("pm")) {
+			PrivateMessage privateMessage = new PrivateMessage(jsonObject.get("id").getAsInt());
+			privateMessage.setUserName(jsonObject.get("f_uname").getAsString());
+			privateMessage.setSubject(jsonObject.get("subject").getAsString());
+			privateMessage.setDate(jsonObject.get("date").getAsString());
+			int read = jsonObject.get("readed").getAsInt();
+			if (read == 1)
+				privateMessage.setRead(true);
 			else
-				n.setGelesen(false);
-			n.setText(object.get("pm").getAsString());
-			n.setUserid(object.get("f_uid").getAsInt());
-			return n;
+				privateMessage.setRead(false);
+			privateMessage.setMessage(jsonObject.get("pm").getAsString());
+			privateMessage.setUserId(jsonObject.get("f_uid").getAsInt());
+			return privateMessage;
 		} else {
 			throw new JsonParseException("invalid");
 		}

@@ -26,13 +26,13 @@ import de.btcdev.eliteanimesapp.data.NetworkService;
 public class NewCommentActivity extends ParentActivity implements
 		OnItemClickListener {
 
-	private EditText kommentarEingabe;
-	private String aktuellerUser;
-	private int userID;
+	private EditText commentInputView;
+	private String currentUser;
+	private int userId;
 	private boolean response;
 	private Comment responseComment = null;
 	private NewCommentTask newCommentTask;
-	private Comment edit;
+	private Comment editedComment;
 	private String status;
 	private String commentInput;
 
@@ -44,43 +44,43 @@ public class NewCommentActivity extends ParentActivity implements
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_neuer_kommentar);
-		kommentarEingabe = (EditText) findViewById(R.id.new_comment_text);
-		bar = getSupportActionBar();
-		bar.setTitle("Neuer Comment");
+		commentInputView = (EditText) findViewById(R.id.new_comment_text);
+		actionBar = getSupportActionBar();
+		actionBar.setTitle("Neuer Comment");
 		Intent intent = getIntent();
 		Bundle bundle = intent.getExtras();
-		aktuellerUser = bundle.getString("User");
-		userID = bundle.getInt("UserID");
+		currentUser = bundle.getString("User");
+		userId = bundle.getInt("UserID");
 		status = bundle.getString("Status");
 		response = bundle.getBoolean("Response", false);
 		if (response) {
 			responseComment = bundle.getParcelable("Comment");
 			LayoutInflater inflater = getLayoutInflater();
 			LinearLayout root = (LinearLayout) findViewById(R.id.new_comment_root);
-			View kView = inflater.inflate(R.layout.kommentar_layout, root,
+			View commentLayoutView = inflater.inflate(R.layout.kommentar_layout, root,
 					false);
-			TextView name = (TextView) kView.findViewById(R.id.comment_name);
-			TextView date = (TextView) kView.findViewById(R.id.comment_date);
-			ImageView profilbild = (ImageView) kView
+			TextView name = (TextView) commentLayoutView.findViewById(R.id.comment_name);
+			TextView date = (TextView) commentLayoutView.findViewById(R.id.comment_date);
+			ImageView avatar = (ImageView) commentLayoutView
 					.findViewById(R.id.comment_img);
-			TextView text = (TextView) kView.findViewById(R.id.comment_text);
+			TextView text = (TextView) commentLayoutView.findViewById(R.id.comment_text);
 			name.setText(responseComment.getUserName());
 			date.setText(responseComment.getDate());
 			text.setText(Html.fromHtml(responseComment.getText()));
-			profilbild.setImageBitmap(responseComment.getAvatar());
-			kView.setBackgroundDrawable(getResources().getDrawable(
+			avatar.setImageBitmap(responseComment.getAvatar());
+			commentLayoutView.setBackgroundDrawable(getResources().getDrawable(
 					R.drawable.borderback));
-			root.addView(kView, 0);
+			root.addView(commentLayoutView, 0);
 		}
-		bar.setSubtitle(aktuellerUser);
+		actionBar.setSubtitle(currentUser);
 		if (status.equals("Editieren")) {
-			bar.setTitle("Comment editieren");
-			edit = bundle.getParcelable("Comment");
-			kommentarEingabe.setText(Html.fromHtml(edit.getText()));
+			actionBar.setTitle("Comment editieren");
+			editedComment = bundle.getParcelable("Comment");
+			commentInputView.setText(Html.fromHtml(editedComment.getText()));
 		}
 		networkService = NetworkService.instance(this);
 		handleNavigationDrawer(R.id.nav_neuer_kommentar,
-				R.id.nav_neuer_kommentar_list, "Neuer Comment", aktuellerUser);
+				R.id.nav_neuer_kommentar_list, "Neuer Comment", currentUser);
 	}
 
 	/**
@@ -88,7 +88,7 @@ public class NewCommentActivity extends ParentActivity implements
 	 */
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
-		// Inflate the menu; this adds items to the action bar if it is present.
+		// Inflate the menu; this adds items to the action actionBar if it is present.
 		getMenuInflater().inflate(R.menu.neuer_kommentar, menu);
 		return true;
 	}
@@ -105,7 +105,7 @@ public class NewCommentActivity extends ParentActivity implements
 			return true;
 		switch (item.getItemId()) {
 		case R.id.new_comment_send:
-			commentInput = kommentarEingabe.getText().toString();
+			commentInput = commentInputView.getText().toString();
 			newCommentTask = new NewCommentTask();
 			newCommentTask.execute("");
 		default:
@@ -153,13 +153,13 @@ public class NewCommentActivity extends ParentActivity implements
 			networkService = NetworkService.instance(getApplicationContext());
 			try {
 				if (status.equals("Editieren")) {
-					edit.setText(commentInput);
-					networkService.editComment(edit, aktuellerUser, userID);
+					editedComment.setText(commentInput);
+					networkService.editComment(editedComment, currentUser, userId);
 					send = true;
 				} else {
 					if (isCancelled())
 						return null;
-					send = networkService.postComment(commentInput, aktuellerUser, userID);
+					send = networkService.postComment(commentInput, currentUser, userId);
 				}
 			} catch (EAException e) {
 				publishProgress("Exception", e.getMessage());
@@ -188,8 +188,8 @@ public class NewCommentActivity extends ParentActivity implements
 			if (result != null && result.equals("Erfolg")) {
 				Intent intent = new Intent(getApplicationContext(),
 						CommentActivity.class);
-				intent.putExtra("User", aktuellerUser);
-				intent.putExtra("UserID", userID);
+				intent.putExtra("User", currentUser);
+				intent.putExtra("UserID", userId);
 				intent.putExtra("Send", true);
 				startActivity(intent);
 			} else {

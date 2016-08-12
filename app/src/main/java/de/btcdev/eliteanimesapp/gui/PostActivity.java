@@ -34,13 +34,13 @@ import de.btcdev.eliteanimesapp.data.NetworkService;
 public class PostActivity extends ParentActivity implements
 		OnItemSelectedListener {
 
-	private BoardThread thread;
+	private BoardThread boardThread;
 	private ArrayList<BoardPost> postList;
 	private ListView listView;
 	private PostTask postTask;
-	private BoardPostAdapter postAdapter;
+	private BoardPostAdapter boardPostAdapter;
 	private int pageCount;
-	private int seite = 1;
+	private int page = 1;
 	private String[] pages;
 	private ArrayAdapter<String> pageAdapter;
 	private ArrayList<Boolean> spoilerArray;
@@ -53,31 +53,31 @@ public class PostActivity extends ParentActivity implements
 		setContentView(R.layout.activity_post);
 		listView = (ListView) findViewById(R.id.threads_list);
 		if (savedInstanceState != null) {
-			thread = savedInstanceState.getParcelable("thread");
-			seite = savedInstanceState.getInt("seite");
+			boardThread = savedInstanceState.getParcelable("boardThread");
+			page = savedInstanceState.getInt("page");
 			pageCount = savedInstanceState.getInt("pageCount");
 			pages = savedInstanceState.getStringArray("pages");
 			postList = savedInstanceState.getParcelableArrayList("postList");
 			chosenPosition = savedInstanceState.getInt("chosenPosition");
 			spoilerArray = (ArrayList<Boolean>) savedInstanceState
 					.getSerializable("spoilerArray");
-			viewZuweisung();
+			fillViews();
 		} else {
 			Bundle bundle = getIntent().getExtras();
-			thread = bundle.getParcelable("thread");
-			seite = bundle.getInt("seite", 1);
+			boardThread = bundle.getParcelable("boardThread");
+			page = bundle.getInt("page", 1);
 
 			postTask = new PostTask();
 			postTask.execute("");
 		}
-		bar = getSupportActionBar();
-		bar.setTitle(thread.getName());
+		actionBar = getSupportActionBar();
+		actionBar.setTitle(boardThread.getName());
 		handleNavigationDrawer(R.id.nav_posts, R.id.nav_posts_list,
-				thread.getName(), null);
+				boardThread.getName(), null);
 	}
 
 	/**
-	 * Wird aufgerufen, wenn die Activity pausiert wird. Ein laufender ForenTask
+	 * Wird aufgerufen, wenn die Activity pausiert wird. Ein laufender BoardTask
 	 * wird dabei abgebrochen.
 	 */
 	@SuppressWarnings("deprecation")
@@ -92,8 +92,8 @@ public class PostActivity extends ParentActivity implements
 
 	@Override
 	protected void onSaveInstanceState(Bundle outState) {
-		outState.putParcelable("thread", thread);
-		outState.putInt("seite", seite);
+		outState.putParcelable("boardThread", boardThread);
+		outState.putInt("page", page);
 		outState.putInt("pageCount", pageCount);
 		outState.putStringArray("pages", pages);
 		outState.putParcelableArrayList("postList", postList);
@@ -106,7 +106,7 @@ public class PostActivity extends ParentActivity implements
 	 */
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
-		// Inflate the menu; this adds items to the action bar if it is present.
+		// Inflate the menu; this adds items to the action actionBar if it is present.
 		getMenuInflater().inflate(R.menu.posts, menu);
 		return true;
 	}
@@ -120,13 +120,13 @@ public class PostActivity extends ParentActivity implements
 			refresh();
 			return super.onOptionsItemSelected(item);
 		case R.id.posts_new:
-			if (thread.isClosed()) {
+			if (boardThread.isClosed()) {
 				Toast.makeText(this, "Thema geschlossen!", Toast.LENGTH_SHORT)
 						.show();
 			} else {
 				Intent intent = new Intent(this,
 						de.btcdev.eliteanimesapp.gui.NewPostActivity.class);
-				intent.putExtra("thread", thread);
+				intent.putExtra("boardThread", boardThread);
 				startActivity(intent);
 			}
 			return super.onOptionsItemSelected(item);
@@ -139,8 +139,8 @@ public class PostActivity extends ParentActivity implements
 	public void onItemSelected(AdapterView<?> parent, View view, int position,
 			long id) {
 		if (parent.getId() == R.id.threads_spinner) {
-			if (seite != position + 1) {
-				seite = position + 1;
+			if (page != position + 1) {
+				page = position + 1;
 				postTask = new PostTask();
 				postTask.execute("");
 			}
@@ -179,18 +179,18 @@ public class PostActivity extends ParentActivity implements
 			AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) menuInfo;
 			chosenPosition = info.position;
 			if (chosenPosition < postList.size()) {
-				BoardPost k = postList.get(chosenPosition);
-				String name = Configuration
+				BoardPost boardPost = postList.get(chosenPosition);
+				String userName = Configuration
 						.getUserName(getApplicationContext());
 				ArrayList<String> items = new ArrayList<String>();
-				if (k.getUserName().equals(name)) {
-					if (!thread.isClosed())
+				if (boardPost.getUserName().equals(userName)) {
+					if (!boardThread.isClosed())
 						items.add(getResources().getString(
 								R.string.post_zitieren));
 					items.add(getResources().getString(R.string.post_spoiler));
-					if (!thread.isClosed())
+					if (!boardThread.isClosed())
 						items.add(getResources().getString(R.string.post_edit));
-					if (!thread.isClosed() && chosenPosition != 0)
+					if (!boardThread.isClosed() && chosenPosition != 0)
 						items.add(getResources()
 								.getString(R.string.post_delete));
 					items.add(getResources().getString(R.string.post_copy));
@@ -203,7 +203,7 @@ public class PostActivity extends ParentActivity implements
 				}
 				for (int i = 0; i < items.size(); i++)
 					menu.add(items.get(i));
-				menu.setHeaderTitle("Beitrag von " + k.getUserName());
+				menu.setHeaderTitle("Beitrag von " + boardPost.getUserName());
 			}
 		}
 	}
@@ -218,36 +218,35 @@ public class PostActivity extends ParentActivity implements
 		} else if (temp.equals(getResources().getString(R.string.post_edit))) {
 			Intent intent = new Intent(this,
 					de.btcdev.eliteanimesapp.gui.NewPostActivity.class);
-			BoardPost k = postList.get(chosenPosition);
-			System.out.println(k);
+			BoardPost boardPost = postList.get(chosenPosition);
 			chosenPosition = -1;
 			intent.putExtra("editieren", true);
-			intent.putExtra("editPost", k);
-			intent.putExtra("thread", thread);
+			intent.putExtra("editPost", boardPost);
+			intent.putExtra("boardThread", boardThread);
 			startActivity(intent);
 		} else if (temp.equals(getResources().getString(R.string.post_profil))) {
-			BoardPost k = postList.get(chosenPosition);
+			BoardPost boardPost = postList.get(chosenPosition);
 			chosenPosition = -1;
-			String name = k.getUserName();
-			if (name.equals(Configuration
+			String userName = boardPost.getUserName();
+			if (userName.equals(Configuration
 					.getUserName(getApplicationContext()))) {
 				Intent intent = new Intent(this,
 						ProfileActivity.class);
 				startActivity(intent);
 			} else {
-				int userid = k.getUserId();
+				int userId = boardPost.getUserId();
 				Intent intent = new Intent(
 						this,
 						UserProfileActivity.class);
-				intent.putExtra("User", name);
-				intent.putExtra("UserID", userid);
+				intent.putExtra("User", userName);
+				intent.putExtra("UserID", userId);
 				startActivity(intent);
 			}
 		} else if (temp.equals(getResources().getString(R.string.post_copy))) {
-			BoardPost k = postList.get(chosenPosition);
-			String text = k.getText();
+			BoardPost boardPost = postList.get(chosenPosition);
+			String boardPostContent = boardPost.getText();
 			android.text.ClipboardManager clipboard = (android.text.ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
-			clipboard.setText(text);
+			clipboard.setText(boardPostContent);
 			Toast.makeText(this, "Beitrag wurde in die Zwischenablage kopiert",
 					Toast.LENGTH_SHORT).show();
 		} else if (temp.equals(getResources().getString(R.string.post_spoiler))) {
@@ -255,22 +254,22 @@ public class PostActivity extends ParentActivity implements
 				spoilerArray.set(chosenPosition, false);
 			else
 				spoilerArray.set(chosenPosition, true);
-			postAdapter.notifyDataSetChanged();
+			boardPostAdapter.notifyDataSetChanged();
 		} else if (temp
 				.equals(getResources().getString(R.string.post_zitieren))) {
 			Intent intent = new Intent(this,
 					de.btcdev.eliteanimesapp.gui.NewPostActivity.class);
 			intent.putExtra("zitieren", true);
-			BoardPost k = postList.get(chosenPosition);
+			BoardPost boardPost = postList.get(chosenPosition);
 			chosenPosition = -1;
-			intent.putExtra("editPost", k);
-			intent.putExtra("thread", thread);
+			intent.putExtra("editPost", boardPost);
+			intent.putExtra("boardThread", boardThread);
 			startActivity(intent);
 		}
 		return true;
 	}
 
-	public void viewZuweisung() {
+	public void fillViews() {
 		if (pages == null)
 			pages = new String[pageCount];
 		if (pageAdapter == null) {
@@ -285,7 +284,7 @@ public class PostActivity extends ParentActivity implements
 			for (int i = 0; i < pageCount; i++)
 				pages[i] = Integer.toString(i + 1);
 			pageSpinner.setAdapter(pageAdapter);
-			pageSpinner.setSelection(seite - 1);
+			pageSpinner.setSelection(page - 1);
 			pageAdapter.notifyDataSetChanged();
 			pageAdapter
 					.setDropDownViewResource(R.layout.dialog_animelist_rate_dropdown);
@@ -298,8 +297,8 @@ public class PostActivity extends ParentActivity implements
 				spoilerArray.add(false);
 			}
 			listView = (ListView) findViewById(R.id.posts_list);
-			postAdapter = new BoardPostAdapter(this, postList, spoilerArray);
-			listView.setAdapter(postAdapter);
+			boardPostAdapter = new BoardPostAdapter(this, postList, spoilerArray);
+			listView.setAdapter(boardPostAdapter);
 			listView.setOnItemClickListener(this);
 			listView.setOnCreateContextMenuListener(this);
 		}
@@ -310,7 +309,7 @@ public class PostActivity extends ParentActivity implements
 		View v = root.getChildAt(0);
 		if (v != null && v.getId() == R.id.forum_pages_root)
 			root.removeViewAt(0);
-		postAdapter = null;
+		boardPostAdapter = null;
 		pageAdapter = null;
 		pages = null;
 		postTask = new PostTask();
@@ -337,7 +336,7 @@ public class PostActivity extends ParentActivity implements
 				} else {
 					if (isCancelled())
 						return null;
-					input = networkService.getPosts(thread.getId(), seite);
+					input = networkService.getPosts(boardThread.getId(), page);
 					if (isCancelled())
 						return null;
 					pageCount = eaParser.getForumPostsPageCount(input);
@@ -370,7 +369,7 @@ public class PostActivity extends ParentActivity implements
 		}
 
 		/**
-		 * Der Lade-Dialog wird geschlossen und die viewZuweisung aufgerufen.
+		 * Der Lade-Dialog wird geschlossen und die fillViews aufgerufen.
 		 */
 		@SuppressWarnings("deprecation")
 		@Override
@@ -381,9 +380,9 @@ public class PostActivity extends ParentActivity implements
 				if (delete) {
 					postList.remove(p);
 					chosenPosition = -1;
-					postAdapter.notifyDataSetChanged();
+					boardPostAdapter.notifyDataSetChanged();
 				} else {
-					viewZuweisung();
+					fillViews();
 				}
 			try {
 				dismissDialog(load_dialog);

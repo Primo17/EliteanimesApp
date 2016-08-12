@@ -34,37 +34,37 @@ public abstract class ParentActivity extends ActionBarActivity implements
 	protected ListView mDrawerList;
 	protected ActionBarDrawerToggle mDrawerToggle;
 	protected ArrayList<NavDrawerItem> navDrawerItems;
-	protected NavDrawerListAdapter adapter;
+	protected NavDrawerListAdapter navDrawerListAdapter;
 	protected NetworkService networkService;
 	protected EAParser eaParser;
 	protected final int load_dialog = 0;
 	protected ProgressDialog loadDialog;
-	protected ActionBar bar;
-	public static final int navigation_profil = 0;
-	public static final int navigation_kommentare = 1;
-	public static final int navigation_pns = 2;
-	public static final int navigation_freunde = 3;
-	public static final int navigation_animeliste = 4;
-	public static final int navigation_forum = 5;
-	public static final int navigation_suche = 6;
-	public static final int navigation_konto = 7;
-	public static final int navigation_settings = 8;
-	public static final int navigation_info = 9;
-	public static final int navigation_logout = 10;
+	protected ActionBar actionBar;
+	public static final int NAVIGATION_PROFILE = 0;
+	public static final int NAVIGATION_COMMENTS = 1;
+	public static final int NAVIGATION_PRIVATE_MESSAGES = 2;
+	public static final int NAVIGATION_FRIENDS = 3;
+	public static final int NAVIGATION_ANIMELIST = 4;
+	public static final int NAVIGATION_BOARD = 5;
+	public static final int NAVIGATION_SEARCH = 6;
+	public static final int NAVIGATION_ACCOUNT = 7;
+	public static final int NAVIGATION_SETTINGS = 8;
+	public static final int NAVIGATION_INFO = 9;
+	public static final int NAVIGATION_LOGOUT = 10;
 
 	public void handleNavigationDrawer(int layoutId, int listId,
 			final String name, final String sub) {
-		bar = getSupportActionBar();
+		actionBar = getSupportActionBar();
 		mDrawerLayout = (DrawerLayout) findViewById(layoutId);
 		mDrawerList = (ListView) findViewById(listId);
 		navDrawerItems = new ArrayList<>();
 		navDrawerItems = setNavigationDrawer(navDrawerItems,
 				getApplicationContext());
-		adapter = new NavDrawerListAdapter(getApplicationContext(),
+		navDrawerListAdapter = new NavDrawerListAdapter(getApplicationContext(),
 				navDrawerItems);
-		mDrawerList.setAdapter(adapter);
-		bar.setDisplayHomeAsUpEnabled(true);
-		bar.setHomeButtonEnabled(true);
+		mDrawerList.setAdapter(navDrawerListAdapter);
+		actionBar.setDisplayHomeAsUpEnabled(true);
+		actionBar.setHomeButtonEnabled(true);
 		mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout,
 				R.drawable.ic_drawer, R.string.app_name, R.string.app_name) {
 			public void onDrawerClosed(View view) {
@@ -87,29 +87,29 @@ public abstract class ParentActivity extends ActionBarActivity implements
 			ArrayList<NavDrawerItem> list, Context context) {
 		String[] navMenuTitles = context.getResources().getStringArray(
 				R.array.nav_drawer_items);
-		list.add(new NavDrawerItem(navMenuTitles[navigation_profil],
+		list.add(new NavDrawerItem(navMenuTitles[NAVIGATION_PROFILE],
 				R.drawable.ic_drawer_profil));
-		list.add(new NavDrawerItem(navMenuTitles[navigation_kommentare],
+		list.add(new NavDrawerItem(navMenuTitles[NAVIGATION_COMMENTS],
 				R.drawable.ic_drawer_comments, true, ""
 						+ Configuration.getNewCommentCount()));
-		list.add(new NavDrawerItem(navMenuTitles[navigation_pns],
+		list.add(new NavDrawerItem(navMenuTitles[NAVIGATION_PRIVATE_MESSAGES],
 				R.drawable.ic_drawer_pn, true, ""
 						+ Configuration.getNewMessageCount()));
-		list.add(new NavDrawerItem(navMenuTitles[navigation_freunde],
+		list.add(new NavDrawerItem(navMenuTitles[NAVIGATION_FRIENDS],
 				R.drawable.ic_drawer_friends));
-		list.add(new NavDrawerItem(navMenuTitles[navigation_animeliste],
+		list.add(new NavDrawerItem(navMenuTitles[NAVIGATION_ANIMELIST],
 				R.drawable.ic_drawer_animelist));
-		list.add(new NavDrawerItem(navMenuTitles[navigation_forum],
+		list.add(new NavDrawerItem(navMenuTitles[NAVIGATION_BOARD],
 				R.drawable.ic_drawer_animelist));
-		list.add(new NavDrawerItem(navMenuTitles[navigation_suche],
+		list.add(new NavDrawerItem(navMenuTitles[NAVIGATION_SEARCH],
 				R.drawable.ic_drawer_search));
-		list.add(new NavDrawerItem(navMenuTitles[navigation_konto],
+		list.add(new NavDrawerItem(navMenuTitles[NAVIGATION_ACCOUNT],
 				R.drawable.ic_drawer_settings));
-		list.add(new NavDrawerItem(navMenuTitles[navigation_settings],
+		list.add(new NavDrawerItem(navMenuTitles[NAVIGATION_SETTINGS],
 				R.drawable.ic_drawer_settings));
-		list.add(new NavDrawerItem(navMenuTitles[navigation_info],
+		list.add(new NavDrawerItem(navMenuTitles[NAVIGATION_INFO],
 				R.drawable.ic_drawer_info));
-		list.add(new NavDrawerItem(navMenuTitles[navigation_logout],
+		list.add(new NavDrawerItem(navMenuTitles[NAVIGATION_LOGOUT],
 				R.drawable.ic_drawer_logout));
 		return list;
 	}
@@ -200,13 +200,13 @@ public abstract class ParentActivity extends ActionBarActivity implements
 					.show();
 		} else {
 			switch (arg2) {
-			case navigation_profil:
+			case NAVIGATION_PROFILE:
 				Intent intent = new Intent(getApplicationContext(),
 						ProfileActivity.class);
 				mDrawerLayout.closeDrawer(Gravity.LEFT);
 				startActivity(intent);
 				break;
-			case navigation_kommentare:
+			case NAVIGATION_COMMENTS:
 				intent = new Intent(this,
 						CommentActivity.class);
 				intent.putExtra("User",
@@ -216,13 +216,13 @@ public abstract class ParentActivity extends ActionBarActivity implements
 				mDrawerLayout.closeDrawer(Gravity.LEFT);
 				startActivity(intent);
 				break;
-			case navigation_pns:
+			case NAVIGATION_PRIVATE_MESSAGES:
 				intent = new Intent(this,
 						PrivateMessageActivity.class);
 				mDrawerLayout.closeDrawer(Gravity.LEFT);
 				startActivity(intent);
 				break;
-			case navigation_freunde:
+			case NAVIGATION_FRIENDS:
 				intent = new Intent(this,
 						FriendActivity.class);
 				intent.putExtra("User",
@@ -232,7 +232,7 @@ public abstract class ParentActivity extends ActionBarActivity implements
 				mDrawerLayout.closeDrawer(Gravity.LEFT);
 				startActivity(intent);
 				break;
-			case navigation_animeliste:
+			case NAVIGATION_ANIMELIST:
 				intent = new Intent(this,
 						de.btcdev.eliteanimesapp.gui.AnimeListActivity.class);
 				intent.putExtra("User",
@@ -242,38 +242,38 @@ public abstract class ParentActivity extends ActionBarActivity implements
 				mDrawerLayout.closeDrawer(Gravity.LEFT);
 				startActivity(intent);
 				break;
-			case navigation_forum:
+			case NAVIGATION_BOARD:
 				intent = new Intent(this,
 						BoardActivity.class);
 				mDrawerLayout.closeDrawer(Gravity.LEFT);
 				startActivity(intent);
 				break;
-			case navigation_suche:
+			case NAVIGATION_SEARCH:
 				intent = new Intent(this,
 						de.btcdev.eliteanimesapp.gui.SearchActivity.class);
 				mDrawerLayout.closeDrawer(Gravity.LEFT);
 				startActivity(intent);
 				break;
-			case navigation_info:
+			case NAVIGATION_INFO:
 				intent = new Intent(this,
 						de.btcdev.eliteanimesapp.gui.InfoActivity.class);
 				mDrawerLayout.closeDrawer(Gravity.LEFT);
 				startActivity(intent);
 				break;
-			case navigation_konto:
+			case NAVIGATION_ACCOUNT:
 				intent = new Intent(
 						this,
 						AccountSettingsActivity.class);
 				mDrawerLayout.closeDrawer(Gravity.LEFT);
 				startActivity(intent);
 				break;
-			case navigation_settings:
+			case NAVIGATION_SETTINGS:
 				intent = new Intent(this,
 						de.btcdev.eliteanimesapp.gui.SettingsActivity.class);
 				mDrawerLayout.closeDrawer(Gravity.LEFT);
 				startActivity(intent);
 				break;
-			case navigation_logout:
+			case NAVIGATION_LOGOUT:
 				try {
 					networkService = NetworkService.instance(this);
 					networkService.logout();

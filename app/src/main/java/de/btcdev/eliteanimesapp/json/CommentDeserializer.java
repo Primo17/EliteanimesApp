@@ -13,26 +13,26 @@ import de.btcdev.eliteanimesapp.data.Comment;
 public class CommentDeserializer implements JsonDeserializer<Comment> {
 	public Comment deserialize(JsonElement json, Type typeOfT,
 							   JsonDeserializationContext context) throws JsonParseException {
-		JsonObject object;
+		JsonObject jsonObject;
 		try {
-			object = json.getAsJsonObject();
+			jsonObject = json.getAsJsonObject();
 		} catch (IllegalStateException e) {
 			throw new JsonParseException("invalid");
 		}
-		if (object.has("uid") && object.has("cid") && object.has("name")
-				&& object.has("date") && object.has("text")
-				&& object.has("image")) {
-			Comment k = new Comment(object.get("cid").getAsInt());
-			k.setUserName(object.get("name").getAsString());
-			k.setDate(object.get("date").getAsString());
-			k.setUserId(object.get("uid").getAsInt());
-			String image = object.get("image").getAsString();
+		if (jsonObject.has("uid") && jsonObject.has("cid") && jsonObject.has("name")
+				&& jsonObject.has("date") && jsonObject.has("text")
+				&& jsonObject.has("image")) {
+			Comment comment = new Comment(jsonObject.get("cid").getAsInt());
+			comment.setUserName(jsonObject.get("name").getAsString());
+			comment.setDate(jsonObject.get("date").getAsString());
+			comment.setUserId(jsonObject.get("uid").getAsInt());
+			String image = jsonObject.get("image").getAsString();
 			if (image.equals(""))
-				k.setAvatar("noava.png");
+				comment.setAvatar("noava.png");
 			else
-				k.setAvatar(image);
-			k.setText(object.get("text").getAsString());
-			return k;
+				comment.setAvatar(image);
+			comment.setText(jsonObject.get("text").getAsString());
+			return comment;
 		} else {
 			throw new JsonParseException("invaid");
 		}

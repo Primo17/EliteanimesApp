@@ -15,22 +15,22 @@ public class ListAnimeDeserializer implements JsonDeserializer<ListAnime> {
 	@Override
 	public ListAnime deserialize(JsonElement json, Type typeOfT,
 			JsonDeserializationContext context) throws JsonParseException {
-		JsonObject object;
+		JsonObject jsonObject;
 		try {
-			object = json.getAsJsonObject();
+			jsonObject = json.getAsJsonObject();
 		} catch (IllegalStateException e) {
 			throw new JsonParseException("invalid");
 		}
-		if (object.has("mid") && object.has("aid") && object.has("aname")
-				&& object.has("epi") && object.has("seen")
-				&& object.has("score")) {
+		if (jsonObject.has("mid") && jsonObject.has("aid") && jsonObject.has("aname")
+				&& jsonObject.has("epi") && jsonObject.has("seen")
+				&& jsonObject.has("score")) {
 			ListAnime anime = new ListAnime();
-			anime.setTokenId(object.get("mid").getAsString());
-			anime.setId(object.get("aid").getAsInt());
-			anime.setTitle(object.get("aname").getAsString());
-			anime.setEpisodeCount(object.get("epi").getAsInt());
-			anime.setProgress(object.get("seen").getAsInt());
-			anime.setRating(object.get("score").getAsDouble());
+			anime.setTokenId(jsonObject.get("mid").getAsString());
+			anime.setId(jsonObject.get("aid").getAsInt());
+			anime.setTitle(jsonObject.get("aname").getAsString());
+			anime.setEpisodeCount(jsonObject.get("epi").getAsInt());
+			anime.setProgress(jsonObject.get("seen").getAsInt());
+			anime.setRating(jsonObject.get("score").getAsDouble());
 			return anime;
 		} else
 			throw new JsonParseException("invalid");

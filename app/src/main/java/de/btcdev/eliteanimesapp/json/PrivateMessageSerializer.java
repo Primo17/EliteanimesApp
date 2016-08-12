@@ -12,17 +12,17 @@ import de.btcdev.eliteanimesapp.data.PrivateMessage;
 public class PrivateMessageSerializer implements JsonSerializer<PrivateMessage> {
 	public JsonElement serialize(PrivateMessage src, Type typeOfSrc,
 								 JsonSerializationContext context) {
-		JsonObject object = new JsonObject();
-		object.addProperty("id", src.getId());
-		object.addProperty("subject", src.getBetreff());
-		object.addProperty("date", src.getDate());
-		if (src.getGelesen())
-			object.addProperty("readed", 1);
+		JsonObject jsonObject = new JsonObject();
+		jsonObject.addProperty("id", src.getId());
+		jsonObject.addProperty("subject", src.getSubject());
+		jsonObject.addProperty("date", src.getDate());
+		if (src.isRead())
+			jsonObject.addProperty("readed", 1);
 		else
-			object.addProperty("readed", 0);
-		object.addProperty("f_uid", src.getUserid());
-		object.addProperty("f_uname", src.getBenutzername());
-		object.addProperty("pm", src.getText());
-		return object;
+			jsonObject.addProperty("readed", 0);
+		jsonObject.addProperty("f_uid", src.getUserId());
+		jsonObject.addProperty("f_uname", src.getUserName());
+		jsonObject.addProperty("pm", src.getMessage());
+		return jsonObject;
 	}
 }

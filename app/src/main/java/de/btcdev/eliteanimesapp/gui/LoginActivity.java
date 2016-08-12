@@ -37,12 +37,12 @@ public class LoginActivity extends ParentActivity implements OnClickListener,
         OnItemClickListener {
 
     private Button loginButton;
-    private EditText loginBenutzername;
-    private EditText loginPasswort;
-    private CheckBox loginCheck;
+    private EditText loginUserNameView;
+    private EditText loginPasswordView;
+    private CheckBox loginCheckView;
     private SharedPreferences prefs;
     private LoginTask loginTask;
-    private ProfileCache profilcache;
+    private ProfileCache profileCache;
 
     /**
      * Erzeugt die Activity. Die ActionBar und die restliche grafische
@@ -62,21 +62,21 @@ public class LoginActivity extends ParentActivity implements OnClickListener,
         tryLogin();
 
         setContentView(de.btcdev.eliteanimesapp.R.layout.activity_login);
-        loginBenutzername = (EditText) findViewById(de.btcdev.eliteanimesapp.R.id.login_benutzername);
-        loginPasswort = (EditText) findViewById(de.btcdev.eliteanimesapp.R.id.login_passwort);
+        loginUserNameView = (EditText) findViewById(de.btcdev.eliteanimesapp.R.id.login_benutzername);
+        loginPasswordView = (EditText) findViewById(de.btcdev.eliteanimesapp.R.id.login_passwort);
         loginButton = (Button) findViewById(de.btcdev.eliteanimesapp.R.id.login_button);
-        loginCheck = (CheckBox) findViewById(de.btcdev.eliteanimesapp.R.id.login_check);
+        loginCheckView = (CheckBox) findViewById(de.btcdev.eliteanimesapp.R.id.login_check);
         loginButton.setOnClickListener(this);
 
         ActionBar bar = getSupportActionBar();
         bar.setTitle("Login");
 
         if (prefs.contains("Benutzername"))
-            loginBenutzername.setText(prefs.getString("Benutzername", null));
+            loginUserNameView.setText(prefs.getString("Benutzername", null));
         if (prefs.contains("Passwort"))
-            loginPasswort.setText(prefs.getString("Passwort", null));
+            loginPasswordView.setText(prefs.getString("Passwort", null));
         if (prefs.contains("Checked"))
-            loginCheck.setChecked(prefs.getBoolean("Checked", false));
+            loginCheckView.setChecked(prefs.getBoolean("Checked", false));
         handleNavigationDrawer(R.id.nav_login, R.id.nav_login_list, "Login",
                 null);
     }
@@ -117,20 +117,20 @@ public class LoginActivity extends ParentActivity implements OnClickListener,
         if (networkService.hasCookies()
                 && Configuration.getUserID(getApplicationContext()) != 0
                 && Configuration.getUserName(getApplicationContext()) != null) {
-            profilcache = ProfileCache.instance();
-            if (profilcache.getEigenesProfile() == null) {
+            profileCache = ProfileCache.instance();
+            if (profileCache.getOwnProfile() == null) {
                 Profile temp = new Profile(
                         Configuration.getUserName(getApplicationContext()));
-                temp.setUserID(Configuration.getUserID(getApplicationContext()));
-                profilcache.setEigenesProfile(temp);
+                temp.setUserId(Configuration.getUserID(getApplicationContext()));
+                profileCache.setOwnProfile(temp);
             } else {
-                Profile p = profilcache.getEigenesProfile();
+                Profile p = profileCache.getOwnProfile();
                 Profile temp = new Profile(
                         Configuration.getUserName(getApplicationContext()));
                 if (!p.equals(temp)) {
-                    profilcache.deleteProfil(temp.getBenutzername());
-                    profilcache.setEigenesProfile(temp);
-                    profilcache.contains(p.getBenutzername());
+                    profileCache.deleteProfil(temp.getUserName());
+                    profileCache.setOwnProfile(temp);
+                    profileCache.contains(p.getUserName());
                 }
             }
             Intent intent = new Intent(getApplicationContext(),
@@ -165,7 +165,7 @@ public class LoginActivity extends ParentActivity implements OnClickListener,
      */
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
+        // Inflate the menu; this adds items to the action actionBar if it is present.
         getMenuInflater().inflate(de.btcdev.eliteanimesapp.R.menu.login, menu);
         return true;
     }
@@ -190,18 +190,18 @@ public class LoginActivity extends ParentActivity implements OnClickListener,
     @Override
     public void onClick(View arg0) {
         if (arg0.getId() == de.btcdev.eliteanimesapp.R.id.login_button) {
-            String benutzername = loginBenutzername.getText().toString();
-            String passwort = loginPasswort.getText().toString();
-            Configuration.setUserName(benutzername);
-            Configuration.setPassword(passwort);
-            boolean checked = loginCheck.isChecked();
+            String userName = loginUserNameView.getText().toString();
+            String password = loginPasswordView.getText().toString();
+            Configuration.setUserName(userName);
+            Configuration.setPassword(password);
+            boolean checked = loginCheckView.isChecked();
             SharedPreferences.Editor meinEditor = prefs.edit();
             SharedPreferences defaultprefs = PreferenceManager
                     .getDefaultSharedPreferences(this);
-            boolean username = defaultprefs.getBoolean("pref_save_password",
+            boolean savePassword = defaultprefs.getBoolean("pref_save_password",
                     true);
             if (checked) {
-                if (username) {
+                if (savePassword) {
                     meinEditor.putString("Benutzername", Configuration
                             .getUserName(getApplicationContext()));
                     meinEditor.putString("Passwort",
@@ -236,19 +236,19 @@ public class LoginActivity extends ParentActivity implements OnClickListener,
     @Override
     public void onItemClick(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
         switch (arg2) {
-            case navigation_info:
+            case NAVIGATION_INFO:
                 Intent intent = new Intent(this,
                         de.btcdev.eliteanimesapp.gui.InfoActivity.class);
                 mDrawerLayout.closeDrawer(Gravity.LEFT);
                 startActivity(intent);
                 break;
-            case navigation_settings:
+            case NAVIGATION_SETTINGS:
                 intent = new Intent(this,
                         de.btcdev.eliteanimesapp.gui.SettingsActivity.class);
                 mDrawerLayout.closeDrawer(Gravity.LEFT);
                 startActivity(intent);
                 break;
-            case navigation_logout:
+            case NAVIGATION_LOGOUT:
                 try {
                     networkService = NetworkService.instance(this);
                     networkService.logout();
@@ -322,23 +322,23 @@ public class LoginActivity extends ParentActivity implements OnClickListener,
         protected void onPostExecute(String loginString) {
             networkService = NetworkService.instance(getApplicationContext());
             if (networkService.isLoggedIn()) {
-                profilcache = ProfileCache.instance();
-                if (profilcache.getEigenesProfile() == null) {
+                profileCache = ProfileCache.instance();
+                if (profileCache.getOwnProfile() == null) {
                     Profile temp = new Profile(
                             Configuration
                                     .getUserName(getApplicationContext()));
-                    temp.setUserID(Configuration
+                    temp.setUserId(Configuration
                             .getUserID(getApplicationContext()));
-                    profilcache.setEigenesProfile(temp);
+                    profileCache.setOwnProfile(temp);
                 } else {
-                    Profile p = profilcache.getEigenesProfile();
+                    Profile p = profileCache.getOwnProfile();
                     Profile temp = new Profile(
                             Configuration
                                     .getUserName(getApplicationContext()));
                     if (!p.equals(temp)) {
-                        profilcache.deleteProfil(temp.getBenutzername());
-                        profilcache.setEigenesProfile(temp);
-                        profilcache.contains(p.getBenutzername());
+                        profileCache.deleteProfil(temp.getUserName());
+                        profileCache.setOwnProfile(temp);
+                        profileCache.contains(p.getUserName());
                     }
                 }
                 Intent intent = new Intent(getApplicationContext(),

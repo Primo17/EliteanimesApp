@@ -18,16 +18,16 @@ import de.btcdev.eliteanimesapp.adapter.InfoAdapter;
 
 public class InfoActivity extends ParentActivity implements OnItemClickListener {
 
-    private final String datenschutz = "Mit der Nutzung dieser App wird das Einverständnis gegeben, "
+    private final String privacy = "Mit der Nutzung dieser App wird das Einverständnis gegeben, "
             + "Teile der oben genannten anonymen Daten für Analysezwecke und zur Verbesserung der Software durch Google Analytics zu sammeln. "
             + "Dies betrifft in keinster Weise persönliche und personenbezogene sowie vertrauliche Daten. "
             + "Auf die Verarbeitung eingegebener Daten im Funktionsumfang von Eliteanimes.com hat diese App keinen Einfluss. "
             + "Eine Weitergabe der Daten an Dritte ist mit oben genannter Ausnahme ausgeschlossen. "
             + "Die Nutzung der App ist absolut kostenlos.";
-    private final String inhalt = "Diese App stellt lediglich Funktionen von Eliteanimes.com für Android-Handys zur Verfügung. "
+    private final String appContent = "Diese App stellt lediglich Funktionen von Eliteanimes.com für Android-Handys zur Verfügung. "
             + "Auf die Funktionsweisen und Inhalte, die damit verbunden sind, hat diese App keinerlei Einfluss. "
             + "Wir distanzieren uns von jeglichen über Eliteanimes.com gesendeten oder empfangenen Daten.";
-    private final String lizenzen = "Folgende Open-Source-Libraries werden von dieser App genutzt:\n\n"
+    private final String licenses = "Folgende Open-Source-Libraries werden von dieser App genutzt:\n\n"
             + "jsoup\n"
             + "The MIT License, Copyright 2009 - 2013 Jonathan Hedley (jonathan@hedley.net)\n\n"
             + "gson\n"
@@ -43,14 +43,14 @@ public class InfoActivity extends ParentActivity implements OnItemClickListener 
         ActionBar bar = getSupportActionBar();
         bar.setTitle("Info");
 
-        viewZuweisung();
+        fillViews();
 
         handleNavigationDrawer(R.id.nav_info, R.id.nav_info_list, "Info", null);
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
+        // Inflate the menu; this adds items to the action actionBar if it is present.
         getMenuInflater().inflate(R.menu.info, menu);
         return true;
     }
@@ -76,42 +76,42 @@ public class InfoActivity extends ParentActivity implements OnItemClickListener 
     @Override
     public void onItemClick(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
         if (arg0.getId() == R.id.nav_info_list) {
-            if (arg2 == navigation_info)
+            if (arg2 == NAVIGATION_INFO)
                 mDrawerLayout.closeDrawer(Gravity.LEFT);
             else
                 super.onItemClick(arg0, arg1, arg2, arg3);
         }
     }
 
-    public void viewZuweisung() {
+    public void fillViews() {
         try {
             PackageInfo pinfo = getPackageManager().getPackageInfo(
                     getPackageName(), 0);
 
-            ArrayList<String> ueberschrift = new ArrayList<String>();
-            ArrayList<String> normaltext = new ArrayList<String>();
+            ArrayList<String> headline = new ArrayList<String>();
+            ArrayList<String> content = new ArrayList<String>();
 
-            ueberschrift.add("App-Version");
-            normaltext.add(pinfo.versionName);
-            ueberschrift.add("Android-Version");
-            normaltext.add(android.os.Build.VERSION.RELEASE);
-            ueberschrift.add("Android-SDK");
-            normaltext.add("" + android.os.Build.VERSION.SDK_INT);
-            ueberschrift.add("Minimal benötigte SDK-Version");
-            normaltext.add("9");
-            ueberschrift.add("Modell");
-            normaltext.add(android.os.Build.MANUFACTURER + ", "
+            headline.add("App-Version");
+            content.add(pinfo.versionName);
+            headline.add("Android-Version");
+            content.add(android.os.Build.VERSION.RELEASE);
+            headline.add("Android-SDK");
+            content.add("" + android.os.Build.VERSION.SDK_INT);
+            headline.add("Minimal benötigte SDK-Version");
+            content.add("9");
+            headline.add("Modell");
+            content.add(android.os.Build.MANUFACTURER + ", "
                     + android.os.Build.PRODUCT);
-            ueberschrift.add("Datenschutz");
-            normaltext.add(datenschutz);
-            ueberschrift.add("Inhalt von Eliteanimes");
-            normaltext.add(inhalt);
-            ueberschrift.add("Lizenzen");
-            normaltext.add(lizenzen);
+            headline.add("Datenschutz");
+            content.add(privacy);
+            headline.add("Inhalt von Eliteanimes");
+            content.add(this.appContent);
+            headline.add("Lizenzen");
+            content.add(licenses);
 
             ListView list = (ListView) findViewById(R.id.info_list);
             InfoAdapter adapter = new InfoAdapter(getApplicationContext(),
-                    ueberschrift, normaltext);
+                    headline, content);
             list.setAdapter(adapter);
 
         } catch (Exception e) {

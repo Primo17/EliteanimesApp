@@ -44,12 +44,12 @@ import de.btcdev.eliteanimesapp.json.CommentDeserializer;
 public class CommentActivity extends ParentActivity implements
 		OnItemClickListener {
 
-	private String aktuellerUser;
-	private int userID;
-	private int seitenzahl;
+	private String currentUser;
+	private int userId;
+	private int pageCount;
 	private CommentTask commentTask;
 	private CommentAdapter commentAdapter;
-	private ArrayList<Comment> commentlist;
+	private ArrayList<Comment> comments;
 	private ArrayList<Boolean> spoilerArray;
 	private int chosenPosition;
 
@@ -61,22 +61,22 @@ public class CommentActivity extends ParentActivity implements
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_kommentar);
-		bar = getSupportActionBar();
-		bar.setTitle("Kommentare");
+		actionBar = getSupportActionBar();
+		actionBar.setTitle("Kommentare");
 
 		networkService = NetworkService.instance(this);
 		eaParser = new EAParser(null);
 
 		if (savedInstanceState != null) {
-			aktuellerUser = savedInstanceState.getString("User");
-			userID = savedInstanceState.getInt("UserID");
-			commentlist = savedInstanceState
+			currentUser = savedInstanceState.getString("User");
+			userId = savedInstanceState.getInt("UserID");
+			comments = savedInstanceState
 					.getParcelableArrayList("Kommentare");
-			seitenzahl = savedInstanceState.getInt("Seitenzahl");
-			bar.setSubtitle(aktuellerUser);
+			pageCount = savedInstanceState.getInt("Seitenzahl");
+			actionBar.setSubtitle(currentUser);
 			chosenPosition = savedInstanceState.getInt("chosenPosition");
-			if (commentlist != null)
-				viewZuweisung(commentlist);
+			if (comments != null)
+				fillViews(comments);
 			else {
 				commentTask = new CommentTask();
 				commentTask.execute("");
@@ -84,26 +84,26 @@ public class CommentActivity extends ParentActivity implements
 		} else {
 			Intent intent = getIntent();
 			Bundle intentdata = intent.getExtras();
-			aktuellerUser = intentdata.getString("User");
-			userID = intentdata.getInt("UserID");
-			bar.setSubtitle(aktuellerUser);
+			currentUser = intentdata.getString("User");
+			userId = intentdata.getInt("UserID");
+			actionBar.setSubtitle(currentUser);
 			// Neue Kommentare vorhanden oder anderer
 			// User oder selbst neuer Comment gesendet
 			if (Configuration.getNewCommentCount() != 0
 					|| !Configuration.getUserName(getApplicationContext())
-							.equals(aktuellerUser)
+							.equals(currentUser)
 					|| intentdata.getBoolean("Send")) {
-				seitenzahl = 1;
+				pageCount = 1;
 				commentTask = new CommentTask();
 				commentTask.execute("no_cache");
 			} else {
-				seitenzahl = 1;
+				pageCount = 1;
 				commentTask = new CommentTask();
 				commentTask.execute("");
 			}
 		}
 		handleNavigationDrawer(R.id.nav_kommentare, R.id.nav_kommentare_list,
-				"Kommentare", aktuellerUser);
+				"Kommentare", currentUser);
 		Configuration.setNewCommentCount(0, this);
 	}
 
@@ -112,14 +112,14 @@ public class CommentActivity extends ParentActivity implements
 	 */
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
-		// Inflate the menu; this adds items to the action bar if it is present.
+		// Inflate the menu; this adds items to the action actionBar if it is present.
 		getMenuInflater().inflate(R.menu.kommentar, menu);
 		return true;
 	}
 
 	/**
 	 * Wird aufgerufen, wenn die Activity pausiert wird. Ein laufender
-	 * ProfilTask wird dabei abgebrochen.
+	 * ProfileTask wird dabei abgebrochen.
 	 */
 	@SuppressWarnings("deprecation")
 	@Override
@@ -139,10 +139,10 @@ public class CommentActivity extends ParentActivity implements
 	 */
 	@Override
 	public void onSaveInstanceState(Bundle savedInstanceState) {
-		savedInstanceState.putString("User", aktuellerUser);
-		savedInstanceState.putInt("UserID", userID);
-		savedInstanceState.putParcelableArrayList("Kommentare", commentlist);
-		savedInstanceState.putInt("Seitenzahl", seitenzahl);
+		savedInstanceState.putString("User", currentUser);
+		savedInstanceState.putInt("UserID", userId);
+		savedInstanceState.putParcelableArrayList("Kommentare", comments);
+		savedInstanceState.putInt("Seitenzahl", pageCount);
 		savedInstanceState.putInt("chosenPosition", chosenPosition);
 	}
 
@@ -150,13 +150,13 @@ public class CommentActivity extends ParentActivity implements
 	 * Erzeugt eine ListView-Komponente, über die mit einem Adapter die
 	 * Kommentare zugewiesen werden
 	 * 
-	 * @param result
+	 * @param newComments
 	 *            die Kommentare in einer ArrayList
 	 */
-	public void viewZuweisung(ArrayList<Comment> result) {
+	public void fillViews(ArrayList<Comment> newComments) {
 		Configuration.setNewCommentCount(0, this);
-		commentlist = result;
-		if (commentlist == null || commentlist.isEmpty()) {
+		comments = newComments;
+		if (comments == null || comments.isEmpty()) {
 			LinearLayout lin = (LinearLayout) findViewById(R.id.comments_layout);
 			TextView text = new TextView(this);
 			text.setTextSize(16);
@@ -166,12 +166,12 @@ public class CommentActivity extends ParentActivity implements
 			lin.addView(text, 0, new LayoutParams(LayoutParams.MATCH_PARENT,
 					LayoutParams.MATCH_PARENT));
 		} else {
-			spoilerArray = new ArrayList<Boolean>(commentlist.size());
-			for (int i = 0; i < commentlist.size(); i++) {
+			spoilerArray = new ArrayList<Boolean>(comments.size());
+			for (int i = 0; i < comments.size(); i++) {
 				spoilerArray.add(false);
 			}
 			ListView list = (ListView) findViewById(R.id.kommentarliste);
-			commentAdapter = new CommentAdapter(this, result, spoilerArray);
+			commentAdapter = new CommentAdapter(this, newComments, spoilerArray);
 			list.setAdapter(commentAdapter);
 			list.setOnItemClickListener(this);
 			registerForContextMenu(list);
@@ -182,7 +182,7 @@ public class CommentActivity extends ParentActivity implements
 	 * Aktualisiert die Activity, indem alle Daten neu geladen werden.
 	 */
 	public void refresh() {
-		seitenzahl = 1;
+		pageCount = 1;
 		commentTask = new CommentTask();
 		commentTask.execute("no_cache");
 	}
@@ -198,8 +198,8 @@ public class CommentActivity extends ParentActivity implements
 		case R.id.new_comment_icon:
 			Intent intent = new Intent(this,
 					NewCommentActivity.class);
-			intent.putExtra("User", aktuellerUser);
-			intent.putExtra("UserID", userID);
+			intent.putExtra("User", currentUser);
+			intent.putExtra("UserID", userId);
 			intent.putExtra("Status", "Neu");
 			startActivity(intent);
 			break;
@@ -218,13 +218,13 @@ public class CommentActivity extends ParentActivity implements
 	@Override
 	public void onItemClick(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
 		if (arg0.getId() == R.id.kommentarliste) {
-			if (arg2 >= commentlist.size()) {
+			if (arg2 >= comments.size()) {
 				commentTask = new CommentTask();
 				commentTask.execute("more");
 			}
 		} else if (arg0.getId() == R.id.nav_kommentare_list) {
-			if (arg2 == navigation_kommentare) {
-				if (aktuellerUser.equals(Configuration
+			if (arg2 == NAVIGATION_COMMENTS) {
+				if (currentUser.equals(Configuration
 						.getUserName(getApplicationContext()))) {
 					mDrawerLayout.closeDrawer(Gravity.LEFT);
 				} else {
@@ -253,25 +253,25 @@ public class CommentActivity extends ParentActivity implements
 		} else if (temp.equals(getResources().getString(R.string.comment_edit))) {
 			Intent intent = new Intent(this,
 					NewCommentActivity.class);
-			Comment k = commentlist.get(chosenPosition);
+			Comment comment = comments.get(chosenPosition);
 			chosenPosition = -1;
-			intent.putExtra("Comment", k);
-			intent.putExtra("User", aktuellerUser);
-			intent.putExtra("UserID", userID);
+			intent.putExtra("Comment", comment);
+			intent.putExtra("User", currentUser);
+			intent.putExtra("UserID", userId);
 			intent.putExtra("Status", "Editieren");
 			startActivity(intent);
 		} else if (temp.equals(getResources().getString(
 				R.string.comment_profil_besuchen))) {
-			Comment k = commentlist.get(chosenPosition);
+			Comment comment = comments.get(chosenPosition);
 			chosenPosition = -1;
-			String name = k.getUserName();
+			String name = comment.getUserName();
 			if (name.equals(Configuration
 					.getUserName(getApplicationContext()))) {
 				Intent intent = new Intent(this,
 						ProfileActivity.class);
 				startActivity(intent);
 			} else {
-				int userid = k.getUserId();
+				int userid = comment.getUserId();
 				Intent intent = new Intent(
 						this,
 						UserProfileActivity.class);
@@ -282,17 +282,17 @@ public class CommentActivity extends ParentActivity implements
 		} else if (temp.contains("antworten")) {
 			Intent intent = new Intent(this,
 					NewCommentActivity.class);
-			Comment k = commentlist.get(chosenPosition);
-			int userid = k.getUserId();
-			intent.putExtra("User", k.getUserName());
+			Comment comment = comments.get(chosenPosition);
+			int userid = comment.getUserId();
+			intent.putExtra("User", comment.getUserName());
 			intent.putExtra("UserID", userid);
 			intent.putExtra("Status", "Neu");
 			intent.putExtra("Response", true);
-			intent.putExtra("Comment", k);
+			intent.putExtra("Comment", comment);
 			startActivity(intent);
 		} else if (temp.equals(getResources().getString(R.string.comment_copy))) {
-			Comment k = commentlist.get(chosenPosition);
-			String text = k.getText();
+			Comment comment = comments.get(chosenPosition);
+			String text = comment.getText();
 			android.text.ClipboardManager clipboard = (android.text.ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
 			clipboard.setText(text);
 			Toast.makeText(this,
@@ -315,13 +315,13 @@ public class CommentActivity extends ParentActivity implements
 		if (v.getId() == R.id.kommentarliste) {
 			AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) menuInfo;
 			chosenPosition = info.position;
-			if (chosenPosition < commentlist.size()) {
-				Comment k = commentlist.get(chosenPosition);
-				String name = Configuration
+			if (chosenPosition < comments.size()) {
+				Comment comment = comments.get(chosenPosition);
+				String userName = Configuration
 						.getUserName(getApplicationContext());
 				ArrayList<String> items = new ArrayList<String>();
-				if (k.getUserName().equals(name)
-						&& aktuellerUser.equals(name)) {
+				if (comment.getUserName().equals(userName)
+						&& currentUser.equals(userName)) {
 					items.add(getResources()
 							.getString(R.string.comment_spoiler));
 					items.add(getResources().getString(R.string.comment_delete));
@@ -329,15 +329,15 @@ public class CommentActivity extends ParentActivity implements
 					items.add(getResources().getString(R.string.comment_copy));
 					items.add(getResources().getString(
 							R.string.comment_profil_besuchen));
-				} else if (k.getUserName().equals(name)) {
+				} else if (comment.getUserName().equals(userName)) {
 					items.add(getResources()
 							.getString(R.string.comment_spoiler));
 					items.add(getResources().getString(R.string.comment_edit));
 					items.add(getResources().getString(R.string.comment_copy));
 					items.add(getResources().getString(
 							R.string.comment_profil_besuchen));
-				} else if (aktuellerUser.equals(name)) {
-					items.add(k.getUserName() + " antworten");
+				} else if (currentUser.equals(userName)) {
+					items.add(comment.getUserName() + " antworten");
 					items.add(getResources()
 							.getString(R.string.comment_spoiler));
 					items.add(getResources().getString(R.string.comment_delete));
@@ -345,7 +345,7 @@ public class CommentActivity extends ParentActivity implements
 					items.add(getResources().getString(
 							R.string.comment_profil_besuchen));
 				} else {
-					items.add(k.getUserName() + " antworten");
+					items.add(comment.getUserName() + " antworten");
 					items.add(getResources()
 							.getString(R.string.comment_spoiler));
 					items.add(getResources().getString(R.string.comment_copy));
@@ -354,7 +354,7 @@ public class CommentActivity extends ParentActivity implements
 				}
 				for (int i = 0; i < items.size(); i++)
 					menu.add(items.get(i));
-				menu.setHeaderTitle("Comment von " + k.getUserName());
+				menu.setHeaderTitle("Comment von " + comment.getUserName());
 			}
 		}
 	}
@@ -390,27 +390,27 @@ public class CommentActivity extends ParentActivity implements
 				try {
 					if (isCancelled())
 						return null;
-					input = networkService.getCommentPage(seitenzahl + 1,
-							aktuellerUser, userID);
+					input = networkService.getCommentPage(pageCount + 1,
+							currentUser, userId);
 					if (isCancelled())
 						return null;
-					commentlist = eaParser.getMoreComments(input, commentlist);
-					seitenzahl++;
+					comments = eaParser.getMoreComments(input, comments);
+					pageCount++;
 					more = true;
-					return commentlist;
+					return comments;
 				} catch (EAException e) {
 					publishProgress("Exception", e.getMessage());
 				}
 			} else if (params[0].equals("delete")) {
-				Comment k = commentlist.get(chosenPosition);
+				Comment comment = comments.get(chosenPosition);
 				chosenPosition = -1;
 				try {
 					if (isCancelled())
 						return null;
-					networkService.deleteComment(Integer.toString(k.getId()));
-					commentlist.remove(k);
+					networkService.deleteComment(Integer.toString(comment.getId()));
+					comments.remove(comment);
 					delete = true;
-					return commentlist;
+					return comments;
 				} catch (EAException e) {
 					publishProgress("Exception", e.getMessage());
 				}
@@ -420,26 +420,26 @@ public class CommentActivity extends ParentActivity implements
 					if (params[0].equals("no_cache")) {
 						if (isCancelled())
 							return null;
-						input = networkService.getCommentPage(1, aktuellerUser,
-								userID);
+						input = networkService.getCommentPage(1, currentUser,
+								userId);
 						if (isCancelled())
 							return null;
-						commentlist = eaParser.getComments(input);
-						return commentlist;
+						comments = eaParser.getComments(input);
+						return comments;
 					}
 					// teste ob Cache vorhanden und wähle dann daraus Quelle
 					else {
 						if (loadCache()) {
-							return commentlist;
+							return comments;
 						} else {
 							if (isCancelled())
 								return null;
-							input = networkService.getCommentPage(1, aktuellerUser,
-									userID);
+							input = networkService.getCommentPage(1, currentUser,
+									userId);
 							if (isCancelled())
 								return null;
-							commentlist = eaParser.getComments(input);
-							return commentlist;
+							comments = eaParser.getComments(input);
+							return comments;
 						}
 					}
 				} catch (EAException e) {
@@ -451,7 +451,7 @@ public class CommentActivity extends ParentActivity implements
 		}
 
 		/**
-		 * Die viewZuweisung wird mit den erhaltenen Daten aufgerufen, der
+		 * Die fillViews wird mit den erhaltenen Daten aufgerufen, der
 		 * LoadDialog wird geschlossen.
 		 * 
 		 * @param result
@@ -462,9 +462,9 @@ public class CommentActivity extends ParentActivity implements
 		protected void onPostExecute(ArrayList<Comment> result) {
 
 			if (result != null && !result.isEmpty()) {
-				if (aktuellerUser.equals(Configuration
+				if (currentUser.equals(Configuration
 						.getUserName(getApplicationContext()))
-						&& seitenzahl == 1) {
+						&& pageCount == 1) {
 					new CommentCacheThread(
 							CommentCacheThread.MODE_SAVE_CACHE, result);
 				}
@@ -477,7 +477,7 @@ public class CommentActivity extends ParentActivity implements
 				commentAdapter.updateSpoilerArray(spoilerArray);
 				commentAdapter.notifyDataSetChanged();
 			} else
-				viewZuweisung(result);
+				fillViews(result);
 			try {
 				dismissDialog(load_dialog);
 			} catch (IllegalArgumentException e) {
@@ -562,7 +562,7 @@ public class CommentActivity extends ParentActivity implements
 							}.getType();
 							ArrayList<Comment> jsonList = gson.fromJson(
 									jsonCache, collectionType);
-							commentlist = jsonList;
+							comments = jsonList;
 							return true;
 						} catch (JsonParseException e) {
 							// lösche vorhanden Cache

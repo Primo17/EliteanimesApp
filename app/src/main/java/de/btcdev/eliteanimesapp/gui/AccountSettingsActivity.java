@@ -47,18 +47,18 @@ import de.btcdev.eliteanimesapp.data.NewsThread;
 public class AccountSettingsActivity extends ParentActivity implements
 		OnItemClickListener {
 
-	private KontoPagerAdapter kontoPagerAdapter;
+	private AccountPagerAdapter accountPagerAdapter;
 	private ViewPager viewPager;
-	private ArrayList<FriendRequest> anfrageListe;
-	private ArrayList<FriendRequest> blockedListe;
-	private KontoTask task;
+	private ArrayList<FriendRequest> friendRequests;
+	private ArrayList<FriendRequest> blockedUsers;
+	private AccountTask accountTask;
 	private int position;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_kontoeinstellungen);
-		bar = getSupportActionBar();
+		actionBar = getSupportActionBar();
 		viewPager = (ViewPager) findViewById(R.id.konto_pager);
 		// set listener for swiping actions
 		viewPager
@@ -67,11 +67,11 @@ public class AccountSettingsActivity extends ParentActivity implements
 					public void onPageSelected(int position) {
 						// When swiping between pages, select the
 						// corresponding tab.
-						bar.setSelectedNavigationItem(position);
+						actionBar.setSelectedNavigationItem(position);
 					}
 				});
-		bar.setTitle("Konto");
-		bar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
+		actionBar.setTitle("Konto");
+		actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
 
 		// set listener for tab actions
 		ActionBar.TabListener tabListener = new ActionBar.TabListener() {
@@ -90,21 +90,21 @@ public class AccountSettingsActivity extends ParentActivity implements
 				// probably ignore this event
 			}
 		};
-		bar.addTab(bar.newTab().setText("Anfragen").setTabListener(tabListener));
-		bar.addTab(bar.newTab().setText("Blockiert")
+		actionBar.addTab(actionBar.newTab().setText("Anfragen").setTabListener(tabListener));
+		actionBar.addTab(actionBar.newTab().setText("Blockiert")
 				.setTabListener(tabListener));
 
 		networkService = NetworkService.instance(this);
 
 		if (savedInstanceState != null) {
-			anfrageListe = savedInstanceState
+			friendRequests = savedInstanceState
 					.getParcelableArrayList("requests");
-			blockedListe = savedInstanceState.getParcelableArrayList("blocked");
+			blockedUsers = savedInstanceState.getParcelableArrayList("blocked");
 			position = savedInstanceState.getInt("tab");
 			loadFragments();
 		} else {
-			task = new KontoTask();
-			task.execute("");
+			accountTask = new AccountTask();
+			accountTask.execute("");
 		}
 		handleNavigationDrawer(R.id.nav_konto, R.id.nav_konto_list, "Konto",
 				null);
@@ -112,13 +112,13 @@ public class AccountSettingsActivity extends ParentActivity implements
 
 	/**
 	 * Wird aufgerufen, wenn die Activity pausiert wird. Ein laufender
-	 * FreundeTask wird dabei abgebrochen.
+	 * FriendTask wird dabei abgebrochen.
 	 */
 	@SuppressWarnings("deprecation")
 	@Override
 	protected void onPause() {
-		if (task != null) {
-			task.cancel(true);
+		if (accountTask != null) {
+			accountTask.cancel(true);
 		}
 		removeDialog(load_dialog);
 		super.onPause();
@@ -127,16 +127,16 @@ public class AccountSettingsActivity extends ParentActivity implements
 	public void loadFragments() {
 		// ViewPager and its adapters use support library
 		// fragments, so use getSupportFragmentManager.
-		kontoPagerAdapter = new KontoPagerAdapter(getSupportFragmentManager(),
-				anfrageListe, blockedListe);
-		viewPager.setAdapter(kontoPagerAdapter);
-		bar.setSelectedNavigationItem(position);
-		kontoPagerAdapter.instantiateItem(viewPager, position);
+		accountPagerAdapter = new AccountPagerAdapter(getSupportFragmentManager(),
+				friendRequests, blockedUsers);
+		viewPager.setAdapter(accountPagerAdapter);
+		actionBar.setSelectedNavigationItem(position);
+		accountPagerAdapter.instantiateItem(viewPager, position);
 	}
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
-		// Inflate the menu; this adds items to the action bar if it is present.
+		// Inflate the menu; this adds items to the action actionBar if it is present.
 		getMenuInflater().inflate(R.menu.kontoeinstellungen, menu);
 		return true;
 	}
@@ -159,9 +159,9 @@ public class AccountSettingsActivity extends ParentActivity implements
 	 */
 	@Override
 	public void onSaveInstanceState(Bundle savedInstanceState) {
-		savedInstanceState.putParcelableArrayList("requests", anfrageListe);
-		savedInstanceState.putParcelableArrayList("blocked", blockedListe);
-		savedInstanceState.putInt("tab", bar.getSelectedNavigationIndex());
+		savedInstanceState.putParcelableArrayList("requests", friendRequests);
+		savedInstanceState.putParcelableArrayList("blocked", blockedUsers);
+		savedInstanceState.putInt("tab", actionBar.getSelectedNavigationIndex());
 	}
 
 	/**
@@ -181,7 +181,7 @@ public class AccountSettingsActivity extends ParentActivity implements
 	@Override
 	public void onItemClick(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
 		if (arg0.getId() == R.id.nav_konto_list) {
-			if(arg2 == navigation_konto)
+			if(arg2 == NAVIGATION_ACCOUNT)
 				mDrawerLayout.closeDrawer(Gravity.LEFT);
 			else
 				super.onItemClick(arg0, arg1, arg2, arg3);
@@ -199,9 +199,9 @@ public class AccountSettingsActivity extends ParentActivity implements
 		if (id >= 2000) {
 			// decline
 			position = id - 2000;
-			if (anfrageListe.size() <= position)
+			if (friendRequests.size() <= position)
 				return;
-			final FriendRequest f = anfrageListe.get(position);
+			final FriendRequest f = friendRequests.get(position);
 			if (checked) {
 				new Thread(new Runnable() {
 					public void run() {
@@ -217,13 +217,13 @@ public class AccountSettingsActivity extends ParentActivity implements
 				Toast.makeText(this,
 						"Anfrage von " + f.getName() + " abgelehnt.",
 						Toast.LENGTH_SHORT).show();
-				anfrageListe.remove(f);
+				friendRequests.remove(f);
 				reload();
 			}
 		} else if (id >= 1000) {
 			// accept
 			position = id - 1000;
-			final FriendRequest f = anfrageListe.get(position);
+			final FriendRequest f = friendRequests.get(position);
 			if (checked) {
 				new Thread(new Runnable() {
 					public void run() {
@@ -239,8 +239,8 @@ public class AccountSettingsActivity extends ParentActivity implements
 				Toast.makeText(this,
 						"Anfrage von " + f.getName() + " akzeptiert.",
 						Toast.LENGTH_SHORT).show();
-				anfrageListe.remove(f);
-				kontoPagerAdapter.notifyDataSetChanged();
+				friendRequests.remove(f);
+				accountPagerAdapter.notifyDataSetChanged();
 				reload();
 			}
 		}
@@ -261,36 +261,36 @@ public class AccountSettingsActivity extends ParentActivity implements
 	}
 
 	public void reload() {
-		task = new KontoTask();
-		task.execute("");
+		accountTask = new AccountTask();
+		accountTask.execute("");
 	}
 
-	public class KontoPagerAdapter extends FragmentPagerAdapter {
+	public class AccountPagerAdapter extends FragmentPagerAdapter {
 
-		private ArrayList<FriendRequest> anfragen;
-		private ArrayList<FriendRequest> blockiert;
+		private ArrayList<FriendRequest> requestList;
+		private ArrayList<FriendRequest> blockedList;
 
-		public KontoPagerAdapter(FragmentManager fm,
-				ArrayList<FriendRequest> anfragen,
-				ArrayList<FriendRequest> blockiert) {
+		public AccountPagerAdapter(FragmentManager fm,
+								   ArrayList<FriendRequest> requestList,
+								   ArrayList<FriendRequest> blockedList) {
 			super(fm);
-			this.anfragen = anfragen;
-			this.blockiert = blockiert;
+			this.requestList = requestList;
+			this.blockedList = blockedList;
 		}
 
 		@Override
 		public Fragment getItem(int arg0) {
 			if (arg0 == 0) {
-				Fragment fragment = new FreundeAnfragenFragment();
+				Fragment fragment = new FriendRequestFragment();
 				Bundle bundle = new Bundle();
-				bundle.putParcelableArrayList("liste", anfragen);
+				bundle.putParcelableArrayList("liste", requestList);
 				fragment.setArguments(bundle);
 				return fragment;
 			} else {
-				Fragment fragment = new BlockierenFragment();
+				Fragment fragment = new BlockedUsersFragment();
 				Bundle args = new Bundle();
-				args.putInt(BlockierenFragment.ARG_OBJECT, arg0 + 1);
-				args.putParcelableArrayList("liste", blockiert);
+				args.putInt(BlockedUsersFragment.ARG_OBJECT, arg0 + 1);
+				args.putParcelableArrayList("liste", blockedList);
 				fragment.setArguments(args);
 				return fragment;
 			}
@@ -307,9 +307,9 @@ public class AccountSettingsActivity extends ParentActivity implements
 		}
 	}
 
-	public static class FreundeAnfragenFragment extends Fragment {
+	public static class FriendRequestFragment extends Fragment {
 		public static final String ARG_OBJECT = "object";
-		ArrayList<FriendRequest> list;
+		ArrayList<FriendRequest> requests;
 		int chosenPosition;
 
 		@Override
@@ -320,13 +320,13 @@ public class AccountSettingsActivity extends ParentActivity implements
 			View rootView = inflater.inflate(R.layout.freundesanfragen_layout,
 					container, false);
 			Bundle bundle = getArguments();
-			list = bundle.getParcelableArrayList("liste");
+			requests = bundle.getParcelableArrayList("liste");
 			viewZuweisung(rootView);
 			return rootView;
 		}
 
 		public void viewZuweisung(View view) {
-			if (list == null || list.isEmpty()) {
+			if (requests == null || requests.isEmpty()) {
 				LinearLayout lin = (LinearLayout) view
 						.findViewById(R.id.freundesanfragen_layout);
 				TextView text = new TextView(view.getContext());
@@ -338,12 +338,12 @@ public class AccountSettingsActivity extends ParentActivity implements
 				lin.addView(text, 0, new LayoutParams(
 						LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
 			} else {
-				ListView liste = (ListView) view
+				ListView requestListView = (ListView) view
 						.findViewById(R.id.freundeanfragen_liste);
 				FriendRequestAdapter adapter = new FriendRequestAdapter(
-						view.getContext(), list);
-				liste.setAdapter(adapter);
-				registerForContextMenu(liste);
+						view.getContext(), requests);
+				requestListView.setAdapter(adapter);
+				registerForContextMenu(requestListView);
 			}
 		}
 
@@ -352,7 +352,7 @@ public class AccountSettingsActivity extends ParentActivity implements
 			String temp = item.getTitle().toString();
 			if (temp.equals(getResources().getString(
 					R.string.comment_profil_besuchen))) {
-				FriendRequest f = list.get(chosenPosition);
+				FriendRequest f = requests.get(chosenPosition);
 				Intent intent = new Intent(
 						getActivity(),
 						UserProfileActivity.class);
@@ -369,21 +369,21 @@ public class AccountSettingsActivity extends ParentActivity implements
 			if (v.getId() == R.id.freundeanfragen_liste) {
 				AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) menuInfo;
 				chosenPosition = info.position;
-				if (chosenPosition < list.size()) {
+				if (chosenPosition < requests.size()) {
 					menu.add(getResources().getString(
 							R.string.comment_profil_besuchen));
 					menu.setHeaderTitle("User: "
-							+ list.get(chosenPosition).getName());
+							+ requests.get(chosenPosition).getName());
 				}
 			}
 		}
 
 	}
 
-	public static class BlockierenFragment extends Fragment implements
+	public static class BlockedUsersFragment extends Fragment implements
 			OnItemClickListener {
 		public static final String ARG_OBJECT = "object";
-		ArrayList<FriendRequest> list;
+		ArrayList<FriendRequest> blocked;
 
 		@Override
 		public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -393,13 +393,13 @@ public class AccountSettingsActivity extends ParentActivity implements
 			View rootView = inflater.inflate(R.layout.freundesanfragen_layout,
 					container, false);
 			Bundle bundle = getArguments();
-			list = bundle.getParcelableArrayList("liste");
-			viewZuweisung(rootView);
+			blocked = bundle.getParcelableArrayList("liste");
+			fillViews(rootView);
 			return rootView;
 		}
 
-		public void viewZuweisung(View view) {
-			if (list == null || list.isEmpty()) {
+		public void fillViews(View view) {
+			if (blocked == null || blocked.isEmpty()) {
 				LinearLayout lin = (LinearLayout) view
 						.findViewById(R.id.freundesanfragen_layout);
 				TextView text = new TextView(view.getContext());
@@ -411,40 +411,40 @@ public class AccountSettingsActivity extends ParentActivity implements
 				lin.addView(text, 0, new LayoutParams(
 						LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
 			} else {
-				ListView liste = (ListView) view
+				ListView blockedListView = (ListView) view
 						.findViewById(R.id.freundeanfragen_liste);
 				BlockedAdapter adapter = new BlockedAdapter(view.getContext(),
-						list);
-				liste.setAdapter(adapter);
-				liste.setOnItemClickListener(this);
+						blocked);
+				blockedListView.setAdapter(adapter);
+				blockedListView.setOnItemClickListener(this);
 			}
 		}
 
 		@Override
 		public void onItemClick(AdapterView<?> arg0, View arg1, int arg2,
 				long arg3) {
-			DialogFragment dialog = new BlockierenDialog();
+			DialogFragment dialog = new BlockedUsersDialog();
 			Bundle bundle = new Bundle();
-			bundle.putParcelable("anfrage", list.get(arg2));
+			bundle.putParcelable("friendRequest", blocked.get(arg2));
 			dialog.setArguments(bundle);
-			dialog.show(getFragmentManager(), "BlockierenDialog");
+			dialog.show(getFragmentManager(), "BlockedUsersDialog");
 		}
 
 	}
 
-	public static class BlockierenDialog extends DialogFragment {
+	public static class BlockedUsersDialog extends DialogFragment {
 
-		FriendRequest anfrage;
+		FriendRequest friendRequest;
 
-		public BlockierenDialog() {
+		public BlockedUsersDialog() {
 
 		}
 
 		public Dialog onCreateDialog(Bundle savedInstanceState) {
 			Bundle bundle = getArguments();
-			anfrage = bundle.getParcelable("anfrage");
+			friendRequest = bundle.getParcelable("friendRequest");
 			AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-			builder.setTitle("User: " + anfrage.getName());
+			builder.setTitle("User: " + friendRequest.getName());
 			CharSequence[] choice = { "Profile aufrufen", "Blockierung aufheben" };
 			builder.setItems(choice, new DialogInterface.OnClickListener() {
 				public void onClick(DialogInterface dialog, int which) {
@@ -453,8 +453,8 @@ public class AccountSettingsActivity extends ParentActivity implements
 						Intent intent = new Intent(
 								getActivity(),
 								UserProfileActivity.class);
-						intent.putExtra("User", anfrage.getName());
-						intent.putExtra("UserID", anfrage.getId());
+						intent.putExtra("User", friendRequest.getName());
+						intent.putExtra("UserID", friendRequest.getId());
 						startActivity(intent);
 						break;
 					case 1:
@@ -463,7 +463,7 @@ public class AccountSettingsActivity extends ParentActivity implements
 								try {
 									NetworkService.instance(getActivity())
 											.unblockUser(
-													Integer.toString(anfrage
+													Integer.toString(friendRequest
 															.getId()));
 								} catch (EAException e) {
 
@@ -490,7 +490,7 @@ public class AccountSettingsActivity extends ParentActivity implements
 	/**
 	 * Klasse für das Herunterladen der Informationen. Erbt von AsyncTask.
 	 */
-	public class KontoTask extends
+	public class AccountTask extends
 			AsyncTask<String, String, ArrayList<FriendRequest>[]> {
 
 		/**
@@ -501,7 +501,7 @@ public class AccountSettingsActivity extends ParentActivity implements
 		protected ArrayList<FriendRequest>[] doInBackground(
 				String... params) {
 			String input;
-			ArrayList<FriendRequest> list;
+			ArrayList<FriendRequest> friendRequests;
 			try {
 				if (this.isCancelled())
 					return null;
@@ -510,7 +510,7 @@ public class AccountSettingsActivity extends ParentActivity implements
 				new NewsThread(getApplicationContext()).start();
 				if (this.isCancelled())
 					return null;
-				list = new EAParser(null).getFriendRequests(input);
+				friendRequests = new EAParser(null).getFriendRequests(input);
 				if (this.isCancelled())
 					return null;
 				ArrayList<FriendRequest> list2;
@@ -524,7 +524,7 @@ public class AccountSettingsActivity extends ParentActivity implements
 				if (this.isCancelled())
 					return null;
 				ArrayList[] gesamt = new ArrayList[2];
-				gesamt[0] = list;
+				gesamt[0] = friendRequests;
 				gesamt[1] = list2;
 				return gesamt;
 			} catch (EAException e) {
@@ -560,14 +560,14 @@ public class AccountSettingsActivity extends ParentActivity implements
 		}
 
 		/**
-		 * Der Ladedialog wird geschlossen und die viewZuweisung des Aufrufers
+		 * Der Ladedialog wird geschlossen und die fillViews des Aufrufers
 		 * aufgerufen
 		 */
 		@SuppressWarnings("deprecation")
 		@Override
 		protected void onPostExecute(ArrayList<FriendRequest>[] result) {
-			anfrageListe = result[0];
-			blockedListe = result[1];
+			friendRequests = result[0];
+			blockedUsers = result[1];
 			loadFragments();
 			try {
 				dismissDialog(load_dialog);

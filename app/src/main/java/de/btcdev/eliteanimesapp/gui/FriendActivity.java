@@ -37,17 +37,17 @@ import de.btcdev.eliteanimesapp.data.NewsThread;
 public class FriendActivity extends ParentActivity implements
 		OnItemClickListener {
 
-	private String aktuellerUser = null;
-	private int userID = 0;
-	private ListView freundesliste;
-	private FriendAdapter adapter;
-	private FreundeTask freundeTask;
-	private ArrayList<Friend> freundeliste;
+	private String currentUser;
+	private int userId = 0;
+	private ListView friendsView;
+	private FriendAdapter friendAdapter;
+	private FriendTask friendTask;
+	private ArrayList<Friend> friends;
 	private int chosenPosition;
 
 	/**
 	 * Die Activity wird erzeugt, falls sie schon vorher erzeugt wurde, werden
-	 * die Daten aus dem Bundle geladen, ansonsten wird ein neuer FreundeTask
+	 * die Daten aus dem Bundle geladen, ansonsten wird ein neuer FriendTask
 	 * aufgerufen
 	 * 
 	 * @param savedInstanceState
@@ -57,45 +57,45 @@ public class FriendActivity extends ParentActivity implements
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_freunde);
-		bar = getSupportActionBar();
+		actionBar = getSupportActionBar();
 		networkService = NetworkService.instance(this);
 		eaParser = new EAParser(this);
 
 		if (savedInstanceState != null) {
-			freundeliste = savedInstanceState
+			friends = savedInstanceState
 					.getParcelableArrayList("Freundeliste");
-			aktuellerUser = savedInstanceState.getString("User");
-			userID = savedInstanceState.getInt("UserID");
+			currentUser = savedInstanceState.getString("User");
+			userId = savedInstanceState.getInt("UserID");
 			chosenPosition = savedInstanceState.getInt("chosenPosition");
-			bar.setSubtitle(aktuellerUser);
-			if (freundeliste != null) {
-				viewZuweisung(freundeliste);
+			actionBar.setSubtitle(currentUser);
+			if (friends != null) {
+				fillViews(friends);
 			} else {
-				freundeTask = new FreundeTask();
-				freundeTask.execute("");
+				friendTask = new FriendTask();
+				friendTask.execute("");
 			}
 		} else {
 			Intent intent = getIntent();
 			Bundle intentdata = intent.getExtras();
-			aktuellerUser = intentdata.getString("User");
-			userID = intentdata.getInt("UserID");
-			bar.setSubtitle(aktuellerUser);
-			freundeTask = new FreundeTask();
-			freundeTask.execute("");
+			currentUser = intentdata.getString("User");
+			userId = intentdata.getInt("UserID");
+			actionBar.setSubtitle(currentUser);
+			friendTask = new FriendTask();
+			friendTask.execute("");
 		}
 		handleNavigationDrawer(R.id.nav_freunde, R.id.nav_freunde_list,
-				"Freunde", aktuellerUser);
+				"Freunde", currentUser);
 	}
 
 	/**
 	 * Wird aufgerufen, wenn die Activity pausiert wird. Ein laufender
-	 * FreundeTask wird dabei abgebrochen.
+	 * FriendTask wird dabei abgebrochen.
 	 */
 	@SuppressWarnings("deprecation")
 	@Override
 	protected void onPause() {
-		if (freundeTask != null) {
-			freundeTask.cancel(true);
+		if (friendTask != null) {
+			friendTask.cancel(true);
 		}
 		removeDialog(load_dialog);
 		super.onPause();
@@ -109,9 +109,9 @@ public class FriendActivity extends ParentActivity implements
 	 */
 	@Override
 	public void onSaveInstanceState(Bundle savedInstanceState) {
-		savedInstanceState.putParcelableArrayList("Freundeliste", freundeliste);
-		savedInstanceState.putString("User", aktuellerUser);
-		savedInstanceState.putInt("UserID", userID);
+		savedInstanceState.putParcelableArrayList("Freundeliste", friends);
+		savedInstanceState.putString("User", currentUser);
+		savedInstanceState.putInt("UserID", userId);
 		savedInstanceState.putInt("chosenPosition", chosenPosition);
 	}
 
@@ -135,9 +135,9 @@ public class FriendActivity extends ParentActivity implements
 	 *            Ein Array, bestehend aus den Daten der Freundesliste und den
 	 *            Links der Freundesliste, jeweils in einer ArrayList
 	 */
-	public void viewZuweisung(ArrayList<Friend> result) {
-		freundeliste = result;
-		if (freundeliste == null || freundeliste.isEmpty()) {
+	public void fillViews(ArrayList<Friend> result) {
+		friends = result;
+		if (friends == null || friends.isEmpty()) {
 			LinearLayout lin = (LinearLayout) findViewById(R.id.freunde_layout);
 			TextView text = new TextView(this);
 			text.setTextSize(16);
@@ -147,11 +147,11 @@ public class FriendActivity extends ParentActivity implements
 			lin.addView(text, 0, new LayoutParams(LayoutParams.MATCH_PARENT,
 					LayoutParams.MATCH_PARENT));
 		} else {
-			freundesliste = (ListView) findViewById(R.id.freundesliste);
-			adapter = new FriendAdapter(this, freundeliste);
-			freundesliste.setAdapter(adapter);
-			freundesliste.setOnItemClickListener(this);
-			registerForContextMenu(freundesliste);
+			friendsView = (ListView) findViewById(R.id.freundesliste);
+			friendAdapter = new FriendAdapter(this, friends);
+			friendsView.setAdapter(friendAdapter);
+			friendsView.setOnItemClickListener(this);
+			registerForContextMenu(friendsView);
 		}
 	}
 
@@ -159,8 +159,8 @@ public class FriendActivity extends ParentActivity implements
 	 * Aktualisiert die Activity, indem alle Daten neu geladen werden.
 	 */
 	public void refresh() {
-		freundeTask = new FreundeTask();
-		freundeTask.execute();
+		friendTask = new FriendTask();
+		friendTask.execute();
 	}
 
 	/**
@@ -168,7 +168,7 @@ public class FriendActivity extends ParentActivity implements
 	 */
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
-		// Inflate the menu; this adds items to the action bar if it is present.
+		// Inflate the menu; this adds items to the action actionBar if it is present.
 		getMenuInflater().inflate(R.menu.freunde, menu);
 		return true;
 	}
@@ -190,7 +190,7 @@ public class FriendActivity extends ParentActivity implements
 	@Override
 	public void onItemClick(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
 		if (arg0.getId() == R.id.freundesliste) {
-			Friend friend = freundeliste.get(arg2);
+			Friend friend = friends.get(arg2);
 			int id = friend.getId();
 			Intent intent;
 			if (friend.getName().equals(
@@ -206,7 +206,7 @@ public class FriendActivity extends ParentActivity implements
 			}
 			startActivity(intent);
 		} else if (arg0.getId() == R.id.nav_freunde_list) {
-			if (arg2 == navigation_freunde) {
+			if (arg2 == NAVIGATION_FRIENDS) {
 				mDrawerLayout.closeDrawer(Gravity.LEFT);
 			} else
 				super.onItemClick(arg0, arg1, arg2, arg3);
@@ -218,7 +218,7 @@ public class FriendActivity extends ParentActivity implements
 		String temp = item.getTitle().toString();
 		if (temp.equals(getResources().getString(R.string.delete_friend))) {
 			// löschen
-			Friend friend = freundeliste.get(chosenPosition);
+			Friend friend = friends.get(chosenPosition);
 			final String id = "" + friend.getId();
 			new Thread(new Runnable() {
 				public void run() {
@@ -232,9 +232,9 @@ public class FriendActivity extends ParentActivity implements
 			}).start();
 			Toast.makeText(this, "Friend wurde gelöscht.", Toast.LENGTH_SHORT)
 					.show();
-			freundeliste.remove(chosenPosition);
+			friends.remove(chosenPosition);
 			chosenPosition = -1;
-			adapter.notifyDataSetChanged();
+			friendAdapter.notifyDataSetChanged();
 		}
 		return true;
 	}
@@ -245,9 +245,9 @@ public class FriendActivity extends ParentActivity implements
 		if (v.getId() == R.id.freundesliste) {
 			AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) menuInfo;
 			chosenPosition = info.position;
-			if (chosenPosition < freundeliste.size()) {
+			if (chosenPosition < friends.size()) {
 				menu.add(getResources().getString(R.string.delete_friend));
-				menu.setHeaderTitle(freundeliste.get(chosenPosition).getName());
+				menu.setHeaderTitle(friends.get(chosenPosition).getName());
 			}
 		}
 
@@ -256,7 +256,7 @@ public class FriendActivity extends ParentActivity implements
 	/**
 	 * Klasse für das Herunterladen der Freundesliste. Erbt von AsyncTask.
 	 */
-	public class FreundeTask extends
+	public class FriendTask extends
 			AsyncTask<String, String, ArrayList<Friend>> {
 
 		/**
@@ -274,13 +274,13 @@ public class FriendActivity extends ParentActivity implements
 			try {
 				if (isCancelled())
 					return null;
-				final String input = networkService.getFriendList(aktuellerUser,
-						userID);
+				final String input = networkService.getFriendList(currentUser,
+						userId);
 				if (isCancelled())
 					return null;
 				new NewsThread(getApplicationContext()).start();
-				ArrayList<Friend> ergebnis = eaParser.getFriendList(input);
-				return ergebnis;
+				ArrayList<Friend> result = eaParser.getFriendList(input);
+				return result;
 			} catch (EAException e) {
 				publishProgress("Exception", e.getMessage());
 			}
@@ -300,7 +300,7 @@ public class FriendActivity extends ParentActivity implements
 		}
 
 		/**
-		 * Die viewZuweisung wird mit den erhaltenen Daten aufgerufen, der
+		 * Die fillViews wird mit den erhaltenen Daten aufgerufen, der
 		 * LoadDialog wird geschlossen.
 		 * 
 		 * @param result
@@ -309,7 +309,7 @@ public class FriendActivity extends ParentActivity implements
 		@SuppressWarnings("deprecation")
 		@Override
 		protected void onPostExecute(ArrayList<Friend> result) {
-			viewZuweisung(result);
+			fillViews(result);
 			try {
 				dismissDialog(load_dialog);
 			} catch (IllegalArgumentException e) {

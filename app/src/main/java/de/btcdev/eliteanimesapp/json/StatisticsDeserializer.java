@@ -17,30 +17,30 @@ public class StatisticsDeserializer implements JsonDeserializer<Statistics> {
 	@Override
 	public Statistics deserialize(JsonElement json, Type typeOfT,
 								  JsonDeserializationContext context) throws JsonParseException {
-		JsonObject obj;
+		JsonObject jsonObject;
 		try {
-			obj = json.getAsJsonObject();
-			Statistics stat = new Statistics();
-			if (obj.has("count")) {
-				JsonObject count = obj.get("count").getAsJsonObject();
+			jsonObject = json.getAsJsonObject();
+			Statistics statistics = new Statistics();
+			if (jsonObject.has("count")) {
+				JsonObject count = jsonObject.get("count").getAsJsonObject();
 				if (count.has("users"))
-					stat.setAnzahlUser(count.get("users").getAsInt());
+					statistics.setUserCount(count.get("users").getAsInt());
 				if (count.has("threads"))
-					stat.setAnzahlThreads(count.get("threads").getAsInt());
+					statistics.setThreadCount(count.get("threads").getAsInt());
 				if (count.has("posts"))
-					stat.setAnzahlPosts(count.get("posts").getAsInt());
+					statistics.setPostCount(count.get("posts").getAsInt());
 				if (count.has("online"))
-					stat.setAnzahlOnline(count.get("online").getAsInt());
-				if (obj.has("lastuser_id"))
-					stat.setLastUserId(obj.get("lastuser_id").getAsInt());
-				if (obj.has("lastuser_name"))
-					stat.setLastUserName(obj.get("lastuser_name").getAsString());
-				ArrayList<Statistics.StatistikUser> list = new ArrayList<>();
-				if (obj.has("users_online")) {
-					JsonArray ar = obj.get("users_online").getAsJsonArray();
-					Statistics.StatistikUser user;
+					statistics.setOnlineCount(count.get("online").getAsInt());
+				if (jsonObject.has("lastuser_id"))
+					statistics.setLastUserId(jsonObject.get("lastuser_id").getAsInt());
+				if (jsonObject.has("lastuser_name"))
+					statistics.setLastUserName(jsonObject.get("lastuser_name").getAsString());
+				ArrayList<Statistics.StatisticsUser> statisticsUsers = new ArrayList<>();
+				if (jsonObject.has("users_online")) {
+					JsonArray ar = jsonObject.get("users_online").getAsJsonArray();
+					Statistics.StatisticsUser user;
 					for (JsonElement el : ar) {
-						user = new Statistics.StatistikUser();
+						user = new Statistics.StatisticsUser();
 						count = el.getAsJsonObject();
 						if (count.has("id"))
 							user.id = count.get("id").getAsInt();
@@ -50,11 +50,11 @@ public class StatisticsDeserializer implements JsonDeserializer<Statistics> {
 							user.level = count.get("user_level").getAsInt();
 						if (count.has("donator"))
 							user.setDonator(count.get("donator").getAsInt());
-						list.add(user);
+						statisticsUsers.add(user);
 					}
-					stat.setUsersOnline(list);
+					statistics.setUsersOnline(statisticsUsers);
 				}
-				return stat;
+				return statistics;
 			}
 		} catch (Exception e) {
 			return null;

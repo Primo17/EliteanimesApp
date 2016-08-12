@@ -9,8 +9,8 @@ import java.util.ArrayList;
  */
 public class ProfileCache {
 
-	private ArrayList<Profile> profilcache;
-	private Profile eigenesProfile;
+	private ArrayList<Profile> profileCache;
+	private Profile ownProfile;
 	private static ProfileCache unique = null;
 
 	public static ProfileCache instance() {
@@ -23,7 +23,7 @@ public class ProfileCache {
 	 * Ein neuer ProfileCache wird erzeugt.
 	 */
 	private ProfileCache() {
-		profilcache = new ArrayList<>();
+		profileCache = new ArrayList<>();
 	}
 
 	/**
@@ -31,8 +31,8 @@ public class ProfileCache {
 	 * 
 	 * @return Cache fremder Profile
 	 */
-	public ArrayList<Profile> getProfilcache() {
-		return profilcache;
+	public ArrayList<Profile> getProfileCache() {
+		return profileCache;
 	}
 
 	/**
@@ -40,18 +40,18 @@ public class ProfileCache {
 	 * 
 	 * @return eigenes Profile
 	 */
-	public Profile getEigenesProfile() {
-		return eigenesProfile;
+	public Profile getOwnProfile() {
+		return ownProfile;
 	}
 
 	/**
 	 * Setzt ein neues Profile als eigenes Profile.
 	 * 
-	 * @param eigenesProfile
+	 * @param ownProfile
 	 *            Profile, das gesetzt werden soll
 	 */
-	public void setEigenesProfile(Profile eigenesProfile) {
-		this.eigenesProfile = eigenesProfile;
+	public void setOwnProfile(Profile ownProfile) {
+		this.ownProfile = ownProfile;
 	}
 
 	/**
@@ -66,21 +66,21 @@ public class ProfileCache {
 	 */
 	public Profile contains(String benutzername) {
 		Profile p = new Profile(benutzername);
-		if (p.equals(eigenesProfile))
-			return eigenesProfile;
-		if (profilcache.contains(p)) {
-			for (Profile temp : profilcache) {
+		if (p.equals(ownProfile))
+			return ownProfile;
+		if (profileCache.contains(p)) {
+			for (Profile temp : profileCache) {
 				if (temp.equals(p))
 					return temp;
 			}
 		}
-		profilcache.add(p);
+		profileCache.add(p);
 		return p;
 	}
 
 	public void deleteProfil(String benutzername) {
 		Profile temp = new Profile(benutzername);
-		if (profilcache.contains(temp))
-			profilcache.remove(temp);
+		if (profileCache.contains(temp))
+			profileCache.remove(temp);
 	}
 }

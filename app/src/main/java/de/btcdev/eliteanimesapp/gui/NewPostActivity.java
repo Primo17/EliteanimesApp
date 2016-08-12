@@ -21,12 +21,12 @@ import de.btcdev.eliteanimesapp.data.NetworkService;
 
 public class NewPostActivity extends ParentActivity {
 
-	private BoardThread thread;
-	private boolean editieren;
-	private boolean zitieren;
-	private EditText postEingabe;
+	private BoardThread boardThread;
+	private boolean editMode;
+	private boolean citeMode;
+	private EditText postInputView;
 	private BoardPost editPost;
-	private String barName;
+	private String actionBarTitle;
 	private NewPostTask newPostTask;
 	private String postInput;
 
@@ -37,31 +37,30 @@ public class NewPostActivity extends ParentActivity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_new_post);
-		postEingabe = (EditText) findViewById(R.id.new_post_text);
-		bar = getSupportActionBar();
+		postInputView = (EditText) findViewById(R.id.new_post_text);
+		actionBar = getSupportActionBar();
 		Intent intent = getIntent();
 		Bundle bundle = intent.getExtras();
-		editieren = bundle.getBoolean("editieren", false);
-		zitieren = bundle.getBoolean("zitieren", false);
-		thread = bundle.getParcelable("thread");
-		barName = "Neuer Beitrag";
-		if (editieren) {
+		editMode = bundle.getBoolean("editMode", false);
+		citeMode = bundle.getBoolean("citeMode", false);
+		boardThread = bundle.getParcelable("boardThread");
+		actionBarTitle = "Neuer Beitrag";
+		if (editMode) {
 			editPost = bundle.getParcelable("editPost");
-			System.out.println(editPost);
-			barName = "Beitrag editieren";
-			postInput = postEingabe.getText().toString();
+			actionBarTitle = "Beitrag editMode";
+			postInput = postInputView.getText().toString();
 			newPostTask = new NewPostTask(false, true);
 			newPostTask.execute("");
-		} else if (zitieren) {
+		} else if (citeMode) {
 			editPost = bundle.getParcelable("editPost");
-			postInput = postEingabe.getText().toString();
+			postInput = postInputView.getText().toString();
 			newPostTask = new NewPostTask(false, true);
 			newPostTask.execute("");
 		}
-		bar.setTitle(barName);
-		bar.setSubtitle(thread.getName());
+		actionBar.setTitle(actionBarTitle);
+		actionBar.setSubtitle(boardThread.getName());
 		handleNavigationDrawer(R.id.nav_new_post, R.id.nav_new_post_list,
-				barName, thread.getName());
+				actionBarTitle, boardThread.getName());
 	}
 
 	/**
@@ -69,7 +68,7 @@ public class NewPostActivity extends ParentActivity {
 	 */
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
-		// Inflate the menu; this adds items to the action bar if it is present.
+		// Inflate the menu; this adds items to the action actionBar if it is present.
 		getMenuInflater().inflate(R.menu.new_post, menu);
 		return true;
 	}
@@ -86,9 +85,9 @@ public class NewPostActivity extends ParentActivity {
 			return true;
 		switch (item.getItemId()) {
 		case R.id.new_post_send:
-			if (!isNullOrEmpty(postEingabe.getText().toString())) {
-				postInput = postEingabe.getText().toString();
-				newPostTask = new NewPostTask(editieren, false);
+			if (!isNullOrEmpty(postInputView.getText().toString())) {
+				postInput = postInputView.getText().toString();
+				newPostTask = new NewPostTask(editMode, false);
 				newPostTask.execute("");
 			}
 			return super.onOptionsItemSelected(item);
@@ -153,7 +152,7 @@ public class NewPostActivity extends ParentActivity {
 				} else {
 					if (isCancelled())
 						return null;
-					send = networkService.addPost(postInput, thread.getId());
+					send = networkService.addPost(postInput, boardThread.getId());
 				}
 			} catch (EAException e) {
 				publishProgress("Exception", e.getMessage());
@@ -180,7 +179,7 @@ public class NewPostActivity extends ParentActivity {
 			getWindow().clearFlags(
 					WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 			if (editGet) {
-				if (zitieren) {
+				if (citeMode) {
 					StringBuilder b = new StringBuilder();
 					b.append("[quote]");
 					b.append(editPost.getText());
@@ -192,16 +191,16 @@ public class NewPostActivity extends ParentActivity {
 					b.append("]");
 					b.append(editPost.getUserName());
 					b.append("[/url][/quote]\n");
-					postEingabe.setText(b.toString());
+					postInputView.setText(b.toString());
 				} else {
-					postEingabe.setText(editPost.getText());
+					postInputView.setText(editPost.getText());
 				}
 			} else {
 				if (result != null && result.equals("Erfolg")) {
 					Intent intent = new Intent(getApplicationContext(),
 							de.btcdev.eliteanimesapp.gui.PostActivity.class);
-					intent.putExtra("thread", thread);
-					intent.putExtra("seite", thread.getPages());
+					intent.putExtra("boardThread", boardThread);
+					intent.putExtra("seite", boardThread.getPages());
 					startActivity(intent);
 				} else {
 					Toast.makeText(getBaseContext(),

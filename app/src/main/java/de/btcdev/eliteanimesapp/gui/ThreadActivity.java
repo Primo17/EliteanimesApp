@@ -32,12 +32,12 @@ public class ThreadActivity extends ParentActivity implements
 		OnItemSelectedListener {
 
 	private ListView listView;
-	private BoardThreadAdapter threadAdapter;
+	private BoardThreadAdapter boardThreadAdapter;
 	private Board board;
 	private ThreadTask threadTask;
 	private int pageCount;
-	private int seite = 1;
-	private ArrayList<BoardThread> threadList;
+	private int page = 1;
+	private ArrayList<BoardThread> boardThreads;
 	ArrayAdapter<String> pageAdapter;
 	String[] pages;
 
@@ -48,26 +48,26 @@ public class ThreadActivity extends ParentActivity implements
 		listView = (ListView) findViewById(R.id.threads_list);
 		if (savedInstanceState != null) {
 			board = savedInstanceState.getParcelable("board");
-			threadList = savedInstanceState
-					.getParcelableArrayList("threadList");
-			seite = savedInstanceState.getInt("seite");
+			boardThreads = savedInstanceState
+					.getParcelableArrayList("boardThreads");
+			page = savedInstanceState.getInt("page");
 			pageCount = savedInstanceState.getInt("pageCount");
 			pages = savedInstanceState.getStringArray("pages");
-			viewZuweisung();
+			fillViews();
 		} else {
 			Bundle bundle = getIntent().getExtras();
 			board = bundle.getParcelable("board");
 			threadTask = new ThreadTask();
 			threadTask.execute("");
 		}
-		bar = getSupportActionBar();
-		bar.setTitle(board.getName());
+		actionBar = getSupportActionBar();
+		actionBar.setTitle(board.getName());
 		handleNavigationDrawer(R.id.nav_threads, R.id.nav_threads_list,
 				board.getName(), null);
 	}
 
 	/**
-	 * Wird aufgerufen, wenn die Activity pausiert wird. Ein laufender ForenTask
+	 * Wird aufgerufen, wenn die Activity pausiert wird. Ein laufender BoardTask
 	 * wird dabei abgebrochen.
 	 */
 	@SuppressWarnings("deprecation")
@@ -83,8 +83,8 @@ public class ThreadActivity extends ParentActivity implements
 	@Override
 	protected void onSaveInstanceState(Bundle outState) {
 		outState.putParcelable("board", board);
-		outState.putParcelableArrayList("threadList", threadList);
-		outState.putInt("seite", seite);
+		outState.putParcelableArrayList("boardThreads", boardThreads);
+		outState.putInt("page", page);
 		outState.putInt("pageCount", pageCount);
 		outState.putStringArray("pages", pages);
 	}
@@ -94,7 +94,7 @@ public class ThreadActivity extends ParentActivity implements
 	 */
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
-		// Inflate the menu; this adds items to the action bar if it is present.
+		// Inflate the menu; this adds items to the action actionBar if it is present.
 		getMenuInflater().inflate(R.menu.threads, menu);
 		return true;
 	}
@@ -130,7 +130,7 @@ public class ThreadActivity extends ParentActivity implements
 		if (arg0.getId() == R.id.nav_threads_list) {
 			super.onItemClick(arg0, arg1, arg2, arg3);
 		} else if (arg0.getId() == R.id.threads_list) {
-			Object temp = threadAdapter.getItem(arg2);
+			Object temp = boardThreadAdapter.getItem(arg2);
 			if (temp == null || board == null)
 				return;
 			if (temp instanceof Subboard) {
@@ -150,7 +150,7 @@ public class ThreadActivity extends ParentActivity implements
 				Intent intent = new Intent(this,
 						de.btcdev.eliteanimesapp.gui.PostActivity.class);
 				intent.putExtra("thread", ft);
-				intent.putExtra("seite", ft.getPages());
+				intent.putExtra("page", ft.getPages());
 				startActivity(intent);
 			}
 		}
@@ -160,8 +160,8 @@ public class ThreadActivity extends ParentActivity implements
 	public void onItemSelected(AdapterView<?> parent, View view, int position,
 			long id) {
 		if (parent.getId() == R.id.threads_spinner) {
-			if (seite != position + 1) {
-				seite = position + 1;
+			if (page != position + 1) {
+				page = position + 1;
 				threadTask = new ThreadTask();
 				threadTask.execute("");
 			}
@@ -173,7 +173,7 @@ public class ThreadActivity extends ParentActivity implements
 		// do nothing
 	}
 
-	public void viewZuweisung() {
+	public void fillViews() {
 		if (pages == null)
 			pages = new String[pageCount];
 		if (pageAdapter == null) {
@@ -188,7 +188,7 @@ public class ThreadActivity extends ParentActivity implements
 			for (int i = 0; i < pageCount; i++)
 				pages[i] = Integer.toString(i + 1);
 
-			pageSpinner.setSelection(seite - 1);
+			pageSpinner.setSelection(page - 1);
 			pageSpinner.setAdapter(pageAdapter);
 			pageAdapter
 					.setDropDownViewResource(R.layout.dialog_animelist_rate_dropdown);
@@ -196,12 +196,12 @@ public class ThreadActivity extends ParentActivity implements
 			root.addView(pagesView, 0);
 		}
 		listView = (ListView) findViewById(R.id.threads_list);
-		if (seite == 1)
-			threadAdapter = new BoardThreadAdapter(this, threadList,
+		if (page == 1)
+			boardThreadAdapter = new BoardThreadAdapter(this, boardThreads,
 					board.getSubboards());
 		else
-			threadAdapter = new BoardThreadAdapter(this, threadList, null);
-		listView.setAdapter(threadAdapter);
+			boardThreadAdapter = new BoardThreadAdapter(this, boardThreads, null);
+		listView.setAdapter(boardThreadAdapter);
 		listView.setOnItemClickListener(this);
 	}
 
@@ -210,7 +210,7 @@ public class ThreadActivity extends ParentActivity implements
 		View v = root.getChildAt(0);
 		if (v != null && v.getId() == R.id.forum_pages_root)
 			root.removeViewAt(0);
-		threadAdapter = null;
+		boardThreadAdapter = null;
 		pages = null;
 		pageAdapter = null;
 		threadTask = new ThreadTask();
@@ -227,13 +227,13 @@ public class ThreadActivity extends ParentActivity implements
 			try {
 				if (isCancelled())
 					return null;
-				input = networkService.getThreads(board.getId(), seite);
+				input = networkService.getThreads(board.getId(), page);
 				if (isCancelled())
 					return null;
 				pageCount = eaParser.getBoardThreadPageCount(input);
 				if (isCancelled())
 					return null;
-				threadList = eaParser.getBoardThreads(input);
+				boardThreads = eaParser.getBoardThreads(input);
 				return "success";
 			} catch (EAException e) {
 				publishProgress("Exception", e.getMessage());
@@ -257,7 +257,7 @@ public class ThreadActivity extends ParentActivity implements
 		}
 
 		/**
-		 * Der Lade-Dialog wird geschlossen und die viewZuweisung aufgerufen.
+		 * Der Lade-Dialog wird geschlossen und die fillViews aufgerufen.
 		 */
 		@SuppressWarnings("deprecation")
 		@Override
@@ -265,7 +265,7 @@ public class ThreadActivity extends ParentActivity implements
 			getWindow().clearFlags(
 					WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 			if (!isNullOrEmpty(result))
-				viewZuweisung();
+				fillViews();
 			try {
 				dismissDialog(load_dialog);
 			} catch (IllegalArgumentException e) {

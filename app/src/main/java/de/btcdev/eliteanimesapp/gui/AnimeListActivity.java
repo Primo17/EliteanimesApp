@@ -55,27 +55,27 @@ import de.btcdev.eliteanimesapp.json.ListAnimeDeserializer;
 public class AnimeListActivity extends ParentActivity implements
 		OnItemClickListener, OnItemSelectedListener, OnAnimeRatedListener {
 
-	private String aktuellerUser;
-	private int userID;
-	private ArrayList<ListAnime> komplett;
-	private ArrayList<ListAnime> amSchauen;
-	private ArrayList<ListAnime> kurzAufgehoert;
-	private ArrayList<ListAnime> abgebrochen;
-	private ArrayList<ListAnime> geplant;
+	private String currentUser;
+	private int userId;
+	private ArrayList<ListAnime> completeAnime;
+	private ArrayList<ListAnime> watchingAnime;
+	private ArrayList<ListAnime> stalledAnime;
+	private ArrayList<ListAnime> droppedAnime;
+	private ArrayList<ListAnime> plannedAnime;
 	private AnimelistTask animelistTask;
-	private ListAnimeAdapter animeAdapter;
+	private ListAnimeAdapter listAnimeAdapter;
 
 	private enum AnimelistSelection {
-		KOMPLETT, AMSCHAUEN, KURZAUFGEHOERT, ABGEBROCHEN, GEPLANT
+		COMPLETE, WATCHING, STALLED, DROPPED, PLANNED
 	};
 
 	private AnimelistSelection animelistSelection;
 
 	private enum AnimelistSort {
-		BEWERTUNG, ALPHABET
+		BY_RATING, ALPHABETICAL
 	};
 
-	private AnimelistSort animelistSort;
+	private AnimelistSort AnimelistSort;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -85,30 +85,30 @@ public class AnimeListActivity extends ParentActivity implements
 		networkService = NetworkService.instance(this);
 		eaParser = new EAParser(this);
 		if (savedInstanceState != null) {
-			aktuellerUser = savedInstanceState.getString("User");
-			userID = savedInstanceState.getInt("UserID");
-			komplett = savedInstanceState.getParcelableArrayList("Komplett");
-			amSchauen = savedInstanceState.getParcelableArrayList("AmSchauen");
-			kurzAufgehoert = savedInstanceState
+			currentUser = savedInstanceState.getString("User");
+			userId = savedInstanceState.getInt("UserID");
+			completeAnime = savedInstanceState.getParcelableArrayList("Komplett");
+			watchingAnime = savedInstanceState.getParcelableArrayList("AmSchauen");
+			stalledAnime = savedInstanceState
 					.getParcelableArrayList("KurzAufgehoert");
-			abgebrochen = savedInstanceState
+			droppedAnime = savedInstanceState
 					.getParcelableArrayList("Abgebrochen");
-			geplant = savedInstanceState.getParcelableArrayList("Geplant");
+			plannedAnime = savedInstanceState.getParcelableArrayList("Geplant");
 			animelistSelection = (AnimelistSelection) savedInstanceState
 					.getSerializable("Selection");
-			animelistSort = (AnimelistSort) savedInstanceState
+			AnimelistSort = (AnimelistSort) savedInstanceState
 					.getSerializable("Sort");
-			viewZuweisung();
+			fillViews();
 		} else {
 			Intent intent = getIntent();
 			Bundle bundle = intent.getExtras();
 			if (bundle != null) {
-				aktuellerUser = bundle.getString("User");
-				userID = bundle.getInt("UserID");
-				bar.setSubtitle(aktuellerUser);
+				currentUser = bundle.getString("User");
+				userId = bundle.getInt("UserID");
+				bar.setSubtitle(currentUser);
 			}
 			animelistTask = new AnimelistTask();
-			if (aktuellerUser.equals(Configuration
+			if (currentUser.equals(Configuration
 					.getUserName(getApplicationContext())))
 				animelistTask.ownList = true;
 			else
@@ -116,7 +116,7 @@ public class AnimeListActivity extends ParentActivity implements
 			animelistTask.execute("");
 		}
 		handleNavigationDrawer(R.id.nav_animelist, R.id.nav_animelist_list,
-				"Animeliste", aktuellerUser);
+				"Animeliste", currentUser);
 	}
 
 	/**
@@ -127,28 +127,28 @@ public class AnimeListActivity extends ParentActivity implements
 	 */
 	@Override
 	public void onSaveInstanceState(Bundle savedInstanceState) {
-		savedInstanceState.putString("User", aktuellerUser);
-		savedInstanceState.putInt("UserID", userID);
-		savedInstanceState.putParcelableArrayList("Komplett", komplett);
-		savedInstanceState.putParcelableArrayList("AmSchauen", amSchauen);
+		savedInstanceState.putString("User", currentUser);
+		savedInstanceState.putInt("UserID", userId);
+		savedInstanceState.putParcelableArrayList("Komplett", completeAnime);
+		savedInstanceState.putParcelableArrayList("AmSchauen", watchingAnime);
 		savedInstanceState.putParcelableArrayList("KurzAufgehoert",
-				kurzAufgehoert);
-		savedInstanceState.putParcelableArrayList("Abgebrochen", abgebrochen);
-		savedInstanceState.putParcelableArrayList("Geplant", geplant);
+				stalledAnime);
+		savedInstanceState.putParcelableArrayList("Abgebrochen", droppedAnime);
+		savedInstanceState.putParcelableArrayList("Geplant", plannedAnime);
 		savedInstanceState.putSerializable("Selection", animelistSelection);
-		savedInstanceState.putSerializable("Sort", animelistSort);
+		savedInstanceState.putSerializable("Sort", AnimelistSort);
 	}
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
-		// Inflate the menu; this adds items to the action bar if it is present.
+		// Inflate the menu; this adds items to the action actionBar if it is present.
 		getMenuInflater().inflate(R.menu.anime_list, menu);
 		return true;
 	}
 
 	/**
 	 * Wird aufgerufen, wenn die Activity pausiert wird. Ein laufender
-	 * AnimelistTask wird dabei abgebrochen.
+	 * AnimelistTask wird dabei droppedAnime.
 	 */
 	@SuppressWarnings("deprecation")
 	@Override
@@ -180,45 +180,45 @@ public class AnimeListActivity extends ParentActivity implements
 		case R.id.animelist_listSelectionSpinner:
 			switch (position) {
 			case 0:
-				animelistSelection = AnimelistSelection.KOMPLETT;
+				animelistSelection = AnimelistSelection.COMPLETE;
 				break;
 			case 1:
-				animelistSelection = AnimelistSelection.AMSCHAUEN;
+				animelistSelection = AnimelistSelection.WATCHING;
 				break;
 			case 2:
-				animelistSelection = AnimelistSelection.KURZAUFGEHOERT;
+				animelistSelection = AnimelistSelection.STALLED;
 				break;
 			case 3:
-				animelistSelection = AnimelistSelection.ABGEBROCHEN;
+				animelistSelection = AnimelistSelection.DROPPED;
 				break;
 			case 4:
-				animelistSelection = AnimelistSelection.GEPLANT;
+				animelistSelection = AnimelistSelection.PLANNED;
 				break;
 			}
-			viewZuweisung();
+			fillViews();
 			break;
 		case R.id.animelist_listSortSpinner:
 			switch (position) {
 			case 0:
-				animelistSort = AnimelistSort.BEWERTUNG;
+				AnimelistSort = AnimelistSort.BY_RATING;
 				ListAnimeRatingComparator comp = new ListAnimeRatingComparator();
-				Collections.sort(komplett, comp);
-				Collections.sort(amSchauen, comp);
-				Collections.sort(kurzAufgehoert, comp);
-				Collections.sort(abgebrochen, comp);
-				Collections.sort(geplant, comp);
+				Collections.sort(completeAnime, comp);
+				Collections.sort(watchingAnime, comp);
+				Collections.sort(stalledAnime, comp);
+				Collections.sort(droppedAnime, comp);
+				Collections.sort(plannedAnime, comp);
 				break;
 			case 1:
-				animelistSort = AnimelistSort.ALPHABET;
+				AnimelistSort = AnimelistSort.ALPHABETICAL;
 				ListAnimeAlphabetComparator comparator = new ListAnimeAlphabetComparator();
-				Collections.sort(komplett, comparator);
-				Collections.sort(amSchauen, comparator);
-				Collections.sort(kurzAufgehoert, comparator);
-				Collections.sort(abgebrochen, comparator);
-				Collections.sort(geplant, comparator);
+				Collections.sort(completeAnime, comparator);
+				Collections.sort(watchingAnime, comparator);
+				Collections.sort(stalledAnime, comparator);
+				Collections.sort(droppedAnime, comparator);
+				Collections.sort(plannedAnime, comparator);
 				break;
 			}
-			viewZuweisung();
+			fillViews();
 			break;
 		}
 	}
@@ -232,21 +232,21 @@ public class AnimeListActivity extends ParentActivity implements
 	 * Sortiert alle Animelisten nach der ausgewählten Methode.
 	 */
 	public void sortLists() {
-		if (animelistSort == AnimelistSort.BEWERTUNG) {
+		if (AnimelistSort == AnimelistSort.BY_RATING) {
 			ListAnimeRatingComparator comp = new ListAnimeRatingComparator();
-			Collections.sort(komplett, comp);
-			Collections.sort(amSchauen, comp);
-			Collections.sort(kurzAufgehoert, comp);
-			Collections.sort(abgebrochen, comp);
-			Collections.sort(geplant, comp);
+			Collections.sort(completeAnime, comp);
+			Collections.sort(watchingAnime, comp);
+			Collections.sort(stalledAnime, comp);
+			Collections.sort(droppedAnime, comp);
+			Collections.sort(plannedAnime, comp);
 		}
-		if (animelistSort == AnimelistSort.ALPHABET) {
+		if (AnimelistSort == AnimelistSort.ALPHABETICAL) {
 			ListAnimeAlphabetComparator comparator = new ListAnimeAlphabetComparator();
-			Collections.sort(komplett, comparator);
-			Collections.sort(amSchauen, comparator);
-			Collections.sort(kurzAufgehoert, comparator);
-			Collections.sort(abgebrochen, comparator);
-			Collections.sort(geplant, comparator);
+			Collections.sort(completeAnime, comparator);
+			Collections.sort(watchingAnime, comparator);
+			Collections.sort(stalledAnime, comparator);
+			Collections.sort(droppedAnime, comparator);
+			Collections.sort(plannedAnime, comparator);
 		}
 	}
 
@@ -254,7 +254,7 @@ public class AnimeListActivity extends ParentActivity implements
 	 * Stellt die ausgewählte Animeliste in der ListView dar und setzt evtl
 	 * Default-Werte für die Spinner.
 	 */
-	public void viewZuweisung() {
+	public void fillViews() {
 		Spinner animelistSelectionSpinner = (Spinner) findViewById(R.id.animelist_listSelectionSpinner);
 		Spinner animelistSortSpinner = (Spinner) findViewById(R.id.animelist_listSortSpinner);
 		animelistSelectionSpinner.setOnItemSelectedListener(this);
@@ -266,30 +266,30 @@ public class AnimeListActivity extends ParentActivity implements
 			String category = defaultprefs.getString("pref_animelist_category",
 					"Komplett");
 			if (category.equals("Komplett")) {
-				animelistSelection = AnimelistSelection.KOMPLETT;
+				animelistSelection = AnimelistSelection.COMPLETE;
 				animelistSelectionSpinner.setSelection(0);
 			} else if (category.equals("Am Schauen")) {
-				animelistSelection = AnimelistSelection.AMSCHAUEN;
+				animelistSelection = AnimelistSelection.WATCHING;
 				animelistSelectionSpinner.setSelection(1);
 			} else if (category.equals("Kurz Aufgehört")) {
-				animelistSelection = AnimelistSelection.KURZAUFGEHOERT;
+				animelistSelection = AnimelistSelection.STALLED;
 				animelistSelectionSpinner.setSelection(2);
 			} else if (category.equals("Abgebrochen")) {
-				animelistSelection = AnimelistSelection.ABGEBROCHEN;
+				animelistSelection = AnimelistSelection.DROPPED;
 				animelistSelectionSpinner.setSelection(3);
 			} else if (category.equals("Geplant")) {
-				animelistSelection = AnimelistSelection.GEPLANT;
+				animelistSelection = AnimelistSelection.PLANNED;
 				animelistSelectionSpinner.setSelection(4);
 			}
 		}
-		if (animelistSort == null) {
+		if (AnimelistSort == null) {
 			String sort = defaultprefs.getString("pref_animelist_sort",
 					"Bewertung");
 			if (sort.equals("Bewertung")) {
-				animelistSort = AnimelistSort.BEWERTUNG;
+				AnimelistSort = AnimelistSort.BY_RATING;
 				animelistSortSpinner.setSelection(0);
 			} else if (sort.equals("Alphabet")) {
-				animelistSort = AnimelistSort.ALPHABET;
+				AnimelistSort = AnimelistSort.ALPHABETICAL;
 				animelistSortSpinner.setSelection(1);
 			}
 		}
@@ -297,27 +297,27 @@ public class AnimeListActivity extends ParentActivity implements
 		ListView animelistView = (ListView) findViewById(R.id.animelist_list);
 		animelistView.setOnItemClickListener(this);
 		switch (animelistSelection) {
-		case KOMPLETT:
-			animeAdapter = new ListAnimeAdapter(this, komplett);
+		case COMPLETE:
+			listAnimeAdapter = new ListAnimeAdapter(this, completeAnime);
 			break;
-		case AMSCHAUEN:
-			animeAdapter = new ListAnimeAdapter(this, amSchauen);
+		case WATCHING:
+			listAnimeAdapter = new ListAnimeAdapter(this, watchingAnime);
 			break;
-		case KURZAUFGEHOERT:
-			animeAdapter = new ListAnimeAdapter(this, kurzAufgehoert);
+		case STALLED:
+			listAnimeAdapter = new ListAnimeAdapter(this, stalledAnime);
 			break;
-		case ABGEBROCHEN:
-			animeAdapter = new ListAnimeAdapter(this, abgebrochen);
+		case DROPPED:
+			listAnimeAdapter = new ListAnimeAdapter(this, droppedAnime);
 			break;
-		case GEPLANT:
-			animeAdapter = new ListAnimeAdapter(this, geplant);
+		case PLANNED:
+			listAnimeAdapter = new ListAnimeAdapter(this, plannedAnime);
 			break;
 		default:
 			// unmöglicher Fall, den der Compiler trotzdem haben will
-			animeAdapter = new ListAnimeAdapter(this, null);
+			listAnimeAdapter = new ListAnimeAdapter(this, null);
 			break;
 		}
-		animelistView.setAdapter(animeAdapter);
+		animelistView.setAdapter(listAnimeAdapter);
 	}
 
 	/**
@@ -325,7 +325,7 @@ public class AnimeListActivity extends ParentActivity implements
 	 */
 	public void refresh() {
 		animelistTask = new AnimelistTask();
-		if (aktuellerUser.equals(Configuration
+		if (currentUser.equals(Configuration
 				.getUserName(getApplicationContext())))
 			animelistTask.ownList = true;
 		else
@@ -349,8 +349,8 @@ public class AnimeListActivity extends ParentActivity implements
     @Override
 	public void onItemClick(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
 		if (arg0.getId() == R.id.nav_animelist_list) {
-			if (arg2 == navigation_animeliste) {
-				if (aktuellerUser.equals(Configuration
+			if (arg2 == NAVIGATION_ANIMELIST) {
+				if (currentUser.equals(Configuration
 						.getUserName(getApplicationContext())))
 					mDrawerLayout.closeDrawer(Gravity.LEFT);
 				else {
@@ -367,29 +367,29 @@ public class AnimeListActivity extends ParentActivity implements
 			} else
 				super.onItemClick(arg0, arg1, arg2, arg3);
 		} else if (arg0.getId() == R.id.animelist_list) {
-			if (aktuellerUser.equals(Configuration
+			if (currentUser.equals(Configuration
 					.getUserName(getApplicationContext()))) {
 				ListAnime selectedAnime;
 				int status;
 				switch (animelistSelection) {
-				case KOMPLETT:
-					selectedAnime = komplett.get(arg2);
+				case COMPLETE:
+					selectedAnime = completeAnime.get(arg2);
 					status = 2;
 					break;
-				case AMSCHAUEN:
-					selectedAnime = amSchauen.get(arg2);
+				case WATCHING:
+					selectedAnime = watchingAnime.get(arg2);
 					status = 1;
 					break;
-				case KURZAUFGEHOERT:
-					selectedAnime = kurzAufgehoert.get(arg2);
+				case STALLED:
+					selectedAnime = stalledAnime.get(arg2);
 					status = 3;
 					break;
-				case ABGEBROCHEN:
-					selectedAnime = abgebrochen.get(arg2);
+				case DROPPED:
+					selectedAnime = droppedAnime.get(arg2);
 					status = 4;
 					break;
-				case GEPLANT:
-					selectedAnime = geplant.get(arg2);
+				case PLANNED:
+					selectedAnime = plannedAnime.get(arg2);
 					status = 5;
 					break;
 				default:
@@ -425,38 +425,38 @@ public class AnimeListActivity extends ParentActivity implements
 					new NewsThread(getApplicationContext()).start();
 					if (this.isCancelled())
 						return null;
-					input = networkService.getAnimeList(aktuellerUser, userID);
+					input = networkService.getAnimeList(currentUser, userId);
 					if (this.isCancelled())
 						return null;
-					komplett = new ArrayList<ListAnime>();
-					amSchauen = new ArrayList<ListAnime>();
-					kurzAufgehoert = new ArrayList<ListAnime>();
-					abgebrochen = new ArrayList<ListAnime>();
-					geplant = new ArrayList<ListAnime>();
+					completeAnime = new ArrayList<ListAnime>();
+					watchingAnime = new ArrayList<ListAnime>();
+					stalledAnime = new ArrayList<ListAnime>();
+					droppedAnime = new ArrayList<ListAnime>();
+					plannedAnime = new ArrayList<ListAnime>();
 					if (this.isCancelled())
 						return null;
-					eaParser.getListAnime(input, komplett, amSchauen,
-							kurzAufgehoert, abgebrochen, geplant, ownList);
+					eaParser.getListAnime(input, completeAnime, watchingAnime,
+							stalledAnime, droppedAnime, plannedAnime, ownList);
 					if (ownList)
 						new AnimelistCacheThread(
-								AnimelistCacheThread.MODE_SAVE_CACHE, komplett,
-								amSchauen, kurzAufgehoert, abgebrochen, geplant);
+								AnimelistCacheThread.MODE_SAVE_CACHE, completeAnime,
+								watchingAnime, stalledAnime, droppedAnime, plannedAnime);
 				}
 				// eigene Liste -> Cache kommt in Betracht
 				else {
 					// teste ob Cache
 					if (!loadCache()) {
-						input = networkService.getAnimeList(aktuellerUser, userID);
-						komplett = new ArrayList<ListAnime>();
-						amSchauen = new ArrayList<ListAnime>();
-						kurzAufgehoert = new ArrayList<ListAnime>();
-						abgebrochen = new ArrayList<ListAnime>();
-						geplant = new ArrayList<ListAnime>();
-						eaParser.getListAnime(input, komplett, amSchauen,
-								kurzAufgehoert, abgebrochen, geplant, ownList);
+						input = networkService.getAnimeList(currentUser, userId);
+						completeAnime = new ArrayList<ListAnime>();
+						watchingAnime = new ArrayList<ListAnime>();
+						stalledAnime = new ArrayList<ListAnime>();
+						droppedAnime = new ArrayList<ListAnime>();
+						plannedAnime = new ArrayList<ListAnime>();
+						eaParser.getListAnime(input, completeAnime, watchingAnime,
+								stalledAnime, droppedAnime, plannedAnime, ownList);
 						new AnimelistCacheThread(
-								AnimelistCacheThread.MODE_SAVE_CACHE, komplett,
-								amSchauen, kurzAufgehoert, abgebrochen, geplant);
+								AnimelistCacheThread.MODE_SAVE_CACHE, completeAnime,
+								watchingAnime, stalledAnime, droppedAnime, plannedAnime);
 					}
 				}
 			} catch (EAException e) {
@@ -481,12 +481,12 @@ public class AnimeListActivity extends ParentActivity implements
 		}
 
 		/**
-		 * Der Lade-Dialog wird geschlossen und die viewZuweisung aufgerufen.
+		 * Der Lade-Dialog wird geschlossen und die fillViews aufgerufen.
 		 */
 		@SuppressWarnings("deprecation")
 		@Override
 		protected void onPostExecute(String result) {
-			viewZuweisung();
+			fillViews();
 			try {
 				dismissDialog(load_dialog);
 			} catch (IllegalArgumentException e) {
@@ -514,7 +514,7 @@ public class AnimeListActivity extends ParentActivity implements
 		}
 
 		/**
-		 * Der Task wird abgebrochen.
+		 * Der Task wird droppedAnime.
 		 */
 		@Override
 		protected void onCancelled() {
@@ -537,27 +537,27 @@ public class AnimeListActivity extends ParentActivity implements
 					if (prefs.getString("lastUser", "").equals(
 							Configuration
 									.getUserName(getApplicationContext()))) {
-						komplett = new ArrayList<ListAnime>();
-						amSchauen = new ArrayList<ListAnime>();
-						kurzAufgehoert = new ArrayList<ListAnime>();
-						abgebrochen = new ArrayList<ListAnime>();
-						geplant = new ArrayList<ListAnime>();
+						completeAnime = new ArrayList<ListAnime>();
+						watchingAnime = new ArrayList<ListAnime>();
+						stalledAnime = new ArrayList<ListAnime>();
+						droppedAnime = new ArrayList<ListAnime>();
+						plannedAnime = new ArrayList<ListAnime>();
 						// lese Cache aus und speicher in Configuration
-						String jsonKomplett = prefs.getString(
+						String jsonComplete = prefs.getString(
 								"AnimelistCacheKomplett", "");
-						String jsonAmSchauen = prefs.getString(
+						String jsonWatching = prefs.getString(
 								"AnimelistCacheAmSchauen", "");
-						String jsonKurzAufgehoert = prefs.getString(
+						String jsonStalled = prefs.getString(
 								"AnimelistCacheKurzAufgehoert", "");
-						String jsonAbgebrochen = prefs.getString(
+						String jsonDropped = prefs.getString(
 								"AnimelistCacheAbgebrochen", "");
-						String jsonGeplant = prefs.getString(
+						String jsonPlanned = prefs.getString(
 								"AnimelistCacheGeplant", "");
-						if (!jsonKomplett.equals("")
-								&& !jsonAmSchauen.equals("")
-								&& !jsonKurzAufgehoert.equals("")
-								&& !jsonAbgebrochen.equals("")
-								&& !jsonGeplant.equals("")) {
+						if (!jsonComplete.equals("")
+								&& !jsonWatching.equals("")
+								&& !jsonStalled.equals("")
+								&& !jsonDropped.equals("")
+								&& !jsonPlanned.equals("")) {
 							// Konvertiere JSON-Strings zurück zu ArrayLists aus
 							// ListAnime-Objekten
 							// und setze Cache in Configuration
@@ -568,15 +568,15 @@ public class AnimeListActivity extends ParentActivity implements
 										.create();
 								Type collectionType = new TypeToken<ArrayList<ListAnime>>() {
 								}.getType();
-								komplett = gson.fromJson(jsonKomplett,
+								completeAnime = gson.fromJson(jsonComplete,
 										collectionType);
-								amSchauen = gson.fromJson(jsonAmSchauen,
+								watchingAnime = gson.fromJson(jsonWatching,
 										collectionType);
-								kurzAufgehoert = gson.fromJson(
-										jsonKurzAufgehoert, collectionType);
-								abgebrochen = gson.fromJson(jsonAbgebrochen,
+								stalledAnime = gson.fromJson(
+										jsonStalled, collectionType);
+								droppedAnime = gson.fromJson(jsonDropped,
 										collectionType);
-								geplant = gson.fromJson(jsonGeplant,
+								plannedAnime = gson.fromJson(jsonPlanned,
 										collectionType);
 								return true;
 							} catch (JsonParseException e) {
@@ -606,9 +606,9 @@ public class AnimeListActivity extends ParentActivity implements
 		int status;
 		Spinner scoreSpinner;
 		Spinner categorySpinner;
-		EditText fortschritt;
-		EditText folgenanzahl;
-		OnAnimeRatedListener ratedListener;
+		EditText progressView;
+		EditText episodeCountView;
+		OnAnimeRatedListener onAnimeRatedListener;
 
 		public AnimeRatingDialogFragment() {
 
@@ -617,7 +617,7 @@ public class AnimeListActivity extends ParentActivity implements
 		@Override
 		public void onAttach(Activity activity) {
 			try {
-				ratedListener = (OnAnimeRatedListener) activity;
+				onAnimeRatedListener = (OnAnimeRatedListener) activity;
 			} catch (ClassCastException e) {
 
 			} finally {
@@ -662,12 +662,12 @@ public class AnimeListActivity extends ParentActivity implements
 			categorySpinner = (Spinner) view
 					.findViewById(R.id.dialog_animelist_rate_category);
 			categorySpinner.setSelection(status - 1);
-			fortschritt = (EditText) view
+			progressView = (EditText) view
 					.findViewById(R.id.dialog_animelist_rate_fortschritt);
-			fortschritt.setText("" + anime.getProgress());
-			folgenanzahl = (EditText) view
+			progressView.setText("" + anime.getProgress());
+			episodeCountView = (EditText) view
 					.findViewById(R.id.dialog_animelist_rate_folgenzahl);
-			folgenanzahl.setText("" + anime.getEpisodeCount());
+			episodeCountView.setText("" + anime.getEpisodeCount());
 			builder.setView(view)
 					// Add action buttons
 					.setPositiveButton("Bewerten",
@@ -685,9 +685,9 @@ public class AnimeListActivity extends ParentActivity implements
 														.getSelectedItem());
 									}
 									final int seen = Integer
-											.parseInt(fortschritt.getText()
+											.parseInt(progressView.getText()
 													.toString());
-									final int statusNeu = categorySpinner
+									final int statusNew = categorySpinner
 											.getSelectedItemPosition() + 1;
 									new Thread(new Runnable() {
 										public void run() {
@@ -698,7 +698,7 @@ public class AnimeListActivity extends ParentActivity implements
 																score,
 																seen,
 																anime.getEpisodeCount(),
-																statusNeu);
+																statusNew);
 											} catch (EAException e) {
 
 											}
@@ -706,8 +706,8 @@ public class AnimeListActivity extends ParentActivity implements
 									}).start();
 									anime.setRating(score);
 									anime.setProgress(seen);
-									ratedListener.onAnimeRatingComplete(anime,
-											status, statusNeu);
+									onAnimeRatedListener.onAnimeRatingComplete(anime,
+											status, statusNew);
 								}
 							})
 					.setNegativeButton("Abbrechen",
@@ -733,42 +733,42 @@ public class AnimeListActivity extends ParentActivity implements
 		if (oldStatus != newStatus) {
 			switch (oldStatus) {
 			case 1:
-				amSchauen.remove(anime);
+				watchingAnime.remove(anime);
 				break;
 			case 2:
-				komplett.remove(anime);
+				completeAnime.remove(anime);
 				break;
 			case 3:
-				kurzAufgehoert.remove(anime);
+				stalledAnime.remove(anime);
 				break;
 			case 4:
-				abgebrochen.remove(anime);
+				droppedAnime.remove(anime);
 				break;
 			case 5:
-				abgebrochen.remove(anime);
+				droppedAnime.remove(anime);
 				break;
 			}
 			switch (newStatus) {
 			case 1:
-				amSchauen.add(anime);
+				watchingAnime.add(anime);
 				break;
 			case 2:
-				komplett.add(anime);
+				completeAnime.add(anime);
 				break;
 			case 3:
-				kurzAufgehoert.add(anime);
+				stalledAnime.add(anime);
 				break;
 			case 4:
-				abgebrochen.add(anime);
+				droppedAnime.add(anime);
 				break;
 			case 5:
-				abgebrochen.add(anime);
+				droppedAnime.add(anime);
 				break;
 			}
 		}
 		sortLists();
-		animeAdapter.notifyDataSetChanged();
+		listAnimeAdapter.notifyDataSetChanged();
 		new AnimelistCacheThread(AnimelistCacheThread.MODE_SAVE_CACHE,
-				komplett, amSchauen, kurzAufgehoert, abgebrochen, geplant);
+				completeAnime, watchingAnime, stalledAnime, droppedAnime, plannedAnime);
 	}
 }

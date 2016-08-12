@@ -16,25 +16,25 @@ public class FriendRequestDeserializer implements
 	@Override
 	public FriendRequest deserialize(JsonElement json, Type typeOfT,
 									 JsonDeserializationContext context) throws JsonParseException {
-		JsonObject obj;
+		JsonObject jsonObject;
 		try {
-			obj = json.getAsJsonObject();
+			jsonObject = json.getAsJsonObject();
 		} catch (IllegalStateException e) {
 			throw new JsonParseException("invalid");
 		}
-		if (obj.has("id") && obj.has("name") && obj.has("status")
-				&& obj.has("gender") && obj.has("age")) {
-			FriendRequest anfrage = new FriendRequest(obj.get(
+		if (jsonObject.has("id") && jsonObject.has("name") && jsonObject.has("status")
+				&& jsonObject.has("gender") && jsonObject.has("age")) {
+			FriendRequest friendRequest = new FriendRequest(jsonObject.get(
 					"name").getAsString());
-			anfrage.setId(obj.get("id").getAsInt());
-			anfrage.setAge(obj.get("age").getAsString());
-			anfrage.setSex(obj.get("gender").getAsString());
-			int status = obj.get("status").getAsInt();
+			friendRequest.setId(jsonObject.get("id").getAsInt());
+			friendRequest.setAge(jsonObject.get("age").getAsString());
+			friendRequest.setSex(jsonObject.get("gender").getAsString());
+			int status = jsonObject.get("status").getAsInt();
 			if (status == 1)
-				anfrage.setStatus(true);
+				friendRequest.setStatus(true);
 			else
-				anfrage.setStatus(false);
-			return anfrage;
+				friendRequest.setStatus(false);
+			return friendRequest;
 		}
 		return null;
 	}

@@ -22,27 +22,27 @@ import de.btcdev.eliteanimesapp.R;
  */
 public class Profile {
 
-	private int userID;
-	private String benutzername;
-	private String gruppe;
+	private int userId;
+	private String userName;
+	private String group;
 	private boolean online;
-	private String geschlecht;
-	private String alter;
+	private String sex;
+	private String age;
 	private String single;
-	private String wohnort;
-	private String dabei;
+	private String residence;
+	private String registeredSince;
 	private int friend;
-	private transient Bitmap profilbild;
-	private String bildlink;
+	private transient Bitmap avatar;
+	private String avatarURL;
 
 	/**
 	 * Erzeugt ein neues Profile.
 	 * 
-	 * @param benutzername
+	 * @param userName
 	 *            Benutzername, mit dem das Profile erzeugt werden soll
 	 */
-	public Profile(String benutzername) {
-		setBenutzername(benutzername);
+	public Profile(String userName) {
+		setUserName(userName);
 	}
 
 	/**
@@ -50,8 +50,8 @@ public class Profile {
 	 * 
 	 * @return Benutzername als String
 	 */
-	public String getBenutzername() {
-		return benutzername;
+	public String getUserName() {
+		return userName;
 	}
 
 	/**
@@ -59,18 +59,18 @@ public class Profile {
 	 * 
 	 * @return UserID
 	 */
-	public int getUserID() {
-		return userID;
+	public int getUserId() {
+		return userId;
 	}
 
 	/**
 	 * Setzt eine neue UserID.
 	 * 
-	 * @param userID
+	 * @param userId
 	 *            UserID, die gesetzt werden soll
 	 */
-	public void setUserID(int userID) {
-		this.userID = userID;
+	public void setUserId(int userId) {
+		this.userId = userId;
 	}
 
 	/**
@@ -78,22 +78,22 @@ public class Profile {
 	 * 
 	 * @return Profilbild als Bitmap
 	 */
-	public Bitmap getProfilbild() {
-		return profilbild;
+	public Bitmap getAvatar() {
+		return avatar;
 	}
 
 	/**
 	 * Setzt ein neues Profilbild.
 	 * 
-	 * @return profilbild
+	 * @return avatar
 	 *            Bitmap, die als Profilbild gesetzt werden soll
 	 */
-	public void setProfilbild(String bildlink) {
-		this.bildlink = bildlink;
+	public void setAvatar(String avatarURL) {
+		this.avatarURL = avatarURL;
 		final int reqHeight = 120;
 		final int reqWidth = 120;
 		try {
-			if (bildlink.contains("noava.png")) {
+			if (avatarURL.contains("noava.png")) {
 				// First decode with inJustDecodeBounds=true to check dimensions
 				BitmapFactory.Options options = new BitmapFactory.Options();
 				options.inJustDecodeBounds = true;
@@ -104,14 +104,14 @@ public class Profile {
 						reqHeight);
 				// Decode bitmap with inSampleSize set
 				options.inJustDecodeBounds = false;
-				profilbild = BitmapFactory
+				avatar = BitmapFactory
 						.decodeResource(Configuration.getContext()
 								.getResources(), R.drawable.noava, options);
 			} else {
 				// First decode with inJustDecodeBounds=true to check dimensions
 				BitmapFactory.Options options = new BitmapFactory.Options();
 				options.inJustDecodeBounds = true;
-				HttpGet httpRequest = new HttpGet(bildlink);
+				HttpGet httpRequest = new HttpGet(avatarURL);
 				HttpParams httpParameters = new BasicHttpParams();
 				int timeoutConnection = 3000;
 				HttpConnectionParams.setConnectionTimeout(httpParameters,
@@ -134,7 +134,7 @@ public class Profile {
 				// Decode bitmap with inSampleSize set
 				options.inJustDecodeBounds = false;
 				is = bufferedHttpEntity.getContent();
-				profilbild = BitmapFactory.decodeStream(is, null, options);
+				avatar = BitmapFactory.decodeStream(is, null, options);
 				is.close();
 			}
 		} catch (Exception e) {
@@ -166,18 +166,18 @@ public class Profile {
 		return inSampleSize;
 	}
 
-	public String getBildURL() {
-		return bildlink;
+	public String getAvatarURL() {
+		return avatarURL;
 	}
 
 	/**
 	 * Setzt einen neuen Benutzernamen.
 	 * 
-	 * @param benutzername
+	 * @param userName
 	 *            Benutzername, der gesetzt werden soll
 	 */
-	public void setBenutzername(String benutzername) {
-		this.benutzername = benutzername;
+	public void setUserName(String userName) {
+		this.userName = userName;
 	}
 
 	/**
@@ -185,7 +185,7 @@ public class Profile {
 	 * 
 	 * @return Status des Benutzers als boolean
 	 */
-	public boolean getOnline() {
+	public boolean isOnline() {
 		return online;
 	}
 
@@ -204,18 +204,18 @@ public class Profile {
 	 * 
 	 * @return Gruppe des Benutzers als String
 	 */
-	public String getGruppe() {
-		return gruppe;
+	public String getGroup() {
+		return group;
 	}
 
 	/**
 	 * Setzt eine neue Gruppe.
 	 * 
-	 * @param gruppe
+	 * @param group
 	 *            Gruppe, die gesetzt werden soll
 	 */
-	public void setGruppe(String gruppe) {
-		this.gruppe = gruppe;
+	public void setGroup(String group) {
+		this.group = group;
 	}
 
 	/**
@@ -223,18 +223,18 @@ public class Profile {
 	 * 
 	 * @return Geschlecht als String
 	 */
-	public String getGeschlecht() {
-		return geschlecht;
+	public String getSex() {
+		return sex;
 	}
 
 	/**
 	 * Setzt ein neues Geschlecht.
 	 * 
-	 * @param geschlecht
+	 * @param sex
 	 *            Geschlecht, das gesetzt werden soll
 	 */
-	public void setGeschlecht(String geschlecht) {
-		this.geschlecht = geschlecht;
+	public void setSex(String sex) {
+		this.sex = sex;
 	}
 
 	/**
@@ -242,18 +242,18 @@ public class Profile {
 	 * 
 	 * @return Alter als String
 	 */
-	public String getAlter() {
-		return alter;
+	public String getAge() {
+		return age;
 	}
 
 	/**
 	 * Setzt ein neues Alter.
 	 * 
-	 * @param alter
+	 * @param age
 	 *            Alter, das gesetzt werden soll
 	 */
-	public void setAlter(String alter) {
-		this.alter = alter;
+	public void setAge(String age) {
+		this.age = age;
 	}
 
 	/**
@@ -280,18 +280,18 @@ public class Profile {
 	 * 
 	 * @return Wohnort des Benutzers
 	 */
-	public String getWohnort() {
-		return wohnort;
+	public String getResidence() {
+		return residence;
 	}
 
 	/**
 	 * Setzt einen neuen Wohnort.
 	 * 
-	 * @param wohnort
+	 * @param residence
 	 *            Wohnort, der gesetzt werden soll
 	 */
-	public void setWohnort(String wohnort) {
-		this.wohnort = wohnort;
+	public void setResidence(String residence) {
+		this.residence = residence;
 	}
 
 	/**
@@ -299,18 +299,18 @@ public class Profile {
 	 * 
 	 * @return Registrierungsdatum als String
 	 */
-	public String getDabei() {
-		return dabei;
+	public String getRegisteredSince() {
+		return registeredSince;
 	}
 
 	/**
 	 * Setzt ein neues Registrierungsdatum.
 	 * 
-	 * @param dabei
+	 * @param registeredSince
 	 *            Registrierungsdatum, das gesetzt werden soll
 	 */
-	public void setDabei(String dabei) {
-		this.dabei = dabei;
+	public void setRegisteredSince(String registeredSince) {
+		this.registeredSince = registeredSince;
 	}
 
 	/**
@@ -338,7 +338,7 @@ public class Profile {
 	 * @return String-Repräsentation des Profils
 	 */
 	public String toString() {
-		return benutzername;
+		return userName;
 	}
 
 	/**
@@ -352,7 +352,7 @@ public class Profile {
 	public boolean equals(Object o) {
 		if (o instanceof Profile) {
 			Profile p = (Profile) o;
-			return p.getBenutzername().equals(benutzername);
+			return p.getUserName().equals(userName);
 		}
 		return false;
 	}
@@ -364,9 +364,9 @@ public class Profile {
 	 * @return Wahrheitswert über Vollständigkeit
 	 */
 	public boolean isComplete() {
-		return (benutzername != null && gruppe != null && geschlecht != null
-				&& alter != null && single != null && wohnort != null
-				&& dabei != null && profilbild != null);
+		return (userName != null && group != null && sex != null
+				&& age != null && single != null && residence != null
+				&& registeredSince != null && avatar != null);
 
 	}
 }

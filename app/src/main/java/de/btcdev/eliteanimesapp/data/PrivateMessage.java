@@ -7,12 +7,12 @@ import android.os.Parcelable;
 public class PrivateMessage implements Parcelable {
 
 	private int id;
-	private String benutzername;
-	private String betreff;
-	private int userid;
+	private String userName;
+	private String subject;
+	private int userId;
 	private String date;
-	private String text;
-	private boolean gelesen;
+	private String message;
+	private boolean read;
 
 	public PrivateMessage(int id) {
 		setId(id);
@@ -26,20 +26,20 @@ public class PrivateMessage implements Parcelable {
 		this.id = id;
 	}
 
-	public String getBetreff() {
-		return betreff;
+	public String getSubject() {
+		return subject;
 	}
 
-	public void setBetreff(String betreff) {
-		this.betreff = betreff;
+	public void setSubject(String subject) {
+		this.subject = subject;
 	}
 
-	public String getBenutzername() {
-		return benutzername;
+	public String getUserName() {
+		return userName;
 	}
 
-	public void setBenutzername(String benutzername) {
-		this.benutzername = benutzername;
+	public void setUserName(String userName) {
+		this.userName = userName;
 	}
 
 	public String getDate() {
@@ -50,28 +50,28 @@ public class PrivateMessage implements Parcelable {
 		this.date = date;
 	}
 
-	public boolean getGelesen() {
-		return gelesen;
+	public boolean isRead() {
+		return read;
 	}
 
-	public void setGelesen(boolean gelesen) {
-		this.gelesen = gelesen;
+	public void setRead(boolean read) {
+		this.read = read;
 	}
 
-	public String getText() {
-		return text;
+	public String getMessage() {
+		return message;
 	}
 
-	public void setText(String text) {
-		this.text = text;
+	public void setMessage(String message) {
+		this.message = message;
 	}
 
-	public int getUserid() {
-		return userid;
+	public int getUserId() {
+		return userId;
 	}
 
-	public void setUserid(int userid) {
-		this.userid = userid;
+	public void setUserId(int userId) {
+		this.userId = userId;
 	}
 
 	public boolean equals(Object o) {
@@ -83,7 +83,7 @@ public class PrivateMessage implements Parcelable {
 	}
 
 	public String toString() {
-		return id + ", " + benutzername + ", " + betreff;
+		return id + ", " + userName + ", " + subject;
 	}
 
 	@Override
@@ -95,12 +95,12 @@ public class PrivateMessage implements Parcelable {
 	public void writeToParcel(Parcel arg0, int arg1) {
 		Bundle bundle = new Bundle();
 		bundle.putInt("id", id);
-		bundle.putString("benutzername", benutzername);
-		bundle.putString("betreff", betreff);
+		bundle.putString("userName", userName);
+		bundle.putString("subject", subject);
 		bundle.putString("date", date);
-		bundle.putString("text", text);
-		bundle.putInt("userid", userid);
-		bundle.putBoolean("gelesen", gelesen);
+		bundle.putString("message", message);
+		bundle.putInt("userId", userId);
+		bundle.putBoolean("read", read);
 		arg0.writeBundle(bundle);
 	}
 
@@ -117,12 +117,12 @@ public class PrivateMessage implements Parcelable {
 	private PrivateMessage(Parcel in) {
 		Bundle bundle = in.readBundle();
 		id = bundle.getInt("id");
-		benutzername = bundle.getString("benutzername");
-		betreff = bundle.getString("betreff");
+		userName = bundle.getString("userName");
+		subject = bundle.getString("subject");
 		date = bundle.getString("date");
-		text = bundle.getString("text");
-		userid = bundle.getInt("userid");
-		gelesen = bundle.getBoolean("gelesen");
+		message = bundle.getString("message");
+		userId = bundle.getInt("userId");
+		read = bundle.getBoolean("read");
 	}
 
 }

@@ -16,42 +16,42 @@ public class BoardPostDeserializer implements JsonDeserializer<BoardPost> {
 	public BoardPost deserialize(JsonElement json, Type typeOfT,
 								 JsonDeserializationContext context) throws JsonParseException {
 		try {
-			JsonObject obj = json.getAsJsonObject();
-			BoardPost fp = new BoardPost();
-			if (obj.has("post_id")) {
-				fp.setId(obj.get("post_id").getAsInt());
-				if (obj.has("post_date"))
-					fp.setDate(obj.get("post_date").getAsString());
-				if (obj.has("text"))
-					fp.setText(obj.get("text").getAsString());
-				if (obj.has("edited"))
-					fp.setEditedCount(obj.get("edited").getAsInt());
-				if (obj.has("edited_time"))
-					fp.setEditedTime(obj.get("edited_time").getAsString());
-				if (obj.has("uname"))
-					fp.setUserName(obj.get("uname").getAsString());
-				if (obj.has("uid"))
-					fp.setUserId(obj.get("uid").getAsInt());
-				if (obj.has("user_level"))
-					fp.setUserLevel(obj.get("user_level").getAsInt());
-				if (obj.has("regdate"))
-					fp.setUserDate(obj.get("regdate").getAsString());
-				if (obj.has("online"))
-					fp.setOnline(obj.get("online").getAsInt() == 1);
-				if (obj.has("signatur"))
-					fp.setSignature(obj.get("signatur").getAsString());
-				if (obj.has("geschlecht")) {
-					String gender = obj.get("geschlecht").getAsString();
+			JsonObject jsonObject = json.getAsJsonObject();
+			BoardPost boardPost = new BoardPost();
+			if (jsonObject.has("post_id")) {
+				boardPost.setId(jsonObject.get("post_id").getAsInt());
+				if (jsonObject.has("post_date"))
+					boardPost.setDate(jsonObject.get("post_date").getAsString());
+				if (jsonObject.has("text"))
+					boardPost.setText(jsonObject.get("text").getAsString());
+				if (jsonObject.has("edited"))
+					boardPost.setEditedCount(jsonObject.get("edited").getAsInt());
+				if (jsonObject.has("edited_time"))
+					boardPost.setEditedTime(jsonObject.get("edited_time").getAsString());
+				if (jsonObject.has("uname"))
+					boardPost.setUserName(jsonObject.get("uname").getAsString());
+				if (jsonObject.has("uid"))
+					boardPost.setUserId(jsonObject.get("uid").getAsInt());
+				if (jsonObject.has("user_level"))
+					boardPost.setUserLevel(jsonObject.get("user_level").getAsInt());
+				if (jsonObject.has("regdate"))
+					boardPost.setUserDate(jsonObject.get("regdate").getAsString());
+				if (jsonObject.has("online"))
+					boardPost.setOnline(jsonObject.get("online").getAsInt() == 1);
+				if (jsonObject.has("signatur"))
+					boardPost.setSignature(jsonObject.get("signatur").getAsString());
+				if (jsonObject.has("geschlecht")) {
+					String gender = jsonObject.get("geschlecht").getAsString();
 					if (gender.equals("m"))
-						fp.setSex("Männlich");
+						boardPost.setSex("Männlich");
 					else if (gender.equals("w"))
-						fp.setSex("Weiblich");
+						boardPost.setSex("Weiblich");
 					else
-						fp.setSex("Nicht angegeben");
+						boardPost.setSex("Nicht angegeben");
 				}
-				if (obj.has("user_image"))
-					fp.setAvatar(obj.get("user_image").getAsString());
-				return fp;
+				if (jsonObject.has("user_image"))
+					boardPost.setAvatar(jsonObject.get("user_image").getAsString());
+				return boardPost;
 			} else
 				return null;
 		} catch (Exception e) {

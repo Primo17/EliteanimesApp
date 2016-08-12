@@ -43,9 +43,9 @@ import de.btcdev.eliteanimesapp.json.PrivateMessageDeserializer;
 
 public class PrivateMessageActivity extends ParentActivity implements OnItemClickListener {
 
-	private PNTask pnTask;
-	private int seitenzahl = 1;
-	private ArrayList<PrivateMessage> pnlist;
+	private PrivateMessageTask privateMessageTask;
+	private int pageCount = 1;
+	private ArrayList<PrivateMessage> privateMessages;
 	private int chosenPosition;
 	private PrivateMessageAdapter privateMessageAdapter;
 
@@ -53,29 +53,29 @@ public class PrivateMessageActivity extends ParentActivity implements OnItemClic
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_pn);
-		bar = getSupportActionBar();
-		bar.setTitle("Meine Nachrichten");
+		actionBar = getSupportActionBar();
+		actionBar.setTitle("Meine Nachrichten");
 		networkService = NetworkService.instance(this);
 		eaParser = new EAParser(null);
 		if (savedInstanceState != null) {
-			pnlist = savedInstanceState.getParcelableArrayList("PNs");
-			seitenzahl = savedInstanceState.getInt("Seitenzahl");
-			if (pnlist == null) {
-				pnTask = new PNTask();
-				pnTask.execute("");
+			privateMessages = savedInstanceState.getParcelableArrayList("PNs");
+			pageCount = savedInstanceState.getInt("Seitenzahl");
+			if (privateMessages == null) {
+				privateMessageTask = new PrivateMessageTask();
+				privateMessageTask.execute("");
 			} else
-				viewZuweisung(pnlist);
+				fillViews(privateMessages);
 		} else {
 			// Neue Nachrichten vorhanden
 			if (Configuration.getNewMessageCount() != 0) {
-				seitenzahl = 1;
-				pnTask = new PNTask();
-				pnTask.execute("no_cache");
+				pageCount = 1;
+				privateMessageTask = new PrivateMessageTask();
+				privateMessageTask.execute("no_cache");
 			} else {
 				// Versuche Daten aus Cache zu laden
-				seitenzahl = 1;
-				pnTask = new PNTask();
-				pnTask.execute("");
+				pageCount = 1;
+				privateMessageTask = new PrivateMessageTask();
+				privateMessageTask.execute("");
 			}
 
 		}
@@ -85,20 +85,20 @@ public class PrivateMessageActivity extends ParentActivity implements OnItemClic
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
-		// Inflate the menu; this adds items to the action bar if it is present.
+		// Inflate the menu; this adds items to the action actionBar if it is present.
 		getMenuInflater().inflate(R.menu.pn, menu);
 		return true;
 	}
 
 	/**
-	 * Wird aufgerufen, wenn die Activity pausiert wird. Ein laufender PNTask
+	 * Wird aufgerufen, wenn die Activity pausiert wird. Ein laufender PrivateMessageTask
 	 * wird dabei abgebrochen.
 	 */
 	@SuppressWarnings("deprecation")
 	@Override
 	protected void onPause() {
-		if (pnTask != null) {
-			pnTask.cancel(true);
+		if (privateMessageTask != null) {
+			privateMessageTask.cancel(true);
 		}
 		removeDialog(load_dialog);
 		super.onPause();
@@ -125,8 +125,8 @@ public class PrivateMessageActivity extends ParentActivity implements OnItemClic
 	 */
 	@Override
 	public void onSaveInstanceState(Bundle savedInstanceState) {
-		savedInstanceState.putParcelableArrayList("PNs", pnlist);
-		savedInstanceState.putInt("Seitenzahl", seitenzahl);
+		savedInstanceState.putParcelableArrayList("PNs", privateMessages);
+		savedInstanceState.putInt("Seitenzahl", pageCount);
 	}
 
 	/**
@@ -136,9 +136,9 @@ public class PrivateMessageActivity extends ParentActivity implements OnItemClic
 	 * @param result
 	 *            die PNs in einer ArrayList
 	 */
-	public void viewZuweisung(ArrayList<PrivateMessage> result) {
-		pnlist = result;
-		if (pnlist == null || pnlist.isEmpty()) {
+	public void fillViews(ArrayList<PrivateMessage> result) {
+		privateMessages = result;
+		if (privateMessages == null || privateMessages.isEmpty()) {
 			LinearLayout lin = (LinearLayout) findViewById(R.id.pns_layout);
 			TextView text = new TextView(this);
 			text.setTextSize(16);
@@ -153,11 +153,11 @@ public class PrivateMessageActivity extends ParentActivity implements OnItemClic
 			privateMessageAdapter = new PrivateMessageAdapter(this, result);
 			list.setAdapter(privateMessageAdapter);
 			registerForContextMenu(list);
-			list.setSelection(30 * (seitenzahl - 1) - 1);
-			if (pnlist.size() % 30 == 0)
-				seitenzahl = pnlist.size() / 30;
+			list.setSelection(30 * (pageCount - 1) - 1);
+			if (privateMessages.size() % 30 == 0)
+				pageCount = privateMessages.size() / 30;
 			else
-				seitenzahl = pnlist.size() / 30 + 1;
+				pageCount = privateMessages.size() / 30 + 1;
 		}
 	}
 
@@ -165,9 +165,9 @@ public class PrivateMessageActivity extends ParentActivity implements OnItemClic
 	 * Aktualisiert die Activity, indem alle Daten neu geladen werden.
 	 */
 	public void refresh() {
-		seitenzahl = 1;
-		pnTask = new PNTask();
-		pnTask.execute("no_cache");
+		pageCount = 1;
+		privateMessageTask = new PrivateMessageTask();
+		privateMessageTask.execute("no_cache");
 	}
 
 	/**
@@ -187,25 +187,25 @@ public class PrivateMessageActivity extends ParentActivity implements OnItemClic
 	@Override
 	public void onItemClick(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
 		if (arg0.getId() == R.id.nav_pn_list) {
-			if (arg2 == navigation_pns)
+			if (arg2 == NAVIGATION_PRIVATE_MESSAGES)
 				mDrawerLayout.closeDrawer(Gravity.LEFT);
 			else
 				super.onItemClick(arg0, arg1, arg2, arg3);
 		} else if (arg0.getId() == R.id.pnliste) {
-			if (arg2 < pnlist.size()) {
-				PrivateMessage privateMessage = pnlist.get(arg2);
-				boolean read = privateMessage.getGelesen();
-				privateMessage.setGelesen(true);
+			if (arg2 < privateMessages.size()) {
+				PrivateMessage privateMessage = privateMessages.get(arg2);
+				boolean read = privateMessage.isRead();
+				privateMessage.setRead(true);
 				privateMessageAdapter.notifyDataSetChanged();
 				Intent intent = new Intent(getApplicationContext(),
 						NewPrivateMessageActivity.class);
 				intent.putExtra("PrivateMessage", privateMessage);
 				intent.putExtra("read", read);
-				new PrivateMessageCacheThread(PrivateMessageCacheThread.MODE_SAVE_CACHE, pnlist);
+				new PrivateMessageCacheThread(PrivateMessageCacheThread.MODE_SAVE_CACHE, privateMessages);
 				startActivity(intent);
 			} else {
-				pnTask = new PNTask();
-				pnTask.execute("more");
+				privateMessageTask = new PrivateMessageTask();
+				privateMessageTask.execute("more");
 			}
 		}
 	}
@@ -214,14 +214,14 @@ public class PrivateMessageActivity extends ParentActivity implements OnItemClic
 	public boolean onContextItemSelected(MenuItem item) {
 		String temp = item.getTitle().toString();
 		if (temp.equals(getResources().getString(R.string.pn_delete))) {
-			pnTask = new PNTask();
-			pnTask.execute("delete");
+			privateMessageTask = new PrivateMessageTask();
+			privateMessageTask.execute("delete");
 		} else if (temp.equals(getResources().getString(
 				R.string.pn_profil_besuchen))) {
-			PrivateMessage k = pnlist.get(chosenPosition);
+			PrivateMessage k = privateMessages.get(chosenPosition);
 			chosenPosition = -1;
-			String name = k.getBenutzername();
-			int userid = k.getUserid();
+			String name = k.getUserName();
+			int userid = k.getUserId();
 			Intent intent = new Intent(this,
 					UserProfileActivity.class);
 			intent.putExtra("User", name);
@@ -237,11 +237,11 @@ public class PrivateMessageActivity extends ParentActivity implements OnItemClic
 		if (v.getId() == R.id.pnliste) {
 			AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) menuInfo;
 			chosenPosition = info.position;
-			if (chosenPosition < pnlist.size()) {
+			if (chosenPosition < privateMessages.size()) {
 				menu.add(getResources().getString(R.string.pn_delete));
 				menu.add(getResources().getString(R.string.pn_profil_besuchen));
 				menu.setHeaderTitle("PrivateMessage von "
-						+ pnlist.get(chosenPosition).getBenutzername());
+						+ privateMessages.get(chosenPosition).getUserName());
 			}
 		}
 
@@ -250,7 +250,7 @@ public class PrivateMessageActivity extends ParentActivity implements OnItemClic
 	/**
 	 * Klasse für das Herunterladen der Informationen. Erbt von AsyncTask.
 	 */
-	public class PNTask extends AsyncTask<String, String, ArrayList<PrivateMessage>> {
+	public class PrivateMessageTask extends AsyncTask<String, String, ArrayList<PrivateMessage>> {
 
 		private boolean delete, more, cache;
 
@@ -271,38 +271,37 @@ public class PrivateMessageActivity extends ParentActivity implements OnItemClic
 					input = networkService.getPrivateMessagePage(1);
 					if (isCancelled())
 						return null;
-					pnlist = eaParser.getPrivateMessages(input);
-					return pnlist;
+					privateMessages = eaParser.getPrivateMessages(input);
+					return privateMessages;
 				} else if (params[0].equals("delete")) {
-					PrivateMessage k = pnlist.get(chosenPosition);
+					PrivateMessage privateMessage = privateMessages.get(chosenPosition);
 					chosenPosition = -1;
-					networkService.deletePrivateMessage(Integer.toString(k.getId()));
-					pnlist.remove(k);
+					networkService.deletePrivateMessage(Integer.toString(privateMessage.getId()));
+					privateMessages.remove(privateMessage);
 					delete = true;
-					return pnlist;
+					return privateMessages;
 				} else if (params[0].equals("more")) {
 					more = true;
-
 					if (isCancelled())
 						return null;
-					input = networkService.getPrivateMessagePage(seitenzahl + 1);
+					input = networkService.getPrivateMessagePage(pageCount + 1);
 					if (isCancelled())
 						return null;
-					pnlist = eaParser.getMorePrivateMessages(input, pnlist);
-					seitenzahl++;
-					return pnlist;
+					privateMessages = eaParser.getMorePrivateMessages(input, privateMessages);
+					pageCount++;
+					return privateMessages;
 				} else {
 					if (loadCache()) {
 						cache = true;
-						return pnlist;
+						return privateMessages;
 					} else {
 						if (isCancelled())
 							return null;
 						input = networkService.getPrivateMessagePage(1);
 						if (isCancelled())
 							return null;
-						pnlist = eaParser.getPrivateMessages(input);
-						return pnlist;
+						privateMessages = eaParser.getPrivateMessages(input);
+						return privateMessages;
 					}
 				}
 			} catch (EAException e) {
@@ -322,14 +321,14 @@ public class PrivateMessageActivity extends ParentActivity implements OnItemClic
 		@Override
 		protected void onPostExecute(ArrayList<PrivateMessage> result) {
 			if (result != null && !result.isEmpty()) {
-				if (!more && !cache && seitenzahl == 1) {
+				if (!more && !cache && pageCount == 1) {
 					new PrivateMessageCacheThread(PrivateMessageCacheThread.MODE_SAVE_CACHE, result);
 				}
 			}
 			if (more || delete)
 				privateMessageAdapter.notifyDataSetChanged();
 			else
-				viewZuweisung(result);
+				fillViews(result);
 			try {
 				dismissDialog(load_dialog);
 			} catch (IllegalArgumentException e) {
@@ -414,7 +413,7 @@ public class PrivateMessageActivity extends ParentActivity implements OnItemClic
 								}.getType();
 								ArrayList<PrivateMessage> jsonList = gson.fromJson(
 										jsonCache, collectionType);
-								pnlist = jsonList;
+								privateMessages = jsonList;
 								return true;
 							} catch (JsonParseException e) {
 								// lösche vorhanden Cache

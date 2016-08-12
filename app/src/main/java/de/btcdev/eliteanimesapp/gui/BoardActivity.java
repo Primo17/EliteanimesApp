@@ -32,9 +32,9 @@ public class BoardActivity extends ParentActivity implements
 
 	private ExpandableListView listView;
 	private BoardAdapter boardAdapter;
-	private TreeMap<Integer, ArrayList<Board>> forenMap;
-	private Statistics stat;
-	private ForenTask forenTask;
+	private TreeMap<Integer, ArrayList<Board>> boardMap;
+	private Statistics statistics;
+	private BoardTask boardTask;
 
 	@SuppressWarnings("unchecked")
 	@Override
@@ -44,29 +44,28 @@ public class BoardActivity extends ParentActivity implements
 		listView = (ExpandableListView) findViewById(R.id.foren_list);
 		if (savedInstanceState != null) {
 			Serializable temp = (TreeMap<Integer, ArrayList<Board>>) savedInstanceState
-					.getSerializable("forenMap");
+					.getSerializable("boardMap");
 			if (temp instanceof TreeMap) {
-				forenMap = (TreeMap<Integer, ArrayList<Board>>) temp;
-				viewZuweisung();
-			} else
-				temp = null;
+				boardMap = (TreeMap<Integer, ArrayList<Board>>) temp;
+				fillViews();
+			}
 		} else {
-			forenTask = new ForenTask();
-			forenTask.execute("");
+			boardTask = new BoardTask();
+			boardTask.execute("");
 		}
 		handleNavigationDrawer(R.id.nav_foren, R.id.nav_foren_list, "Board",
 				null);
 	}
 
 	/**
-	 * Wird aufgerufen, wenn die Activity pausiert wird. Ein laufender ForenTask
+	 * Wird aufgerufen, wenn die Activity pausiert wird. Ein laufender BoardTask
 	 * wird dabei abgebrochen.
 	 */
 	@SuppressWarnings("deprecation")
 	@Override
 	protected void onPause() {
-		if (forenTask != null) {
-			forenTask.cancel(true);
+		if (boardTask != null) {
+			boardTask.cancel(true);
 		}
 		removeDialog(load_dialog);
 		super.onPause();
@@ -77,7 +76,7 @@ public class BoardActivity extends ParentActivity implements
 	 */
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
-		// Inflate the menu; this adds items to the action bar if it is present.
+		// Inflate the menu; this adds items to the action actionBar if it is present.
 		getMenuInflater().inflate(R.menu.foren, menu);
 		return true;
 	}
@@ -103,7 +102,7 @@ public class BoardActivity extends ParentActivity implements
 	 */
 	@Override
 	public void onSaveInstanceState(Bundle savedInstanceState) {
-		savedInstanceState.putSerializable("forenMap", forenMap);
+		savedInstanceState.putSerializable("boardMap", boardMap);
 	}
 
 	/**
@@ -122,18 +121,18 @@ public class BoardActivity extends ParentActivity implements
 	@Override
 	public void onItemClick(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
 		if (arg0.getId() == R.id.nav_foren_list) {
-			if (arg2 == navigation_forum)
+			if (arg2 == NAVIGATION_BOARD)
 				mDrawerLayout.closeDrawer(Gravity.LEFT);
 			else
 				super.onItemClick(arg0, arg1, arg2, arg3);
 		}
 	}
 
-	public void viewZuweisung() {
-		forenTask = null;
-		if (forenMap != null) {
+	public void fillViews() {
+		boardTask = null;
+		if (boardMap != null) {
 			listView = (ExpandableListView) findViewById(R.id.foren_list);
-			boardAdapter = new BoardAdapter(this, forenMap, stat);
+			boardAdapter = new BoardAdapter(this, boardMap, statistics);
 			listView.setAdapter(boardAdapter);
 			listView.expandGroup(0);
 			listView.setOnChildClickListener(this);
@@ -141,8 +140,8 @@ public class BoardActivity extends ParentActivity implements
 	}
 
 	public void refresh() {
-		forenTask = new ForenTask();
-		forenTask.execute("");
+		boardTask = new BoardTask();
+		boardTask.execute("");
 	}
 
 	@Override
@@ -161,7 +160,7 @@ public class BoardActivity extends ParentActivity implements
 			return false;
 	}
 
-	public class ForenTask extends AsyncTask<String, String, String> {
+	public class BoardTask extends AsyncTask<String, String, String> {
 
 		private boolean error;
 
@@ -176,13 +175,13 @@ public class BoardActivity extends ParentActivity implements
 				input = networkService.getBoards();
 				if (isCancelled())
 					return "";
-				forenMap = eaParser.getBoards(input);
+				boardMap = eaParser.getBoards(input);
 				if (isCancelled())
 					return "";
 				input = networkService.getBoardStatistics();
 				if (isCancelled())
 					return "";
-				stat = eaParser.getBoardStatistics(input);
+				statistics = eaParser.getBoardStatistics(input);
 				return "success";
 			} catch (EAException e) {
 				error = true;
@@ -208,7 +207,7 @@ public class BoardActivity extends ParentActivity implements
 		}
 
 		/**
-		 * Der Lade-Dialog wird geschlossen und die viewZuweisung aufgerufen.
+		 * Der Lade-Dialog wird geschlossen und die fillViews aufgerufen.
 		 */
 		@SuppressWarnings("deprecation")
 		@Override
@@ -216,7 +215,7 @@ public class BoardActivity extends ParentActivity implements
 			getWindow().clearFlags(
 					WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 			if (!error && !isNullOrEmpty(result))
-				viewZuweisung();
+				fillViews();
 			try {
 				dismissDialog(load_dialog);
 			} catch (IllegalArgumentException e) {

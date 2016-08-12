@@ -16,73 +16,73 @@ public class ProfileDeserializer implements JsonDeserializer<Profile> {
 	@Override
 	public Profile deserialize(JsonElement json, Type typeOfT,
 							   JsonDeserializationContext context) throws JsonParseException {
-		JsonObject object;
+		JsonObject jsonObject;
 		try {
-			object = json.getAsJsonObject();
+			jsonObject = json.getAsJsonObject();
 		} catch (IllegalStateException e) {
 			throw new JsonParseException("invalid");
 		}
-		if (object.has("error") || object.has("Error")) {
+		if (jsonObject.has("error") || jsonObject.has("Error")) {
 			throw new JsonParseException("JsonError");
 		}
-		if (object.has("name")) {
-			String benutzername = object.get("name").getAsString();
-			Profile p = ProfileCache.instance().contains(benutzername);
-			if (object.has("id"))
-				p.setUserID(object.get("id").getAsInt());
-			if (object.has("location"))
-				p.setWohnort(object.get("location").getAsString());
-			if (object.has("group")) {
-				int group = object.get("group").getAsInt();
+		if (jsonObject.has("name")) {
+			String userName = jsonObject.get("name").getAsString();
+			Profile profile = ProfileCache.instance().contains(userName);
+			if (jsonObject.has("id"))
+				profile.setUserId(jsonObject.get("id").getAsInt());
+			if (jsonObject.has("location"))
+				profile.setResidence(jsonObject.get("location").getAsString());
+			if (jsonObject.has("group")) {
+				int group = jsonObject.get("group").getAsInt();
 				switch (group) {
 				case 1:
-					p.setGruppe("User");
+					profile.setGroup("User");
 					break;
 				case 2:
-					p.setGruppe("Moderator");
+					profile.setGroup("Moderator");
 					break;
 				case 3:
-					p.setGruppe("Admin");
+					profile.setGroup("Admin");
 					break;
 				}
 			}
-			if (object.has("status")) {
-				int status = object.get("status").getAsInt();
+			if (jsonObject.has("status")) {
+				int status = jsonObject.get("status").getAsInt();
 				if (status == 0)
-					p.setOnline(false);
+					profile.setOnline(false);
 				else
-					p.setOnline(true);
+					profile.setOnline(true);
 			}
-			if (object.has("gender")) {
-				String gender = object.get("gender").getAsString();
+			if (jsonObject.has("gender")) {
+				String gender = jsonObject.get("gender").getAsString();
 				if (gender.equals("m"))
-					p.setGeschlecht("Männlich");
+					profile.setSex("Männlich");
 				else if (gender.equals("w"))
-					p.setGeschlecht("Weiblich");
+					profile.setSex("Weiblich");
 				else
-					p.setGeschlecht("Nicht angegeben");
+					profile.setSex("Nicht angegeben");
 			}
-			if (object.has("age"))
-				p.setAlter(object.get("age").getAsString());
-			if (object.has("single")) {
-				String single = object.get("single").getAsString();
+			if (jsonObject.has("age"))
+				profile.setAge(jsonObject.get("age").getAsString());
+			if (jsonObject.has("single")) {
+				String single = jsonObject.get("single").getAsString();
 				if (single.equals(""))
-					p.setSingle("k.A.");
+					profile.setSingle("k.A.");
 				else
-					p.setSingle(single);
+					profile.setSingle(single);
 			}
-			if (object.has("since"))
-				p.setDabei(object.get("since").getAsString());
-			if (object.has("friend"))
-				p.setFriend(object.get("friend").getAsInt());
-			if (object.has("image")) {
-				String image = object.get("image").getAsString();
+			if (jsonObject.has("since"))
+				profile.setRegisteredSince(jsonObject.get("since").getAsString());
+			if (jsonObject.has("friend"))
+				profile.setFriend(jsonObject.get("friend").getAsInt());
+			if (jsonObject.has("image")) {
+				String image = jsonObject.get("image").getAsString();
 				if (image.equals("")) {
-					p.setProfilbild("noava.png");
+					profile.setAvatar("noava.png");
 				} else
-					p.setProfilbild(image);
+					profile.setAvatar(image);
 			}
-			return p;
+			return profile;
 		}
 		return null;
 	}

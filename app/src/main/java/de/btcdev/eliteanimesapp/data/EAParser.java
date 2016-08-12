@@ -270,16 +270,16 @@ public class EAParser {
             if (obj.has("id"))
                 privateMessage.setId(obj.get("id").getAsInt());
             if (obj.has("f_uid"))
-                privateMessage.setUserid(obj.get("f_uid").getAsInt());
+                privateMessage.setUserId(obj.get("f_uid").getAsInt());
             if (obj.has("f_uname"))
-                privateMessage.setBenutzername(obj.get("f_uname").getAsString());
+                privateMessage.setUserName(obj.get("f_uname").getAsString());
             if (obj.has("subject"))
-                privateMessage.setBetreff(obj.get("subject").getAsString());
+                privateMessage.setSubject(obj.get("subject").getAsString());
             if (obj.has("date"))
                 privateMessage.setDate(obj.get("date").getAsString());
             if (obj.has("text"))
-                privateMessage.setText(obj.get("text").getAsString());
-            privateMessage.setGelesen(true);
+                privateMessage.setMessage(obj.get("text").getAsString());
+            privateMessage.setRead(true);
             return privateMessage;
         } catch (Exception e) {
             return privateMessage;

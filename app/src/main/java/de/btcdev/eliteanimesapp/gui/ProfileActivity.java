@@ -32,34 +32,34 @@ import de.btcdev.eliteanimesapp.json.JsonErrorException;
 public class ProfileActivity extends ParentActivity implements
 		OnItemClickListener {
 
-	private ProfileCache profilcache;
-	private ImageView bild;
-	private ProfilTask profilTask;
+	private ProfileCache profileCache;
+	private ImageView avatarView;
+	private ProfileTask profileTask;
 
 	/**
 	 * Das UI wird erzeugt, NetworkService, Cache und Parser werden aus der
-	 * Configuration geladen. Anschließend wird ein neuer ProfilTask gestartet,
+	 * Configuration geladen. Anschließend wird ein neuer ProfileTask gestartet,
 	 * falls das Profile noch nicht vollständig ist. Falls doch, wird gleich
-	 * viewZuweisung aufgerufen.
+	 * fillViews aufgerufen.
 	 */
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_profil);
-		bild = (ImageView) findViewById(R.id.profilbild_eigenes);
-		bar = getSupportActionBar();
-		bar.setTitle("Profile");
-		bar.setSubtitle(Configuration.getUserName(getApplicationContext()));
+		avatarView = (ImageView) findViewById(R.id.profilbild_eigenes);
+		actionBar = getSupportActionBar();
+		actionBar.setTitle("Profile");
+		actionBar.setSubtitle(Configuration.getUserName(getApplicationContext()));
 
 		networkService = NetworkService.instance(this);
 		eaParser = new EAParser(null);
-		profilcache = ProfileCache.instance();
-		Profile temp = profilcache.getEigenesProfile();
-		if (temp != null && temp.isComplete())
-			viewZuweisung(temp);
+		profileCache = ProfileCache.instance();
+		Profile ownProfile = profileCache.getOwnProfile();
+		if (ownProfile != null && ownProfile.isComplete())
+			fillViews(ownProfile);
 		else {
-			profilTask = new ProfilTask();
-			profilTask.execute("");
+			profileTask = new ProfileTask();
+			profileTask.execute("");
 		}
 
 		handleNavigationDrawer(R.id.nav_profil, R.id.nav_profil_list, "Profile",
@@ -68,13 +68,13 @@ public class ProfileActivity extends ParentActivity implements
 
 	/**
 	 * Wird aufgerufen, wenn die Activity pausiert wird. Ein laufender
-	 * ProfilTask wird dabei abgebrochen.
+	 * ProfileTask wird dabei abgebrochen.
 	 */
 	@SuppressWarnings("deprecation")
 	@Override
 	protected void onPause() {
-		if (profilTask != null) {
-			profilTask.cancel(true);
+		if (profileTask != null) {
+			profileTask.cancel(true);
 		}
 		removeDialog(load_dialog);
 		super.onPause();
@@ -85,7 +85,7 @@ public class ProfileActivity extends ParentActivity implements
 	 */
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
-		// Inflate the menu; this adds items to the action bar if it is present.
+		// Inflate the menu; this adds items to the action actionBar if it is present.
 		getMenuInflater().inflate(R.menu.profil, menu);
 		return true;
 	}
@@ -107,11 +107,11 @@ public class ProfileActivity extends ParentActivity implements
 	 * Die Views werden sichtbar gemacht und mit den übergebenen Informationen
 	 * gefüllt.
 	 * 
-	 * @param profileNeu
+	 * @param newProfile
 	 *            Profile, das angezeigt werden soll
 	 */
-	public void viewZuweisung(Profile profileNeu) {
-		Profile profile = profileNeu;
+	public void fillViews(Profile newProfile) {
+		Profile profile = newProfile;
 		if (profile != null) {
 			TextView frag1 = (TextView) findViewById(R.id.profil_benutzername);
 			TextView frag2 = (TextView) findViewById(R.id.profil_status);
@@ -137,21 +137,21 @@ public class ProfileActivity extends ParentActivity implements
 			frag6.setVisibility(View.VISIBLE);
 			frag7.setVisibility(View.VISIBLE);
 			frag8.setVisibility(View.VISIBLE);
-			antw1.setText(profile.getBenutzername());
-			if (profile.getOnline())
+			antw1.setText(profile.getUserName());
+			if (profile.isOnline())
 				antw2.setText("Online");
 			else
 				antw2.setText("Offline");
-			antw3.setText(profile.getGruppe());
-			antw4.setText(profile.getGeschlecht());
-			antw5.setText(profile.getAlter());
+			antw3.setText(profile.getGroup());
+			antw4.setText(profile.getSex());
+			antw5.setText(profile.getAge());
 			antw6.setText(profile.getSingle());
-			antw7.setText(profile.getWohnort());
-			antw8.setText(profile.getDabei());
-			bild.setImageBitmap(profile.getProfilbild());
-			bild.setAdjustViewBounds(true);
-			bild.setMaxHeight(200);
-			bild.setMaxWidth(200);
+			antw7.setText(profile.getResidence());
+			antw8.setText(profile.getRegisteredSince());
+			avatarView.setImageBitmap(profile.getAvatar());
+			avatarView.setAdjustViewBounds(true);
+			avatarView.setMaxHeight(200);
+			avatarView.setMaxWidth(200);
 
 			LinearLayout linkContent = (LinearLayout) findViewById(R.id.profil_link_content);
 			linkContent.setVisibility(View.VISIBLE);
@@ -162,8 +162,8 @@ public class ProfileActivity extends ParentActivity implements
 	 * Aktualisiert die Activity, indem alle Daten neu geladen werden.
 	 */
 	public void refresh() {
-		profilTask = new ProfilTask();
-		profilTask.execute("");
+		profileTask = new ProfileTask();
+		profileTask.execute("");
 	}
 
 	/**
@@ -183,7 +183,7 @@ public class ProfileActivity extends ParentActivity implements
 	@Override
 	public void onItemClick(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
 		if (arg0.getId() == R.id.nav_profil_list) {
-			if (arg2 == navigation_profil) {
+			if (arg2 == NAVIGATION_PROFILE) {
 				mDrawerLayout.closeDrawer(Gravity.LEFT);
 			} else {
 				super.onItemClick(arg0, arg1, arg2, arg3);
@@ -195,7 +195,7 @@ public class ProfileActivity extends ParentActivity implements
 		if (v.getId() == R.id.profil_beschreibung) {
 			Intent intent = new Intent(
 					this,
-					ProfileDescritpionActivity.class);
+					ProfileDescriptionActivity.class);
 			intent.putExtra("User",
 					Configuration.getUserName(getApplicationContext()));
 			intent.putExtra("UserID",
@@ -236,7 +236,7 @@ public class ProfileActivity extends ParentActivity implements
 	/**
 	 * Klasse für das Herunterladen der Informationen. Erbt von AsyncTask.
 	 */
-	public class ProfilTask extends AsyncTask<String, String, Profile> {
+	public class ProfileTask extends AsyncTask<String, String, Profile> {
 
 		boolean loginError = false;
 
@@ -299,7 +299,7 @@ public class ProfileActivity extends ParentActivity implements
 		}
 
 		/**
-		 * Die viewZuweisung wird mit den erhaltenen Daten aufgerufen, der
+		 * Die fillViews wird mit den erhaltenen Daten aufgerufen, der
 		 * LoadDialog wird geschlossen.
 		 * 
 		 * @param profile
@@ -318,8 +318,8 @@ public class ProfileActivity extends ParentActivity implements
 				intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 				startActivity(intent);
 			}
-			viewZuweisung(profile);
-			adapter.notifyDataSetChanged();
+			fillViews(profile);
+			navDrawerListAdapter.notifyDataSetChanged();
 			try {
 				dismissDialog(load_dialog);
 			} catch (IllegalArgumentException e) {

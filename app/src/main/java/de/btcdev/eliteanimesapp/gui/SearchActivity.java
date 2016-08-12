@@ -44,7 +44,7 @@ public class SearchActivity extends ParentActivity implements
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_search);
-		bar = getSupportActionBar();
+		actionBar = getSupportActionBar();
 		networkService = NetworkService.instance(this);
 		eaParser = new EAParser(null);
 		eingabe = (EditText) findViewById(R.id.search_eingabe);
@@ -61,7 +61,7 @@ public class SearchActivity extends ParentActivity implements
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
-		// Inflate the menu; this adds items to the action bar if it is present.
+		// Inflate the menu; this adds items to the action actionBar if it is present.
 		getMenuInflater().inflate(R.menu.search, menu);
 		return true;
 	}
@@ -104,7 +104,7 @@ public class SearchActivity extends ParentActivity implements
 	@Override
 	public void onItemClick(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
 		if (arg0.getId() == R.id.nav_search_list) {
-			if (arg2 == navigation_suche)
+			if (arg2 == NAVIGATION_SEARCH)
 				mDrawerLayout.closeDrawer(Gravity.LEFT);
 			else
 				super.onItemClick(arg0, arg1, arg2, arg3);

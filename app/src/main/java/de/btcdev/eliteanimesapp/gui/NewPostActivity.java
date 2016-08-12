@@ -15,22 +15,23 @@ import android.widget.Toast;
 import de.btcdev.eliteanimesapp.R;
 import de.btcdev.eliteanimesapp.data.EAException;
 import de.btcdev.eliteanimesapp.data.EAParser;
-import de.btcdev.eliteanimesapp.data.ForumPost;
-import de.btcdev.eliteanimesapp.data.ForumThread;
-import de.btcdev.eliteanimesapp.data.Netzwerk;
+import de.btcdev.eliteanimesapp.data.BoardPost;
+import de.btcdev.eliteanimesapp.data.BoardThread;
+import de.btcdev.eliteanimesapp.data.NetworkService;
 
 public class NewPostActivity extends ParentActivity {
 
-	private ForumThread thread;
+	private BoardThread thread;
 	private boolean editieren;
 	private boolean zitieren;
 	private EditText postEingabe;
-	private ForumPost editPost;
+	private BoardPost editPost;
 	private String barName;
 	private NewPostTask newPostTask;
+	private String postInput;
 
 	/**
-	 * Erzeugt die Activity, liest Benutzer und UserID aus.
+	 * Erzeugt die Activity, liest User und UserID aus.
 	 */
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -45,13 +46,15 @@ public class NewPostActivity extends ParentActivity {
 		thread = bundle.getParcelable("thread");
 		barName = "Neuer Beitrag";
 		if (editieren) {
-			editPost = (ForumPost) bundle.getParcelable("editPost");
+			editPost = bundle.getParcelable("editPost");
 			System.out.println(editPost);
 			barName = "Beitrag editieren";
+			postInput = postEingabe.getText().toString();
 			newPostTask = new NewPostTask(false, true);
 			newPostTask.execute("");
 		} else if (zitieren) {
-			editPost = (ForumPost) bundle.getParcelable("editPost");
+			editPost = bundle.getParcelable("editPost");
+			postInput = postEingabe.getText().toString();
 			newPostTask = new NewPostTask(false, true);
 			newPostTask.execute("");
 		}
@@ -84,6 +87,7 @@ public class NewPostActivity extends ParentActivity {
 		switch (item.getItemId()) {
 		case R.id.new_post_send:
 			if (!isNullOrEmpty(postEingabe.getText().toString())) {
+				postInput = postEingabe.getText().toString();
 				newPostTask = new NewPostTask(editieren, false);
 				newPostTask.execute("");
 			}
@@ -131,19 +135,16 @@ public class NewPostActivity extends ParentActivity {
 		 * @param params
 		 *            String-Array mit Informationen - hier irrelevant
 		 * @return String - irrelevant
-		 * @throws EAException
-		 *             bei Verbindungs- und Streamfehlern jeglicher Art
 		 */
 		@Override
 		protected String doInBackground(String... params) {
 			boolean send = false;
-			netzwerk = Netzwerk.instance(getApplicationContext());
+			networkService = NetworkService.instance(getApplicationContext());
 			try {
 				if (edit) {
-					String text = postEingabe.getText().toString();
-					send = netzwerk.editPost(text, editPost.getId());
+					send = networkService.editPost(postInput, editPost.getId());
 				} else if (editGet) {
-					String result = netzwerk.getPost(editPost.getId(), true);
+					String result = networkService.getPost(editPost.getId(), true);
 					result = new EAParser(getApplicationContext())
 							.getPost(result);
 					if (!isNullOrEmpty(result))
@@ -152,10 +153,7 @@ public class NewPostActivity extends ParentActivity {
 				} else {
 					if (isCancelled())
 						return null;
-					String text = postEingabe.getText().toString();
-					if (isCancelled())
-						return null;
-					send = netzwerk.addPost(text, thread.getId());
+					send = networkService.addPost(postInput, thread.getId());
 				}
 			} catch (EAException e) {
 				publishProgress("Exception", e.getMessage());
@@ -207,7 +205,7 @@ public class NewPostActivity extends ParentActivity {
 					startActivity(intent);
 				} else {
 					Toast.makeText(getBaseContext(),
-							"Kommentar konnte nicht gesendet werden.",
+							"Comment konnte nicht gesendet werden.",
 							Toast.LENGTH_LONG).show();
 				}
 			}

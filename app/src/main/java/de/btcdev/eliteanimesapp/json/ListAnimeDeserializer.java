@@ -27,10 +27,10 @@ public class ListAnimeDeserializer implements JsonDeserializer<ListAnime> {
 			ListAnime anime = new ListAnime();
 			anime.setTokenId(object.get("mid").getAsString());
 			anime.setId(object.get("aid").getAsInt());
-			anime.setTitel(object.get("aname").getAsString());
-			anime.setFolgenAnzahl(object.get("epi").getAsInt());
-			anime.setFortschritt(object.get("seen").getAsInt());
-			anime.setBewertung(object.get("score").getAsDouble());
+			anime.setTitle(object.get("aname").getAsString());
+			anime.setEpisodeCount(object.get("epi").getAsInt());
+			anime.setProgress(object.get("seen").getAsInt());
+			anime.setRating(object.get("score").getAsDouble());
 			return anime;
 		} else
 			throw new JsonParseException("invalid");

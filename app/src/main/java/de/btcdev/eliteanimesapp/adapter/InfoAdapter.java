@@ -14,15 +14,15 @@ import de.btcdev.eliteanimesapp.R;
 public class InfoAdapter extends ArrayAdapter<String> {
 
     private final Context context;
-    private final ArrayList<String> ueberschrift;
-    private final ArrayList<String> normaltext;
+    private final ArrayList<String> headline;
+    private final ArrayList<String> content;
 
-    public InfoAdapter(Context context, ArrayList<String> ueberschrift,
-                       ArrayList<String> normaltext) {
-        super(context, R.layout.infolayout, ueberschrift);
+    public InfoAdapter(Context context, ArrayList<String> headline,
+                       ArrayList<String> content) {
+        super(context, R.layout.infolayout, headline);
         this.context = context;
-        this.ueberschrift = ueberschrift;
-        this.normaltext = normaltext;
+        this.headline = headline;
+        this.content = content;
 
     }
 
@@ -35,13 +35,13 @@ public class InfoAdapter extends ArrayAdapter<String> {
             rowView = inflater.inflate(R.layout.infolayout, parent, false);
         else
             rowView = convertView;
-        TextView fett = (TextView) rowView
+        TextView bold = (TextView) rowView
                 .findViewById(R.id.infolayout_ueberschrift);
         TextView normal = (TextView) rowView
                 .findViewById(R.id.infolayout_normaltext);
 
-        fett.setText(ueberschrift.get(position));
-        normal.setText(normaltext.get(position));
+        bold.setText(headline.get(position));
+        normal.setText(content.get(position));
         return rowView;
     }
 

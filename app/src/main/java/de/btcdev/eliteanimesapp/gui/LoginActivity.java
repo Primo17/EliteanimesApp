@@ -23,12 +23,12 @@ import android.widget.Toast;
 import com.google.analytics.tracking.android.EasyTracker;
 
 import de.btcdev.eliteanimesapp.R;
+import de.btcdev.eliteanimesapp.data.Configuration;
 import de.btcdev.eliteanimesapp.data.EAException;
 import de.btcdev.eliteanimesapp.data.EAParser;
-import de.btcdev.eliteanimesapp.data.Konfiguration;
-import de.btcdev.eliteanimesapp.data.Netzwerk;
-import de.btcdev.eliteanimesapp.data.Profil;
-import de.btcdev.eliteanimesapp.data.ProfilCache;
+import de.btcdev.eliteanimesapp.data.NetworkService;
+import de.btcdev.eliteanimesapp.data.Profile;
+import de.btcdev.eliteanimesapp.data.ProfileCache;
 
 /**
  * Activity, die für den Login des Benutzers zuständig ist.
@@ -42,12 +42,12 @@ public class LoginActivity extends ParentActivity implements OnClickListener,
     private CheckBox loginCheck;
     private SharedPreferences prefs;
     private LoginTask loginTask;
-    private ProfilCache profilcache;
+    private ProfileCache profilcache;
 
     /**
      * Erzeugt die Activity. Die ActionBar und die restliche grafische
      * Darstellung wird erzeugt. Benutzername und Passwort werden, wenn
-     * gespeichert, abgerufen. Netzwerk und ProfilCache werden beim Erststart
+     * gespeichert, abgerufen. NetworkService und ProfileCache werden beim Erststart
      * eingerichtet.
      *
      * @param savedInstanceState keine Bedeutung für diese Implementierung
@@ -56,9 +56,9 @@ public class LoginActivity extends ParentActivity implements OnClickListener,
         super.onCreate(savedInstanceState);
 
         PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
-        Konfiguration.setContext(getApplicationContext());
+        Configuration.setContext(getApplicationContext());
         prefs = getPreferences(Context.MODE_PRIVATE);
-        netzwerk = Netzwerk.instance(this);
+        networkService = NetworkService.instance(this);
         tryLogin();
 
         setContentView(de.btcdev.eliteanimesapp.R.layout.activity_login);
@@ -112,29 +112,29 @@ public class LoginActivity extends ParentActivity implements OnClickListener,
     }
 
     public void tryLogin() {
-        // überprüfe, ob Cookies vorhanden und geh zum Profil, wenn dies der
+        // überprüfe, ob Cookies vorhanden und geh zum Profile, wenn dies der
         // Fall ist
-        if (netzwerk.hasCookies()
-                && Konfiguration.getUserID(getApplicationContext()) != 0
-                && Konfiguration.getBenutzername(getApplicationContext()) != null) {
-            profilcache = ProfilCache.instance();
-            if (profilcache.getEigenesProfil() == null) {
-                Profil temp = new Profil(
-                        Konfiguration.getBenutzername(getApplicationContext()));
-                temp.setUserID(Konfiguration.getUserID(getApplicationContext()));
-                profilcache.setEigenesProfil(temp);
+        if (networkService.hasCookies()
+                && Configuration.getUserID(getApplicationContext()) != 0
+                && Configuration.getUserName(getApplicationContext()) != null) {
+            profilcache = ProfileCache.instance();
+            if (profilcache.getEigenesProfile() == null) {
+                Profile temp = new Profile(
+                        Configuration.getUserName(getApplicationContext()));
+                temp.setUserID(Configuration.getUserID(getApplicationContext()));
+                profilcache.setEigenesProfile(temp);
             } else {
-                Profil p = profilcache.getEigenesProfil();
-                Profil temp = new Profil(
-                        Konfiguration.getBenutzername(getApplicationContext()));
+                Profile p = profilcache.getEigenesProfile();
+                Profile temp = new Profile(
+                        Configuration.getUserName(getApplicationContext()));
                 if (!p.equals(temp)) {
                     profilcache.deleteProfil(temp.getBenutzername());
-                    profilcache.setEigenesProfil(temp);
+                    profilcache.setEigenesProfile(temp);
                     profilcache.contains(p.getBenutzername());
                 }
             }
             Intent intent = new Intent(getApplicationContext(),
-                    de.btcdev.eliteanimesapp.gui.ProfilActivity.class);
+                    ProfileActivity.class);
             startActivity(intent);
         } else {
             // überprüfe in Einstellungen Auto-Login
@@ -151,8 +151,8 @@ public class LoginActivity extends ParentActivity implements OnClickListener,
                 String benutzername = prefs.getString("Benutzername", "");
                 String passwort = prefs.getString("Passwort", "");
                 if (!benutzername.equals("") && !passwort.equals("")) {
-                    Konfiguration.setBenutzername(benutzername);
-                    Konfiguration.setPasswort(passwort);
+                    Configuration.setUserName(benutzername);
+                    Configuration.setPassword(passwort);
                     loginTask = new LoginTask();
                     loginTask.execute("");
                 }
@@ -181,7 +181,7 @@ public class LoginActivity extends ParentActivity implements OnClickListener,
     }
 
     /**
-     * Die Eingaben für Benutzername und Passwort werden in der Konfiguration
+     * Die Eingaben für Benutzername und Passwort werden in der Configuration
      * gespeichert, falls gewünscht auch im Dateisystem. Anschließend wird ein
      * neuer Login-Task aufgerufen.
      *
@@ -192,8 +192,8 @@ public class LoginActivity extends ParentActivity implements OnClickListener,
         if (arg0.getId() == de.btcdev.eliteanimesapp.R.id.login_button) {
             String benutzername = loginBenutzername.getText().toString();
             String passwort = loginPasswort.getText().toString();
-            Konfiguration.setBenutzername(benutzername);
-            Konfiguration.setPasswort(passwort);
+            Configuration.setUserName(benutzername);
+            Configuration.setPassword(passwort);
             boolean checked = loginCheck.isChecked();
             SharedPreferences.Editor meinEditor = prefs.edit();
             SharedPreferences defaultprefs = PreferenceManager
@@ -202,13 +202,13 @@ public class LoginActivity extends ParentActivity implements OnClickListener,
                     true);
             if (checked) {
                 if (username) {
-                    meinEditor.putString("Benutzername", Konfiguration
-                            .getBenutzername(getApplicationContext()));
+                    meinEditor.putString("Benutzername", Configuration
+                            .getUserName(getApplicationContext()));
                     meinEditor.putString("Passwort",
-                            Konfiguration.getPasswort());
+                            Configuration.getPassword());
                 } else {
-                    meinEditor.putString("Benutzername", Konfiguration
-                            .getBenutzername(getApplicationContext()));
+                    meinEditor.putString("Benutzername", Configuration
+                            .getUserName(getApplicationContext()));
                     if (prefs.contains("Passwort"))
                         meinEditor.remove("Passwort");
                 }
@@ -250,8 +250,8 @@ public class LoginActivity extends ParentActivity implements OnClickListener,
                 break;
             case navigation_logout:
                 try {
-                    netzwerk = Netzwerk.instance(this);
-                    netzwerk.logout();
+                    networkService = NetworkService.instance(this);
+                    networkService.logout();
                     mDrawerLayout.closeDrawer(Gravity.LEFT);
                 } catch (EAException e) {
                     Toast.makeText(this, e.getMessage(), Toast.LENGTH_LONG).show();
@@ -280,8 +280,8 @@ public class LoginActivity extends ParentActivity implements OnClickListener,
             try {
                 if (this.isCancelled())
                     return null;
-                netzwerk = Netzwerk.instance(getApplicationContext());
-                String input = netzwerk.login();
+                networkService = NetworkService.instance(getApplicationContext());
+                String input = networkService.login();
                 if (input != null)
                     new EAParser(getApplicationContext())
                             .parseLoginResult(input);
@@ -309,10 +309,10 @@ public class LoginActivity extends ParentActivity implements OnClickListener,
         }
 
         /**
-         * Falls der Benutzer schon eingeloggt ist, wird überprüft, ob das
-         * eigene Profil schon im Cache gespeichert ist. Wenn nein, wird das neu
-         * erzeugt und im Cache als eigenes Profil gesetzt. Danach wird
-         * unabhängig davon versucht, die ProfilActivity zu starten und der
+         * Falls der User schon eingeloggt ist, wird überprüft, ob das
+         * eigene Profile schon im Cache gespeichert ist. Wenn nein, wird das neu
+         * erzeugt und im Cache als eigenes Profile gesetzt. Danach wird
+         * unabhängig davon versucht, die ProfileActivity zu starten und der
          * Dialog geschlossen.
          *
          * @param loginString wird für diese Implementierung nicht benötigt
@@ -320,29 +320,29 @@ public class LoginActivity extends ParentActivity implements OnClickListener,
         @SuppressWarnings("deprecation")
         @Override
         protected void onPostExecute(String loginString) {
-            netzwerk = Netzwerk.instance(getApplicationContext());
-            if (netzwerk.isLoggedIn()) {
-                profilcache = ProfilCache.instance();
-                if (profilcache.getEigenesProfil() == null) {
-                    Profil temp = new Profil(
-                            Konfiguration
-                                    .getBenutzername(getApplicationContext()));
-                    temp.setUserID(Konfiguration
+            networkService = NetworkService.instance(getApplicationContext());
+            if (networkService.isLoggedIn()) {
+                profilcache = ProfileCache.instance();
+                if (profilcache.getEigenesProfile() == null) {
+                    Profile temp = new Profile(
+                            Configuration
+                                    .getUserName(getApplicationContext()));
+                    temp.setUserID(Configuration
                             .getUserID(getApplicationContext()));
-                    profilcache.setEigenesProfil(temp);
+                    profilcache.setEigenesProfile(temp);
                 } else {
-                    Profil p = profilcache.getEigenesProfil();
-                    Profil temp = new Profil(
-                            Konfiguration
-                                    .getBenutzername(getApplicationContext()));
+                    Profile p = profilcache.getEigenesProfile();
+                    Profile temp = new Profile(
+                            Configuration
+                                    .getUserName(getApplicationContext()));
                     if (!p.equals(temp)) {
                         profilcache.deleteProfil(temp.getBenutzername());
-                        profilcache.setEigenesProfil(temp);
+                        profilcache.setEigenesProfile(temp);
                         profilcache.contains(p.getBenutzername());
                     }
                 }
                 Intent intent = new Intent(getApplicationContext(),
-                        de.btcdev.eliteanimesapp.gui.ProfilActivity.class);
+                        ProfileActivity.class);
                 startActivity(intent);
                 try {
                     dismissDialog(load_dialog);

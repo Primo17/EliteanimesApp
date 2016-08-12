@@ -6,7 +6,6 @@ import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
-import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.widget.DrawerLayout;
@@ -22,11 +21,11 @@ import android.widget.ListView;
 import android.widget.Toast;
 import de.btcdev.eliteanimesapp.R;
 import de.btcdev.eliteanimesapp.adapter.NavDrawerListAdapter;
+import de.btcdev.eliteanimesapp.data.Configuration;
 import de.btcdev.eliteanimesapp.data.EAException;
 import de.btcdev.eliteanimesapp.data.EAParser;
-import de.btcdev.eliteanimesapp.data.Konfiguration;
 import de.btcdev.eliteanimesapp.data.NavDrawerItem;
-import de.btcdev.eliteanimesapp.data.Netzwerk;
+import de.btcdev.eliteanimesapp.data.NetworkService;
 
 public abstract class ParentActivity extends ActionBarActivity implements
 		OnItemClickListener {
@@ -36,7 +35,7 @@ public abstract class ParentActivity extends ActionBarActivity implements
 	protected ActionBarDrawerToggle mDrawerToggle;
 	protected ArrayList<NavDrawerItem> navDrawerItems;
 	protected NavDrawerListAdapter adapter;
-	protected Netzwerk netzwerk;
+	protected NetworkService networkService;
 	protected EAParser eaParser;
 	protected final int load_dialog = 0;
 	protected ProgressDialog loadDialog;
@@ -58,7 +57,7 @@ public abstract class ParentActivity extends ActionBarActivity implements
 		bar = getSupportActionBar();
 		mDrawerLayout = (DrawerLayout) findViewById(layoutId);
 		mDrawerList = (ListView) findViewById(listId);
-		navDrawerItems = new ArrayList<NavDrawerItem>();
+		navDrawerItems = new ArrayList<>();
 		navDrawerItems = setNavigationDrawer(navDrawerItems,
 				getApplicationContext());
 		adapter = new NavDrawerListAdapter(getApplicationContext(),
@@ -92,10 +91,10 @@ public abstract class ParentActivity extends ActionBarActivity implements
 				R.drawable.ic_drawer_profil));
 		list.add(new NavDrawerItem(navMenuTitles[navigation_kommentare],
 				R.drawable.ic_drawer_comments, true, ""
-						+ Konfiguration.getNewCommentCount()));
+						+ Configuration.getNewCommentCount()));
 		list.add(new NavDrawerItem(navMenuTitles[navigation_pns],
 				R.drawable.ic_drawer_pn, true, ""
-						+ Konfiguration.getNewMessageCount()));
+						+ Configuration.getNewMessageCount()));
 		list.add(new NavDrawerItem(navMenuTitles[navigation_freunde],
 				R.drawable.ic_drawer_friends));
 		list.add(new NavDrawerItem(navMenuTitles[navigation_animeliste],
@@ -130,7 +129,7 @@ public abstract class ParentActivity extends ActionBarActivity implements
 	}
 
 	@Override
-	public void onConfigurationChanged(Configuration newConfig) {
+	public void onConfigurationChanged(android.content.res.Configuration newConfig) {
 		super.onConfigurationChanged(newConfig);
 		mDrawerToggle.onConfigurationChanged(newConfig);
 	}
@@ -180,7 +179,7 @@ public abstract class ParentActivity extends ActionBarActivity implements
 	}
 
 	/**
-	 * Behandelt einen Klick auf die Liste unter dem Profil und im Navigation
+	 * Behandelt einen Klick auf die Liste unter dem Profile und im Navigation
 	 * Drawer. Dabei wird die entsprechende Activity per Intent mit den
 	 * erforderlichen Informationen gestartet.
 	 * 
@@ -195,57 +194,57 @@ public abstract class ParentActivity extends ActionBarActivity implements
 	 */
 	@Override
 	public void onItemClick(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
-		Netzwerk netzwerk = Netzwerk.instance(this);
-		if (!netzwerk.isLoggedIn()) {
+		NetworkService networkService = NetworkService.instance(this);
+		if (!networkService.isLoggedIn()) {
 			Toast.makeText(this, "Erst nach Login möglich!", Toast.LENGTH_SHORT)
 					.show();
 		} else {
 			switch (arg2) {
 			case navigation_profil:
 				Intent intent = new Intent(getApplicationContext(),
-						de.btcdev.eliteanimesapp.gui.ProfilActivity.class);
+						ProfileActivity.class);
 				mDrawerLayout.closeDrawer(Gravity.LEFT);
 				startActivity(intent);
 				break;
 			case navigation_kommentare:
 				intent = new Intent(this,
-						de.btcdev.eliteanimesapp.gui.KommentarActivity.class);
-				intent.putExtra("Benutzer",
-						Konfiguration.getBenutzername(getApplicationContext()));
+						CommentActivity.class);
+				intent.putExtra("User",
+						Configuration.getUserName(getApplicationContext()));
 				intent.putExtra("UserID",
-						Konfiguration.getUserID(getApplicationContext()));
+						Configuration.getUserID(getApplicationContext()));
 				mDrawerLayout.closeDrawer(Gravity.LEFT);
 				startActivity(intent);
 				break;
 			case navigation_pns:
 				intent = new Intent(this,
-						de.btcdev.eliteanimesapp.gui.PNActivity.class);
+						PrivateMessageActivity.class);
 				mDrawerLayout.closeDrawer(Gravity.LEFT);
 				startActivity(intent);
 				break;
 			case navigation_freunde:
 				intent = new Intent(this,
-						de.btcdev.eliteanimesapp.gui.FreundeActivity.class);
-				intent.putExtra("Benutzer",
-						Konfiguration.getBenutzername(getApplicationContext()));
+						FriendActivity.class);
+				intent.putExtra("User",
+						Configuration.getUserName(getApplicationContext()));
 				intent.putExtra("UserID",
-						Konfiguration.getUserID(getApplicationContext()));
+						Configuration.getUserID(getApplicationContext()));
 				mDrawerLayout.closeDrawer(Gravity.LEFT);
 				startActivity(intent);
 				break;
 			case navigation_animeliste:
 				intent = new Intent(this,
 						de.btcdev.eliteanimesapp.gui.AnimeListActivity.class);
-				intent.putExtra("Benutzer",
-						Konfiguration.getBenutzername(getApplicationContext()));
+				intent.putExtra("User",
+						Configuration.getUserName(getApplicationContext()));
 				intent.putExtra("UserID",
-						Konfiguration.getUserID(getApplicationContext()));
+						Configuration.getUserID(getApplicationContext()));
 				mDrawerLayout.closeDrawer(Gravity.LEFT);
 				startActivity(intent);
 				break;
 			case navigation_forum:
 				intent = new Intent(this,
-						de.btcdev.eliteanimesapp.gui.ForenActivity.class);
+						BoardActivity.class);
 				mDrawerLayout.closeDrawer(Gravity.LEFT);
 				startActivity(intent);
 				break;
@@ -264,7 +263,7 @@ public abstract class ParentActivity extends ActionBarActivity implements
 			case navigation_konto:
 				intent = new Intent(
 						this,
-						de.btcdev.eliteanimesapp.gui.KontoeinstellungenActivity.class);
+						AccountSettingsActivity.class);
 				mDrawerLayout.closeDrawer(Gravity.LEFT);
 				startActivity(intent);
 				break;
@@ -276,8 +275,8 @@ public abstract class ParentActivity extends ActionBarActivity implements
 				break;
 			case navigation_logout:
 				try {
-					netzwerk = Netzwerk.instance(this);
-					netzwerk.logout();
+					networkService = NetworkService.instance(this);
+					networkService.logout();
 					intent = new Intent(this,
 							de.btcdev.eliteanimesapp.gui.LoginActivity.class);
 					intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);

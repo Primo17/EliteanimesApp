@@ -8,13 +8,13 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 
-import de.btcdev.eliteanimesapp.data.Benutzer;
+import de.btcdev.eliteanimesapp.data.User;
 
-public class SearchUserDeserializer implements JsonDeserializer<Benutzer> {
+public class SearchUserDeserializer implements JsonDeserializer<User> {
 
 	@Override
-	public Benutzer deserialize(JsonElement json, Type typeOfT,
-			JsonDeserializationContext context) throws JsonParseException {
+	public User deserialize(JsonElement json, Type typeOfT,
+							JsonDeserializationContext context) throws JsonParseException {
 		JsonObject obj;
 		try {
 			obj = json.getAsJsonObject();
@@ -22,9 +22,9 @@ public class SearchUserDeserializer implements JsonDeserializer<Benutzer> {
 			throw new JsonParseException("invalid");
 		}
 		if (obj.has("name") && obj.has("id")) {
-			Benutzer benutzer = new Benutzer(obj.get("name").getAsString());
-			benutzer.setId(obj.get("id").getAsString());
-			return benutzer;
+			User user = new User(obj.get("name").getAsString());
+			user.setId(obj.get("id").getAsString());
+			return user;
 		} else {
 			throw new JsonParseException("invalid");
 		}

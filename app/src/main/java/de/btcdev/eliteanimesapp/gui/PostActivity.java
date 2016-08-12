@@ -23,22 +23,22 @@ import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.Toast;
 import de.btcdev.eliteanimesapp.R;
-import de.btcdev.eliteanimesapp.adapter.ForumPostAdapter;
+import de.btcdev.eliteanimesapp.adapter.BoardPostAdapter;
+import de.btcdev.eliteanimesapp.data.Configuration;
 import de.btcdev.eliteanimesapp.data.EAException;
 import de.btcdev.eliteanimesapp.data.EAParser;
-import de.btcdev.eliteanimesapp.data.ForumPost;
-import de.btcdev.eliteanimesapp.data.ForumThread;
-import de.btcdev.eliteanimesapp.data.Konfiguration;
-import de.btcdev.eliteanimesapp.data.Netzwerk;
+import de.btcdev.eliteanimesapp.data.BoardPost;
+import de.btcdev.eliteanimesapp.data.BoardThread;
+import de.btcdev.eliteanimesapp.data.NetworkService;
 
 public class PostActivity extends ParentActivity implements
 		OnItemSelectedListener {
 
-	private ForumThread thread;
-	private ArrayList<ForumPost> postList;
+	private BoardThread thread;
+	private ArrayList<BoardPost> postList;
 	private ListView listView;
 	private PostTask postTask;
-	private ForumPostAdapter postAdapter;
+	private BoardPostAdapter postAdapter;
 	private int pageCount;
 	private int seite = 1;
 	private String[] pages;
@@ -179,9 +179,9 @@ public class PostActivity extends ParentActivity implements
 			AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) menuInfo;
 			chosenPosition = info.position;
 			if (chosenPosition < postList.size()) {
-				ForumPost k = postList.get(chosenPosition);
-				String name = Konfiguration
-						.getBenutzername(getApplicationContext());
+				BoardPost k = postList.get(chosenPosition);
+				String name = Configuration
+						.getUserName(getApplicationContext());
 				ArrayList<String> items = new ArrayList<String>();
 				if (k.getUserName().equals(name)) {
 					if (!thread.isClosed())
@@ -218,7 +218,7 @@ public class PostActivity extends ParentActivity implements
 		} else if (temp.equals(getResources().getString(R.string.post_edit))) {
 			Intent intent = new Intent(this,
 					de.btcdev.eliteanimesapp.gui.NewPostActivity.class);
-			ForumPost k = postList.get(chosenPosition);
+			BoardPost k = postList.get(chosenPosition);
 			System.out.println(k);
 			chosenPosition = -1;
 			intent.putExtra("editieren", true);
@@ -226,25 +226,25 @@ public class PostActivity extends ParentActivity implements
 			intent.putExtra("thread", thread);
 			startActivity(intent);
 		} else if (temp.equals(getResources().getString(R.string.post_profil))) {
-			ForumPost k = postList.get(chosenPosition);
+			BoardPost k = postList.get(chosenPosition);
 			chosenPosition = -1;
 			String name = k.getUserName();
-			if (name.equals(Konfiguration
-					.getBenutzername(getApplicationContext()))) {
+			if (name.equals(Configuration
+					.getUserName(getApplicationContext()))) {
 				Intent intent = new Intent(this,
-						de.btcdev.eliteanimesapp.gui.ProfilActivity.class);
+						ProfileActivity.class);
 				startActivity(intent);
 			} else {
 				int userid = k.getUserId();
 				Intent intent = new Intent(
 						this,
-						de.btcdev.eliteanimesapp.gui.FremdesProfilActivity.class);
-				intent.putExtra("Benutzer", name);
+						UserProfileActivity.class);
+				intent.putExtra("User", name);
 				intent.putExtra("UserID", userid);
 				startActivity(intent);
 			}
 		} else if (temp.equals(getResources().getString(R.string.post_copy))) {
-			ForumPost k = postList.get(chosenPosition);
+			BoardPost k = postList.get(chosenPosition);
 			String text = k.getText();
 			android.text.ClipboardManager clipboard = (android.text.ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
 			clipboard.setText(text);
@@ -261,7 +261,7 @@ public class PostActivity extends ParentActivity implements
 			Intent intent = new Intent(this,
 					de.btcdev.eliteanimesapp.gui.NewPostActivity.class);
 			intent.putExtra("zitieren", true);
-			ForumPost k = postList.get(chosenPosition);
+			BoardPost k = postList.get(chosenPosition);
 			chosenPosition = -1;
 			intent.putExtra("editPost", k);
 			intent.putExtra("thread", thread);
@@ -298,7 +298,7 @@ public class PostActivity extends ParentActivity implements
 				spoilerArray.add(false);
 			}
 			listView = (ListView) findViewById(R.id.posts_list);
-			postAdapter = new ForumPostAdapter(this, postList, spoilerArray);
+			postAdapter = new BoardPostAdapter(this, postList, spoilerArray);
 			listView.setAdapter(postAdapter);
 			listView.setOnItemClickListener(this);
 			listView.setOnCreateContextMenuListener(this);
@@ -320,24 +320,24 @@ public class PostActivity extends ParentActivity implements
 	public class PostTask extends AsyncTask<String, String, String> {
 
 		private boolean delete = false;
-		private ForumPost p = null;
+		private BoardPost p = null;
 
 		@Override
 		protected String doInBackground(String... params) {
 			String input;
 			try {
-				netzwerk = Netzwerk.instance(getApplicationContext());
+				networkService = NetworkService.instance(getApplicationContext());
 				eaParser = new EAParser(getApplicationContext());
 				if (params[0].equals("delete")) {
 					delete = true;
 					p = postList.get(chosenPosition);
-					boolean temp = netzwerk.deletePost(p.getId());
+					boolean temp = networkService.deletePost(p.getId());
 					if (temp)
 						return "success";
 				} else {
 					if (isCancelled())
 						return null;
-					input = netzwerk.getPosts(thread.getId(), seite);
+					input = networkService.getPosts(thread.getId(), seite);
 					if (isCancelled())
 						return null;
 					pageCount = eaParser.getForumPostsPageCount(input);
@@ -345,7 +345,7 @@ public class PostActivity extends ParentActivity implements
 						pageCount++;
 					if (isCancelled())
 						return null;
-					postList = eaParser.getForumPosts(input);
+					postList = eaParser.getBoardPosts(input);
 					return "success";
 				}
 			} catch (EAException e) {

@@ -7,19 +7,19 @@ public class NewsThread extends Thread {
 	@SuppressWarnings("unused")
 	private Context context;
 	private EAParser eaParser;
-	private Netzwerk netzwerk;
+	private NetworkService networkService;
 
 	public NewsThread(Context context) {
 		this.context = context;
-		netzwerk = Netzwerk.instance(context);
+		networkService = NetworkService.instance(context);
 		eaParser = new EAParser(null);
 	}
 
 	public void run() {
 		try {
-			eaParser.getNews(netzwerk.getNews());
+			eaParser.getNotifications(networkService.getNews());
 		} catch (Exception e) {
-
+			System.out.println(e);
 		}
 	}
 }

@@ -23,27 +23,27 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="de.btcdev.eliteanimesapp.gui.ProfilActivity"
+            android:name=".gui.ProfileActivity"
             android:label="@string/title_activity_profil" >
         </activity>
         <activity
-            android:name="de.btcdev.eliteanimesapp.gui.ProfilBeschreibungActivity"
+            android:name=".gui.ProfileDescritpionActivity"
             android:label="@string/title_activity_profil_beschreibung" >
         </activity>
         <activity
-            android:name="de.btcdev.eliteanimesapp.gui.FreundeActivity"
+            android:name=".gui.FriendActivity"
             android:label="@string/title_activity_freunde" >
         </activity>
         <activity
-            android:name="de.btcdev.eliteanimesapp.gui.FremdesProfilActivity"
+            android:name=".gui.UserProfileActivity"
             android:label="@string/title_activity_fremdes_profil" >
         </activity>
         <activity
-            android:name="de.btcdev.eliteanimesapp.gui.KommentarActivity"
+            android:name=".gui.CommentActivity"
             android:label="@string/title_activity_kommentar" >
         </activity>
         <activity
-            android:name="de.btcdev.eliteanimesapp.gui.NeuerKommentarActivity"
+            android:name=".gui.NewCommentActivity"
             android:label="@string/title_activity_neuer_kommentar"
             android:noHistory="true" >
         </activity>
@@ -57,16 +57,16 @@
             android:label="@string/title_activity_settings" >
         </activity>
         <activity
-            android:name="de.btcdev.eliteanimesapp.gui.PNActivity"
+            android:name=".gui.PrivateMessageActivity"
             android:label="@string/title_activity_pn" >
         </activity>
         <activity
-            android:name="de.btcdev.eliteanimesapp.gui.NeuePNActivity"
+            android:name=".gui.NewPrivateMessageActivity"
             android:label="@string/title_activity_neue_pn"
             android:noHistory="true" >
         </activity>
         <activity
-            android:name="de.btcdev.eliteanimesapp.gui.KontoeinstellungenActivity"
+            android:name=".gui.AccountSettingsActivity"
             android:label="@string/title_activity_kontoeinstellungen" >
         </activity>
         <activity
@@ -78,7 +78,7 @@
             android:label="@string/title_activity_anime_list" >
         </activity>
         <activity
-            android:name="de.btcdev.eliteanimesapp.gui.ForenActivity"
+            android:name=".gui.BoardActivity"
             android:label="@string/title_activity_foren" >
         </activity>
         <activity

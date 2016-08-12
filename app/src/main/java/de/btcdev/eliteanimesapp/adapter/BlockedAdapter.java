@@ -10,14 +10,14 @@ import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
 import de.btcdev.eliteanimesapp.R;
-import de.btcdev.eliteanimesapp.data.Freundschaftsanfrage;
+import de.btcdev.eliteanimesapp.data.FriendRequest;
 
 public class BlockedAdapter extends ArrayAdapter<Object> {
 
     private final Context context;
-    private final ArrayList<Freundschaftsanfrage> list;
+    private final ArrayList<FriendRequest> list;
 
-    public BlockedAdapter(Context context, ArrayList<Freundschaftsanfrage> list) {
+    public BlockedAdapter(Context context, ArrayList<FriendRequest> list) {
         super(context, R.layout.blockierte_benutzer_layout, list.toArray());
         this.context = context;
         this.list = list;
@@ -36,9 +36,9 @@ public class BlockedAdapter extends ArrayAdapter<Object> {
         TextView name = (TextView) rowView.findViewById(R.id.blocked_name);
         TextView alter = (TextView) rowView.findViewById(R.id.blocked_alter);
         TextView status = (TextView) rowView.findViewById(R.id.blocked_status);
-        Freundschaftsanfrage f = list.get(position);
+        FriendRequest f = list.get(position);
         name.setText(f.getName());
-        alter.setText(f.getAlter());
+        alter.setText(f.getAge());
         if (f.getStatus())
             status.setText("Online");
         else

@@ -62,7 +62,7 @@ public class InfoThread extends Thread {
 	// nvps = new ArrayList<NameValuePair>();
 	// httppost = new HttpPost(url + "/info.php");
 	// nvps.add(new BasicNameValuePair("Benutzername",
-	// Konfiguration.getBenutzername()));
+	// Configuration.getUserName()));
 	// nvps.add(new BasicNameValuePair("AppVersion", appversion));
 	// nvps.add(new BasicNameValuePair("AndroidVersion",
 	// androidversion));
@@ -85,8 +85,8 @@ public class InfoThread extends Thread {
 	// if (!status)
 	// nvps = null;
 	// nvps = new ArrayList<NameValuePair>();
-	// nvps.add(new BasicNameValuePair("Benutzername", Konfiguration
-	// .getBenutzername()));
+	// nvps.add(new BasicNameValuePair("Benutzername", Configuration
+	// .getUserName()));
 	// httppost = new HttpPost(url + "/status.php");
 	// httppost.setEntity(new UrlEncodedFormEntity(nvps, HTTP.UTF_8));
 	// response = httpclient.execute(httppost);
@@ -137,17 +137,17 @@ public class InfoThread extends Thread {
 	}
 
 	public void sendLoginAnalytics() {
-		PackageInfo pinfo = null;
-		String appversion = null;
-		String androidversion = null;
-		String modell = null;
-		while (pinfo == null) {
+		PackageInfo packageInfo = null;
+		String appVersion = null;
+		String androidVersion = null;
+		String phoneModel = null;
+		while (packageInfo == null) {
 			try {
-				pinfo = context.getPackageManager().getPackageInfo(
+				packageInfo = context.getPackageManager().getPackageInfo(
 						context.getPackageName(), 0);
-				appversion = pinfo.versionName;
-				androidversion = android.os.Build.VERSION.RELEASE;
-				modell = android.os.Build.MANUFACTURER + ", "
+				appVersion = packageInfo.versionName;
+				androidVersion = android.os.Build.VERSION.RELEASE;
+				phoneModel = android.os.Build.MANUFACTURER + ", "
 						+ android.os.Build.PRODUCT;
 			} catch (Exception e) {
 			}
@@ -156,7 +156,7 @@ public class InfoThread extends Thread {
 		tracker.send(MapBuilder.createEvent(
 				"login_action",
 				"login",
-				Konfiguration.getBenutzername(context) + ", " + appversion + ", "
-						+ androidversion + ", " + modell, null).build());
+				Configuration.getUserName(context) + ", " + appVersion + ", "
+						+ androidVersion + ", " + phoneModel, null).build());
 	}
 }

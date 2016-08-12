@@ -17,10 +17,10 @@ public class ListAnimeSerializer implements JsonSerializer<ListAnime> {
 		JsonObject object = new JsonObject();
 		object.addProperty("mid", src.getTokenId());
 		object.addProperty("aid", src.getId());
-		object.addProperty("aname", src.getTitel());
-		object.addProperty("epi", src.getFolgenAnzahl());
-		object.addProperty("seen", src.getFortschritt());
-		object.addProperty("score", src.getBewertung());
+		object.addProperty("aname", src.getTitle());
+		object.addProperty("epi", src.getEpisodeCount());
+		object.addProperty("seen", src.getProgress());
+		object.addProperty("score", src.getRating());
 		return object;
 	}
 

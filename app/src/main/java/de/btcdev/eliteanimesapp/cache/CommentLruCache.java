@@ -5,7 +5,7 @@ import android.support.v4.util.LruCache;
 
 public class CommentLruCache {
 
-	private LruCache<String, Bitmap> avaCache;
+	private LruCache<String, Bitmap> avatarCache;
 	private static CommentLruCache unique;
 	private final int maxMemory;
 	private final int cacheSize;
@@ -15,7 +15,7 @@ public class CommentLruCache {
 		cacheSize = maxMemory / 8;
 		
 
-		avaCache = new LruCache<String, Bitmap>(cacheSize) {
+		avatarCache = new LruCache<String, Bitmap>(cacheSize) {
 			@Override
 			protected int sizeOf(String key, Bitmap bitmap) {
 				return bitmap.getRowBytes() * bitmap.getHeight() / 1024;
@@ -33,11 +33,11 @@ public class CommentLruCache {
 	
 	public void addBitmapToMemoryCache(String key, Bitmap bitmap) {
 	    if (getBitmapFromMemCache(key) == null) {
-	        avaCache.put(key, bitmap);
+	        avatarCache.put(key, bitmap);
 	    }
 	}
 
 	public Bitmap getBitmapFromMemCache(String key) {
-	    return avaCache.get(key);
+	    return avatarCache.get(key);
 	}
 }

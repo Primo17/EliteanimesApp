@@ -25,11 +25,11 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 import de.btcdev.eliteanimesapp.R;
-import de.btcdev.eliteanimesapp.data.Benutzer;
+import de.btcdev.eliteanimesapp.data.Configuration;
+import de.btcdev.eliteanimesapp.data.NetworkService;
+import de.btcdev.eliteanimesapp.data.User;
 import de.btcdev.eliteanimesapp.data.EAException;
 import de.btcdev.eliteanimesapp.data.EAParser;
-import de.btcdev.eliteanimesapp.data.Konfiguration;
-import de.btcdev.eliteanimesapp.data.Netzwerk;
 import de.btcdev.eliteanimesapp.data.NewsThread;
 
 public class SearchActivity extends ParentActivity implements
@@ -38,14 +38,14 @@ public class SearchActivity extends ParentActivity implements
 	private EditText eingabe;
 	private Button searchButton;
 	private SearchTask task;
-	private ArrayList<Benutzer> liste;
+	private ArrayList<User> liste;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_search);
 		bar = getSupportActionBar();
-		netzwerk = Netzwerk.instance(this);
+		networkService = NetworkService.instance(this);
 		eaParser = new EAParser(null);
 		eingabe = (EditText) findViewById(R.id.search_eingabe);
 		searchButton = (Button) findViewById(R.id.search_button);
@@ -110,19 +110,19 @@ public class SearchActivity extends ParentActivity implements
 				super.onItemClick(arg0, arg1, arg2, arg3);
 		} else if (arg0.getId() == R.id.search_liste) {
 			if (arg2 <= liste.size()) {
-				Benutzer benutzer = liste.get(arg2);
-				if (benutzer.getName().equals(
-						Konfiguration.getBenutzername(getApplicationContext()))) {
+				User user = liste.get(arg2);
+				if (user.getName().equals(
+						Configuration.getUserName(getApplicationContext()))) {
 					Intent intent = new Intent(this,
-							de.btcdev.eliteanimesapp.gui.ProfilActivity.class);
+							ProfileActivity.class);
 					startActivity(intent);
 				} else {
 					Intent intent = new Intent(
 							this,
-							de.btcdev.eliteanimesapp.gui.FremdesProfilActivity.class);
-					intent.putExtra("Benutzer", benutzer.getName());
+							UserProfileActivity.class);
+					intent.putExtra("User", user.getName());
 					intent.putExtra("UserID",
-							Integer.parseInt(benutzer.getId()));
+							Integer.parseInt(user.getId()));
 					startActivity(intent);
 				}
 			}
@@ -141,7 +141,7 @@ public class SearchActivity extends ParentActivity implements
 		}
 	}
 
-	public void viewZuweisung(ArrayList<Benutzer> result) {
+	public void viewZuweisung(ArrayList<User> result) {
 		liste = result;
 		LinearLayout lin = (LinearLayout) findViewById(R.id.search_layout);
 		if (liste == null || liste.isEmpty()) {
@@ -157,7 +157,7 @@ public class SearchActivity extends ParentActivity implements
 				lin.removeViewAt(1);
 			}
 			ListView searchList = (ListView) findViewById(R.id.search_liste);
-			ArrayAdapter<Benutzer> adapter = new ArrayAdapter<Benutzer>(this,
+			ArrayAdapter<User> adapter = new ArrayAdapter<User>(this,
 					android.R.layout.simple_list_item_1, liste);
 			searchList.setAdapter(adapter);
 			searchList.setOnItemClickListener(this);
@@ -165,7 +165,7 @@ public class SearchActivity extends ParentActivity implements
 	}
 
 	public class SearchTask extends
-			AsyncTask<String, String, ArrayList<Benutzer>> {
+			AsyncTask<String, String, ArrayList<User>> {
 
 		String name;
 
@@ -174,16 +174,16 @@ public class SearchActivity extends ParentActivity implements
 		}
 
 		@Override
-		protected ArrayList<Benutzer> doInBackground(String... params) {
+		protected ArrayList<User> doInBackground(String... params) {
 			String input;
-			netzwerk = Netzwerk.instance(getApplicationContext());
+			networkService = NetworkService.instance(getApplicationContext());
 			eaParser = new EAParser(null);
 			new NewsThread(getApplicationContext()).start();
-			ArrayList<Benutzer> result;
+			ArrayList<User> result;
 			try {
 				if (isCancelled())
 					return null;
-				input = netzwerk.searchUser(name);
+				input = networkService.searchUser(name);
 				if (isCancelled())
 					return null;
 				result = eaParser.getSearchedUsers(input);
@@ -205,7 +205,7 @@ public class SearchActivity extends ParentActivity implements
 
 		@SuppressWarnings("deprecation")
 		@Override
-		protected void onPostExecute(ArrayList<Benutzer> result) {
+		protected void onPostExecute(ArrayList<User> result) {
 			try {
 				dismissDialog(load_dialog);
 			} catch (IllegalArgumentException e) {

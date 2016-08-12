@@ -20,24 +20,24 @@ import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.Toast;
 import de.btcdev.eliteanimesapp.R;
-import de.btcdev.eliteanimesapp.adapter.ForumThreadAdapter;
+import de.btcdev.eliteanimesapp.adapter.BoardThreadAdapter;
 import de.btcdev.eliteanimesapp.data.EAException;
 import de.btcdev.eliteanimesapp.data.EAParser;
-import de.btcdev.eliteanimesapp.data.Forum;
-import de.btcdev.eliteanimesapp.data.ForumThread;
-import de.btcdev.eliteanimesapp.data.Netzwerk;
-import de.btcdev.eliteanimesapp.data.Subforum;
+import de.btcdev.eliteanimesapp.data.Board;
+import de.btcdev.eliteanimesapp.data.BoardThread;
+import de.btcdev.eliteanimesapp.data.NetworkService;
+import de.btcdev.eliteanimesapp.data.Subboard;
 
 public class ThreadActivity extends ParentActivity implements
 		OnItemSelectedListener {
 
 	private ListView listView;
-	private ForumThreadAdapter threadAdapter;
-	private Forum forum;
+	private BoardThreadAdapter threadAdapter;
+	private Board board;
 	private ThreadTask threadTask;
 	private int pageCount;
 	private int seite = 1;
-	private ArrayList<ForumThread> threadList;
+	private ArrayList<BoardThread> threadList;
 	ArrayAdapter<String> pageAdapter;
 	String[] pages;
 
@@ -47,7 +47,7 @@ public class ThreadActivity extends ParentActivity implements
 		setContentView(R.layout.activity_thread);
 		listView = (ListView) findViewById(R.id.threads_list);
 		if (savedInstanceState != null) {
-			forum = savedInstanceState.getParcelable("forum");
+			board = savedInstanceState.getParcelable("board");
 			threadList = savedInstanceState
 					.getParcelableArrayList("threadList");
 			seite = savedInstanceState.getInt("seite");
@@ -56,14 +56,14 @@ public class ThreadActivity extends ParentActivity implements
 			viewZuweisung();
 		} else {
 			Bundle bundle = getIntent().getExtras();
-			forum = bundle.getParcelable("forum");
+			board = bundle.getParcelable("board");
 			threadTask = new ThreadTask();
 			threadTask.execute("");
 		}
 		bar = getSupportActionBar();
-		bar.setTitle(forum.getName());
+		bar.setTitle(board.getName());
 		handleNavigationDrawer(R.id.nav_threads, R.id.nav_threads_list,
-				forum.getName(), null);
+				board.getName(), null);
 	}
 
 	/**
@@ -82,7 +82,7 @@ public class ThreadActivity extends ParentActivity implements
 
 	@Override
 	protected void onSaveInstanceState(Bundle outState) {
-		outState.putParcelable("forum", forum);
+		outState.putParcelable("board", board);
 		outState.putParcelableArrayList("threadList", threadList);
 		outState.putInt("seite", seite);
 		outState.putInt("pageCount", pageCount);
@@ -131,22 +131,22 @@ public class ThreadActivity extends ParentActivity implements
 			super.onItemClick(arg0, arg1, arg2, arg3);
 		} else if (arg0.getId() == R.id.threads_list) {
 			Object temp = threadAdapter.getItem(arg2);
-			if (temp == null || forum == null)
+			if (temp == null || board == null)
 				return;
-			if (temp instanceof Subforum) {
-				Subforum sub = (Subforum) temp;
+			if (temp instanceof Subboard) {
+				Subboard sub = (Subboard) temp;
 				Intent intent = new Intent(this,
 						de.btcdev.eliteanimesapp.gui.ThreadActivity.class);
-				Forum f = new Forum();
+				Board f = new Board();
 				f.setId(sub.getId());
 				f.setName(sub.getName());
-				f.setOberforumId(forum.getId());
-				f.setOberforumName(forum.getName());
-				intent.putExtra("forum", f);
+				f.setBoardCategoryId(board.getId());
+				f.setBoardCategoryName(board.getName());
+				intent.putExtra("board", f);
 				sub = null;
 				startActivity(intent);
-			} else if (temp instanceof ForumThread) {
-				ForumThread ft = (ForumThread) temp;
+			} else if (temp instanceof BoardThread) {
+				BoardThread ft = (BoardThread) temp;
 				Intent intent = new Intent(this,
 						de.btcdev.eliteanimesapp.gui.PostActivity.class);
 				intent.putExtra("thread", ft);
@@ -197,10 +197,10 @@ public class ThreadActivity extends ParentActivity implements
 		}
 		listView = (ListView) findViewById(R.id.threads_list);
 		if (seite == 1)
-			threadAdapter = new ForumThreadAdapter(this, threadList,
-					forum.getSubforen());
+			threadAdapter = new BoardThreadAdapter(this, threadList,
+					board.getSubboards());
 		else
-			threadAdapter = new ForumThreadAdapter(this, threadList, null);
+			threadAdapter = new BoardThreadAdapter(this, threadList, null);
 		listView.setAdapter(threadAdapter);
 		listView.setOnItemClickListener(this);
 	}
@@ -222,18 +222,18 @@ public class ThreadActivity extends ParentActivity implements
 		@Override
 		protected String doInBackground(String... params) {
 			String input;
-			netzwerk = Netzwerk.instance(getApplicationContext());
+			networkService = NetworkService.instance(getApplicationContext());
 			eaParser = new EAParser(getApplicationContext());
 			try {
 				if (isCancelled())
 					return null;
-				input = netzwerk.getThreads(forum.getId(), seite);
+				input = networkService.getThreads(board.getId(), seite);
 				if (isCancelled())
 					return null;
-				pageCount = eaParser.getForumThreadPageCount(input);
+				pageCount = eaParser.getBoardThreadPageCount(input);
 				if (isCancelled())
 					return null;
-				threadList = eaParser.getForumThreads(input);
+				threadList = eaParser.getBoardThreads(input);
 				return "success";
 			} catch (EAException e) {
 				publishProgress("Exception", e.getMessage());

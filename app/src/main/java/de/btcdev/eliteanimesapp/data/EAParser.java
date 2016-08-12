@@ -22,19 +22,19 @@ import com.google.gson.JsonParser;
 import com.google.gson.JsonSyntaxException;
 import com.google.gson.reflect.TypeToken;
 
-import de.btcdev.eliteanimesapp.json.ForumDeserializer;
-import de.btcdev.eliteanimesapp.json.ForumPostDeserializer;
-import de.btcdev.eliteanimesapp.json.ForumThreadDeserializer;
-import de.btcdev.eliteanimesapp.json.FreundDeserializer;
-import de.btcdev.eliteanimesapp.json.FreundschaftsanfrageDeserializer;
+import de.btcdev.eliteanimesapp.json.BoardDeserializer;
+import de.btcdev.eliteanimesapp.json.BoardPostDeserializer;
+import de.btcdev.eliteanimesapp.json.BoardThreadDeserializer;
+import de.btcdev.eliteanimesapp.json.FriendDeserializer;
+import de.btcdev.eliteanimesapp.json.FriendRequestDeserializer;
 import de.btcdev.eliteanimesapp.json.JsonError;
 import de.btcdev.eliteanimesapp.json.JsonErrorException;
-import de.btcdev.eliteanimesapp.json.KommentarDeserializer;
+import de.btcdev.eliteanimesapp.json.CommentDeserializer;
 import de.btcdev.eliteanimesapp.json.ListAnimeDeserializer;
-import de.btcdev.eliteanimesapp.json.PNDeserializer;
-import de.btcdev.eliteanimesapp.json.ProfilDeserializer;
+import de.btcdev.eliteanimesapp.json.PrivateMessageDeserializer;
+import de.btcdev.eliteanimesapp.json.ProfileDeserializer;
 import de.btcdev.eliteanimesapp.json.SearchUserDeserializer;
-import de.btcdev.eliteanimesapp.json.StatistikDeserializer;
+import de.btcdev.eliteanimesapp.json.StatisticsDeserializer;
 
 /**
  * Klasse für alle verwendeten Parsing-Aufgaben
@@ -60,7 +60,7 @@ public class EAParser {
             JsonObject obj = jsonParser.parse(input).getAsJsonObject();
             JsonElement token = obj.get("token");
             if (token != null) {
-                Konfiguration.setForumtoken(token.getAsString());
+                Configuration.setBoardToken(token.getAsString());
                 return true;
             }
             return false;
@@ -73,22 +73,22 @@ public class EAParser {
      * Parst den übergebenen String nach den tabellarischen Profildaten.
      *
      * @param input HTML-Code der Profilseite
-     * @return neues Profil, das die geparsten Daten enthält
+     * @return neues Profile, das die geparsten Daten enthält
      * @throws EAException
      */
-    public Profil getProfilDaten(String input) throws EAException,
+    public Profile getProfile(String input) throws EAException,
             JsonErrorException {
-        Profil profil = null;
+        Profile profile = null;
         if (input != null) {
-            Gson gson = new GsonBuilder().registerTypeAdapter(Profil.class,
-                    new ProfilDeserializer()).create();
+            Gson gson = new GsonBuilder().registerTypeAdapter(Profile.class,
+                    new ProfileDeserializer()).create();
             try {
-                profil = gson.fromJson(input, Profil.class);
+                profile = gson.fromJson(input, Profile.class);
             } catch (JsonParseException ex) {
                 JsonError error = gson.fromJson(input, JsonError.class);
                 throw new JsonErrorException(error.getError());
             }
-            return profil;
+            return profile;
         } else {
             return null;
         }
@@ -101,15 +101,15 @@ public class EAParser {
      * @param input JSON der Profilbeschreibung
      * @return die Userbeschreibung als String
      */
-    public String getProfilBeschreibung(String input) {
-        String ausgabe = null;
+    public String getProfileDescription(String input) {
+        String description = null;
         JsonParser parser = new JsonParser();
         JsonObject object = parser.parse(input).getAsJsonObject();
         if (object.has("text")) {
-            ausgabe = "<html><head><meta name=\"viewport\" content=\"width=device-width\"/></head><body>"
+            description = "<html><head><meta name=\"viewport\" content=\"width=device-width\"/></head><body>"
                     + object.get("text").getAsString() + "</body></html>";
         }
-        return ausgabe;
+        return description;
     }
 
     /**
@@ -119,18 +119,18 @@ public class EAParser {
      * @param input JSON mit Freunden
      * @return ArrayList mit den erhaltenen Informationen
      */
-    public ArrayList<Freund> getFreundesliste(String input) {
-        ArrayList<Freund> freundeliste = new ArrayList<Freund>();
+    public ArrayList<Friend> getFriendList(String input) {
+        ArrayList<Friend> friendList = new ArrayList<Friend>();
         try {
-            Gson gson = new GsonBuilder().registerTypeAdapter(Freund.class,
-                    new FreundDeserializer()).create();
-            Type collectionType = new TypeToken<ArrayList<Freund>>() {
+            Gson gson = new GsonBuilder().registerTypeAdapter(Friend.class,
+                    new FriendDeserializer()).create();
+            Type collectionType = new TypeToken<ArrayList<Friend>>() {
             }.getType();
-            freundeliste = gson.fromJson(input, collectionType);
+            friendList = gson.fromJson(input, collectionType);
         } catch (Exception e) {
-            return freundeliste;
+            return friendList;
         }
-        return freundeliste;
+        return friendList;
     }
 
     /**
@@ -140,17 +140,17 @@ public class EAParser {
      * @param input JSON-Antwort der API
      * @return eine ArrayList aus erhaltenen Kommentaren
      */
-    public ArrayList<Kommentar> getComments(String input) {
-        ArrayList<Kommentar> commentlist = new ArrayList<Kommentar>();
+    public ArrayList<Comment> getComments(String input) {
+        ArrayList<Comment> comments = new ArrayList<Comment>();
         try {
-            Gson gson = new GsonBuilder().registerTypeAdapter(Kommentar.class,
-                    new KommentarDeserializer()).create();
-            Type collectionType = new TypeToken<ArrayList<Kommentar>>() {
+            Gson gson = new GsonBuilder().registerTypeAdapter(Comment.class,
+                    new CommentDeserializer()).create();
+            Type collectionType = new TypeToken<ArrayList<Comment>>() {
             }.getType();
-            commentlist = gson.fromJson(input, collectionType);
-            return commentlist;
+            comments = gson.fromJson(input, collectionType);
+            return comments;
         } catch (Exception e) {
-            return commentlist;
+            return comments;
         }
     }
 
@@ -159,48 +159,48 @@ public class EAParser {
      * fügt sie in die übergebene ArrayList ein
      *
      * @param input       JSON-Code, der geparst werden soll
-     * @param commentlist ArrayList mit den schon vorhandenen Kommentaren
+     * @param comments ArrayList mit den schon vorhandenen Kommentaren
      * @return ArrayList aus alten und neuen Kommentaren
      */
     @SuppressWarnings("unchecked")
-    public ArrayList<Kommentar> getMoreComments(String input,
-                                                ArrayList<Kommentar> commentlist) {
+    public ArrayList<Comment> getMoreComments(String input,
+                                              ArrayList<Comment> comments) {
         try {
-            Gson gson = new GsonBuilder().registerTypeAdapter(Kommentar.class,
-                    new KommentarDeserializer()).create();
-            Type collectionType = new TypeToken<ArrayList<Kommentar>>() {
+            Gson gson = new GsonBuilder().registerTypeAdapter(Comment.class,
+                    new CommentDeserializer()).create();
+            Type collectionType = new TypeToken<ArrayList<Comment>>() {
             }.getType();
-            commentlist.addAll((Collection<Kommentar>) gson.fromJson(input,
+            comments.addAll((Collection<Comment>) gson.fromJson(input,
                     collectionType));
         } catch (Exception e) {
-            return commentlist;
+            return comments;
         }
-        return commentlist;
+        return comments;
     }
 
     /**
-     * überprüft im übergebenen HTML-Code, ob der Kommentar erfolgreich
+     * überprüft im übergebenen HTML-Code, ob der Comment erfolgreich
      * abgeschickt wurde.
      *
      * @param input HTML-Code der POST-Antwort
-     * @return Wahrheitswert ob Kommentar erfolgreich abgeschickt
+     * @return Wahrheitswert ob Comment erfolgreich abgeschickt
      */
     public boolean checkComment(String input) {
         Document doc = Jsoup.parse(input);
-        Elements antwort = doc.select("div.toolcol8");
-        if (antwort.isEmpty())
+        Elements response = doc.select("div.toolcol8");
+        if (response.isEmpty())
             return false;
-        return (antwort.text().equals("Ihr Kommentar wurde hinzugefügt."));
+        return (response.text().equals("Ihr Kommentar wurde hinzugefügt."));
     }
 
     /**
-     * überprüft im übergebenen Json-Code, ob die PN erfolgreich abgeschickt
+     * überprüft im übergebenen Json-Code, ob die PrivateMessage erfolgreich abgeschickt
      * wurde.
      *
      * @param input Json-Code der POST-Antwort
      * @return "Erfolg" oder Fehlermeldung
      */
-    public String checkPN(String input) {
+    public String checkPrivateMessage(String input) {
         try {
             Gson gson = new Gson();
             JsonError error = gson.fromJson(input, JsonError.class);
@@ -217,21 +217,21 @@ public class EAParser {
      * Parst den übergebenen String nach den Daten für PNs und speichert diese
      * jeweils in einer ArrayList.
      *
-     * @param input HTML-Code mit den PN-Daten
+     * @param input HTML-Code mit den PrivateMessage-Daten
      * @return ArrayList aus PNs
      */
-    public ArrayList<PN> getPNs(String input) {
-        ArrayList<PN> pnlist = new ArrayList<PN>();
+    public ArrayList<PrivateMessage> getPrivateMessages(String input) {
+        ArrayList<PrivateMessage> privateMessages = new ArrayList<PrivateMessage>();
         try {
-            Gson gson = new GsonBuilder().registerTypeAdapter(PN.class,
-                    new PNDeserializer()).create();
-            Type collectionType = new TypeToken<ArrayList<PN>>() {
+            Gson gson = new GsonBuilder().registerTypeAdapter(PrivateMessage.class,
+                    new PrivateMessageDeserializer()).create();
+            Type collectionType = new TypeToken<ArrayList<PrivateMessage>>() {
             }.getType();
-            pnlist = gson.fromJson(input, collectionType);
+            privateMessages = gson.fromJson(input, collectionType);
         } catch (Exception e) {
-            return pnlist;
+            return privateMessages;
         }
-        return pnlist;
+        return privateMessages;
     }
 
     /**
@@ -239,64 +239,64 @@ public class EAParser {
      * finden sind, und fügt diese in die übergebene Liste ein.
      *
      * @param input  HTML-Code des Postfachs
-     * @param pnlist Liste mit PNs
+     * @param privateMessages Liste mit PNs
      * @return Liste mit PNs
      */
     @SuppressWarnings("unchecked")
-    public ArrayList<PN> getMorePNs(String input, ArrayList<PN> pnlist) {
+    public ArrayList<PrivateMessage> getMorePrivateMessages(String input, ArrayList<PrivateMessage> privateMessages) {
         try {
-            Gson gson = new GsonBuilder().registerTypeAdapter(PN.class,
-                    new PNDeserializer()).create();
-            Type collectionType = new TypeToken<ArrayList<PN>>() {
+            Gson gson = new GsonBuilder().registerTypeAdapter(PrivateMessage.class,
+                    new PrivateMessageDeserializer()).create();
+            Type collectionType = new TypeToken<ArrayList<PrivateMessage>>() {
             }.getType();
-            pnlist.addAll((Collection<PN>) gson.fromJson(input, collectionType));
-            return pnlist;
+            privateMessages.addAll((Collection<PrivateMessage>) gson.fromJson(input, collectionType));
+            return privateMessages;
         } catch (Exception e) {
-            return pnlist;
+            return privateMessages;
         }
     }
 
     /**
-     * Parst den übergebenen String und aktualisiert die PN.
+     * Parst den übergebenen String und aktualisiert die PrivateMessage.
      *
-     * @param pn    PN, die aktualisiert werden soll.
-     * @param input JSON-Code von getPN
-     * @return aktualisierte PN
+     * @param privateMessage    PrivateMessage, die aktualisiert werden soll.
+     * @param input JSON-Code von getPrivateMessage
+     * @return aktualisierte PrivateMessage
      */
-    public PN getPN(PN pn, String input) {
+    public PrivateMessage getPrivateMessage(PrivateMessage privateMessage, String input) {
         try {
             JsonParser parser = new JsonParser();
             JsonObject obj = parser.parse(input).getAsJsonObject();
             if (obj.has("id"))
-                pn.setId(obj.get("id").getAsInt());
+                privateMessage.setId(obj.get("id").getAsInt());
             if (obj.has("f_uid"))
-                pn.setUserid(obj.get("f_uid").getAsInt());
+                privateMessage.setUserid(obj.get("f_uid").getAsInt());
             if (obj.has("f_uname"))
-                pn.setBenutzername(obj.get("f_uname").getAsString());
+                privateMessage.setBenutzername(obj.get("f_uname").getAsString());
             if (obj.has("subject"))
-                pn.setBetreff(obj.get("subject").getAsString());
+                privateMessage.setBetreff(obj.get("subject").getAsString());
             if (obj.has("date"))
-                pn.setDate(obj.get("date").getAsString());
+                privateMessage.setDate(obj.get("date").getAsString());
             if (obj.has("text"))
-                pn.setText(obj.get("text").getAsString());
-            pn.setGelesen(true);
-            return pn;
+                privateMessage.setText(obj.get("text").getAsString());
+            privateMessage.setGelesen(true);
+            return privateMessage;
         } catch (Exception e) {
-            return pn;
+            return privateMessage;
         }
     }
 
     /**
-     * Parst den übergebenen String nach dem Input der empfangenen PN, der bei
+     * Parst den übergebenen String nach dem Input der empfangenen PrivateMessage, der bei
      * einer neuen Nachricht mitgeschickt werden muss.
      *
-     * @param input HTML-Code der PN
-     * @return Input der PN
+     * @param input HTML-Code der PrivateMessage
+     * @return Input der PrivateMessage
      */
-    public String getPNInput(String input) {
+    public String getPrivateMessageInput(String input) {
         Document doc = Jsoup.parse(input);
-        Elements pninput = doc.select("textarea");
-        return pninput.text();
+        Elements privateMessageInput = doc.select("textarea");
+        return privateMessageInput.text();
     }
 
     /**
@@ -307,41 +307,41 @@ public class EAParser {
      * @param input Json-Code der Seite mit den Freundschaftsanfragen
      * @return ArrayList mit Freundschaftsanfragen
      */
-    public ArrayList<Freundschaftsanfrage> getFreundschaftsanfragen(String input) {
-        ArrayList<Freundschaftsanfrage> list = new ArrayList<Freundschaftsanfrage>();
+    public ArrayList<FriendRequest> getFriendRequests(String input) {
+        ArrayList<FriendRequest> friendRequests = new ArrayList<FriendRequest>();
         try {
             Gson gson = new GsonBuilder().registerTypeAdapter(
-                    Freundschaftsanfrage.class,
-                    new FreundschaftsanfrageDeserializer()).create();
-            Type collectionType = new TypeToken<ArrayList<Freundschaftsanfrage>>() {
+                    FriendRequest.class,
+                    new FriendRequestDeserializer()).create();
+            Type collectionType = new TypeToken<ArrayList<FriendRequest>>() {
             }.getType();
-            list = gson.fromJson(input, collectionType);
-            return list;
+            friendRequests = gson.fromJson(input, collectionType);
+            return friendRequests;
         } catch (Exception e) {
-            return list;
+            return friendRequests;
         }
     }
 
     /**
      * Parst den übergebenen String nach den Informationen von Blockierten
-     * Benutzern und gibt diese als ArrayList der Klasse Freundschaftsanfrage
+     * Benutzern und gibt diese als ArrayList der Klasse FriendRequest
      * zurück.
      *
      * @param input Json-Code der Seite mit den blockierten Usern
      * @return ArrayList mit Blockierten Usern
      */
-    public ArrayList<Freundschaftsanfrage> getBlockierteUser(String input) {
-        ArrayList<Freundschaftsanfrage> list = new ArrayList<Freundschaftsanfrage>();
+    public ArrayList<FriendRequest> getBlockedUsers(String input) {
+        ArrayList<FriendRequest> blockedUsers = new ArrayList<FriendRequest>();
         try {
             Gson gson = new GsonBuilder().registerTypeAdapter(
-                    Freundschaftsanfrage.class,
-                    new FreundschaftsanfrageDeserializer()).create();
-            Type collectionType = new TypeToken<ArrayList<Freundschaftsanfrage>>() {
+                    FriendRequest.class,
+                    new FriendRequestDeserializer()).create();
+            Type collectionType = new TypeToken<ArrayList<FriendRequest>>() {
             }.getType();
-            list = gson.fromJson(input, collectionType);
-            return list;
+            blockedUsers = gson.fromJson(input, collectionType);
+            return blockedUsers;
         } catch (Exception e) {
-            return list;
+            return blockedUsers;
         }
     }
 
@@ -352,12 +352,12 @@ public class EAParser {
      * @param input HTJSON-Code der Suche
      * @return ArrayList mit gefundenen Benutzern
      */
-    public ArrayList<Benutzer> getSearchedUsers(String input) {
-        ArrayList<Benutzer> result = new ArrayList<Benutzer>();
+    public ArrayList<User> getSearchedUsers(String input) {
+        ArrayList<User> result = new ArrayList<User>();
         try {
-            Gson gson = new GsonBuilder().registerTypeAdapter(Benutzer.class,
+            Gson gson = new GsonBuilder().registerTypeAdapter(User.class,
                     new SearchUserDeserializer()).create();
-            Type collectionType = new TypeToken<ArrayList<Benutzer>>() {
+            Type collectionType = new TypeToken<ArrayList<User>>() {
             }.getType();
             result = gson.fromJson(input, collectionType);
             return result;
@@ -371,74 +371,74 @@ public class EAParser {
      * speichert die Animes als ListAnime-Objekte in den übergebenen Listen.
      *
      * @param input          HTML-Code der Animeliste als String
-     * @param komplett       ArrayList für komplett gesehene Animes
-     * @param amSchauen      ArrayList für aktuell aktive Animes
-     * @param kurzAufgehoert ArrayList für pausierte Animes
-     * @param abgebrochen    ArrayList für abgebrochene Animes
-     * @param geplant        ArrayList für abgebrochene Animes
+     * @param complete       ArrayList für komplett gesehene Animes
+     * @param watching      ArrayList für aktuell aktive Animes
+     * @param stalled ArrayList für pausierte Animes
+     * @param dropped    ArrayList für abgebrochene Animes
+     * @param planned        ArrayList für abgebrochene Animes
      * @param ownList        Flag ob es die eigene Liste ist (tokenId sonst nicht
      *                       vorhanden)
      */
     @SuppressWarnings("unchecked")
-    public void getListAnimes(String input, ArrayList<ListAnime> komplett,
-                              ArrayList<ListAnime> amSchauen,
-                              ArrayList<ListAnime> kurzAufgehoert,
-                              ArrayList<ListAnime> abgebrochen, ArrayList<ListAnime> geplant,
-                              boolean ownList) {
+    public void getListAnime(String input, ArrayList<ListAnime> complete,
+                             ArrayList<ListAnime> watching,
+                             ArrayList<ListAnime> stalled,
+                             ArrayList<ListAnime> dropped, ArrayList<ListAnime> planned,
+                             boolean ownList) {
         try {
             JsonParser parser = new JsonParser();
             JsonObject object = parser.parse(input).getAsJsonObject();
-            JsonArray jsonKomplett, jsonAmSchauen, jsonKurzAufgehoert, jsonAbgebrochen, jsonGeplant;
+            JsonArray jsonComplete, jsonWatching, jsonStalled, jsonDropped, jsonPlanned;
             Gson gson;
             if (object.has("1")) {
-                jsonAmSchauen = object.get("1").getAsJsonArray();
+                jsonWatching = object.get("1").getAsJsonArray();
                 gson = new GsonBuilder().registerTypeAdapter(ListAnime.class,
                         new ListAnimeDeserializer()).create();
                 Type collectionType = new TypeToken<ArrayList<ListAnime>>() {
                 }.getType();
-                amSchauen.clear();
-                amSchauen.addAll((Collection<ListAnime>) gson.fromJson(
-                        jsonAmSchauen, collectionType));
+                watching.clear();
+                watching.addAll((Collection<ListAnime>) gson.fromJson(
+                        jsonWatching, collectionType));
             }
             if (object.has("2")) {
-                jsonKomplett = object.get("2").getAsJsonArray();
+                jsonComplete = object.get("2").getAsJsonArray();
                 gson = new GsonBuilder().registerTypeAdapter(ListAnime.class,
                         new ListAnimeDeserializer()).create();
                 Type collectionType = new TypeToken<ArrayList<ListAnime>>() {
                 }.getType();
-                komplett.clear();
-                komplett.addAll((Collection<ListAnime>) gson.fromJson(
-                        jsonKomplett, collectionType));
+                complete.clear();
+                complete.addAll((Collection<ListAnime>) gson.fromJson(
+                        jsonComplete, collectionType));
             }
             if (object.has("3")) {
-                jsonKurzAufgehoert = object.get("3").getAsJsonArray();
+                jsonStalled = object.get("3").getAsJsonArray();
                 gson = new GsonBuilder().registerTypeAdapter(ListAnime.class,
                         new ListAnimeDeserializer()).create();
                 Type collectionType = new TypeToken<ArrayList<ListAnime>>() {
                 }.getType();
-                kurzAufgehoert.clear();
-                kurzAufgehoert.addAll((Collection<ListAnime>) gson.fromJson(
-                        jsonKurzAufgehoert, collectionType));
+                stalled.clear();
+                stalled.addAll((Collection<ListAnime>) gson.fromJson(
+                        jsonStalled, collectionType));
             }
             if (object.has("4")) {
-                jsonAbgebrochen = object.get("4").getAsJsonArray();
+                jsonDropped = object.get("4").getAsJsonArray();
                 gson = new GsonBuilder().registerTypeAdapter(ListAnime.class,
                         new ListAnimeDeserializer()).create();
                 Type collectionType = new TypeToken<ArrayList<ListAnime>>() {
                 }.getType();
-                abgebrochen.clear();
-                abgebrochen.addAll((Collection<ListAnime>) gson.fromJson(
-                        jsonAbgebrochen, collectionType));
+                dropped.clear();
+                dropped.addAll((Collection<ListAnime>) gson.fromJson(
+                        jsonDropped, collectionType));
             }
             if (object.has("5")) {
-                jsonGeplant = object.get("5").getAsJsonArray();
+                jsonPlanned = object.get("5").getAsJsonArray();
                 gson = new GsonBuilder().registerTypeAdapter(ListAnime.class,
                         new ListAnimeDeserializer()).create();
                 Type collectionType = new TypeToken<ArrayList<ListAnime>>() {
                 }.getType();
-                geplant.clear();
-                geplant.addAll((Collection<ListAnime>) gson.fromJson(
-                        jsonGeplant, collectionType));
+                planned.clear();
+                planned.addAll((Collection<ListAnime>) gson.fromJson(
+                        jsonPlanned, collectionType));
             }
         } catch (Exception e) {
 
@@ -452,22 +452,22 @@ public class EAParser {
      * @param input Json-String der API-Funktion getForums
      * @return Eine Map der Forenübersicht
      */
-    public TreeMap<Integer, ArrayList<Forum>> getForen(String input) {
-        ArrayList<Forum> gesamt = new ArrayList<Forum>();
+    public TreeMap<Integer, ArrayList<Board>> getBoards(String input) {
+        ArrayList<Board> allBoards = new ArrayList<Board>();
         try {
-            Gson gson = new GsonBuilder().registerTypeAdapter(Forum.class,
-                    new ForumDeserializer()).create();
-            Type collectionType = new TypeToken<ArrayList<Forum>>() {
+            Gson gson = new GsonBuilder().registerTypeAdapter(Board.class,
+                    new BoardDeserializer()).create();
+            Type collectionType = new TypeToken<ArrayList<Board>>() {
             }.getType();
-            gesamt = gson.fromJson(input, collectionType);
-            TreeMap<Integer, ArrayList<Forum>> map = new TreeMap<Integer, ArrayList<Forum>>();
-            map.put(1, new ArrayList<Forum>());
-            map.put(2, new ArrayList<Forum>());
-            map.put(3, new ArrayList<Forum>());
-            map.put(4, new ArrayList<Forum>());
-            map.put(5, new ArrayList<Forum>());
-            for (Forum f : gesamt) {
-                map.get(f.getOberforumId()).add(f);
+            allBoards = gson.fromJson(input, collectionType);
+            TreeMap<Integer, ArrayList<Board>> map = new TreeMap<Integer, ArrayList<Board>>();
+            map.put(1, new ArrayList<Board>());
+            map.put(2, new ArrayList<Board>());
+            map.put(3, new ArrayList<Board>());
+            map.put(4, new ArrayList<Board>());
+            map.put(5, new ArrayList<Board>());
+            for (Board f : allBoards) {
+                map.get(f.getBoardCategoryId()).add(f);
             }
             return map;
         } catch (Exception e) {
@@ -479,16 +479,16 @@ public class EAParser {
      * Parst den String nach Daten der Forenstatistik.
      *
      * @param input Json-String der API-Funktion getStatistics
-     * @return Die Forenstatistik als Statistik-Objekt
+     * @return Die Forenstatistik als Statistics-Objekt
      */
-    public Statistik getForenStatistik(String input) {
+    public Statistics getBoardStatistics(String input) {
         try {
-            Gson gson = new GsonBuilder().registerTypeAdapter(Statistik.class,
-                    new StatistikDeserializer()).create();
-            Type collectionType = new TypeToken<Statistik>() {
+            Gson gson = new GsonBuilder().registerTypeAdapter(Statistics.class,
+                    new StatisticsDeserializer()).create();
+            Type collectionType = new TypeToken<Statistics>() {
             }.getType();
-            Statistik stat = gson.fromJson(input, collectionType);
-            return stat;
+            Statistics statistics = gson.fromJson(input, collectionType);
+            return statistics;
         } catch (Exception e) {
             return null;
         }
@@ -500,7 +500,7 @@ public class EAParser {
      * @param input Json-String der API-Funktion getForum
      * @return Seitenzahl der Threadübersicht oder 0 bei Fehlern
      */
-    public int getForumThreadPageCount(String input) {
+    public int getBoardThreadPageCount(String input) {
         JsonParser parser = new JsonParser();
         JsonElement element = parser.parse(input);
         if (!element.isJsonObject()) {
@@ -520,7 +520,7 @@ public class EAParser {
      * @param input Json-String der API-Funktion getForum
      * @return ArrayList mit den gefundenen Thread-Daten oder null bei Fehlern
      */
-    public ArrayList<ForumThread> getForumThreads(String input) {
+    public ArrayList<BoardThread> getBoardThreads(String input) {
         try {
             JsonParser parser = new JsonParser();
             JsonElement el = parser.parse(input);
@@ -529,12 +529,12 @@ public class EAParser {
             if (el == null)
                 return null;
             Gson gson = new GsonBuilder().registerTypeAdapter(
-                    ForumThread.class, new ForumThreadDeserializer()).create();
-            Type collectionType = new TypeToken<ArrayList<ForumThread>>() {
+                    BoardThread.class, new BoardThreadDeserializer()).create();
+            Type collectionType = new TypeToken<ArrayList<BoardThread>>() {
             }.getType();
-            ArrayList<ForumThread> list = gson.fromJson(el, collectionType);
+            ArrayList<BoardThread> list = gson.fromJson(el, collectionType);
             if (list == null)
-                list = new ArrayList<ForumThread>();
+                list = new ArrayList<BoardThread>();
             return list;
         } catch (Exception e) {
             return null;
@@ -548,13 +548,13 @@ public class EAParser {
      * @return ArrayList mit den gefundenen Post-Daten oder null bei Fehlern
      */
     @SuppressWarnings("unchecked")
-    public ArrayList<ForumPost> getForumPosts(String input) {
+    public ArrayList<BoardPost> getBoardPosts(String input) {
         try {
-            ArrayList<ForumPost> list = new ArrayList<ForumPost>();
+            ArrayList<BoardPost> boardPosts = new ArrayList<BoardPost>();
             JsonParser parser = new JsonParser();
             JsonElement el = parser.parse(input);
             JsonObject obj = el.getAsJsonObject();
-            ForumPost first = new ForumPost();
+            BoardPost first = new BoardPost();
             if (obj.has("thread_id"))
                 first.setId(0);
             if (obj.has("thread_date"))
@@ -562,7 +562,7 @@ public class EAParser {
             if (obj.has("text"))
                 first.setText(obj.get("text").getAsString());
             if (obj.has("edited"))
-                first.setEdited(obj.get("edited").getAsInt());
+                first.setEditedCount(obj.get("edited").getAsInt());
             if (obj.has("edited_time"))
                 first.setEditedTime(obj.get("edited_time").getAsString());
             if (obj.has("uname"))
@@ -576,29 +576,29 @@ public class EAParser {
             if (obj.has("online"))
                 first.setOnline(obj.get("online").getAsInt() == 1);
             if (obj.has("signatur"))
-                first.setSignatur(obj.get("signatur").getAsString());
+                first.setSignature(obj.get("signatur").getAsString());
             if (obj.has("geschlecht")) {
                 String gender = obj.get("geschlecht").getAsString();
                 if (gender.equals("m"))
-                    first.setGeschlecht("Männlich");
+                    first.setSex("Männlich");
                 else if (gender.equals("w"))
-                    first.setGeschlecht("Weiblich");
+                    first.setSex("Weiblich");
                 else
-                    first.setGeschlecht("Nicht angegeben");
+                    first.setSex("Nicht angegeben");
             }
             if (obj.has("user_image"))
-                first.setBild(obj.get("user_image").getAsString());
-            list.add(first);
+                first.setAvatar(obj.get("user_image").getAsString());
+            boardPosts.add(first);
             el = obj.get("posts");
             if (el == null)
                 return null;
-            Gson gson = new GsonBuilder().registerTypeAdapter(ForumPost.class,
-                    new ForumPostDeserializer()).create();
-            Type collectionType = new TypeToken<ArrayList<ForumPost>>() {
+            Gson gson = new GsonBuilder().registerTypeAdapter(BoardPost.class,
+                    new BoardPostDeserializer()).create();
+            Type collectionType = new TypeToken<ArrayList<BoardPost>>() {
             }.getType();
-            list.addAll((Collection<ForumPost>) gson.fromJson(el,
+            boardPosts.addAll((Collection<BoardPost>) gson.fromJson(el,
                     collectionType));
-            return list;
+            return boardPosts;
         } catch (Exception e) {
             return null;
         }
@@ -646,11 +646,11 @@ public class EAParser {
 
     /**
      * Parst den übergebenen String nach den Neuigkeiten (Neue Nachrichten und
-     * Kommentare) und setzt die erhaltenen Werte in der Konfiguration.
+     * Kommentare) und setzt die erhaltenen Werte in der Configuration.
      *
      * @param input JSON der die News enthält
      */
-    public void getNews(String input) {
+    public void getNotifications(String input) {
         try {
             JsonParser parser = new JsonParser();
             JsonObject object = parser.parse(input).getAsJsonObject();
@@ -662,8 +662,8 @@ public class EAParser {
             if (object.has("comment")) {
                 commentcount = object.get("comment").getAsInt();
             }
-            Konfiguration.setNewCommentCount(commentcount, context);
-            Konfiguration.setNewMessageCount(pncount, context);
+            Configuration.setNewCommentCount(commentcount, context);
+            Configuration.setNewMessageCount(pncount, context);
         } catch (Exception e) {
 
         }
@@ -671,7 +671,7 @@ public class EAParser {
 
     /**
      * Parst den übergebenen JSON-String der API-Funktion getToken nach dem
-     * Token und setzt diesen in der Konfiguration.
+     * Token und setzt diesen in der Configuration.
      *
      * @param input JSON-String der den Token enthält
      */
@@ -680,7 +680,7 @@ public class EAParser {
             JsonParser parser = new JsonParser();
             JsonObject object = parser.parse(input).getAsJsonObject();
             if (object.has("token")) {
-                Konfiguration.setForumtoken(object.get("token").getAsString());
+                Configuration.setBoardToken(object.get("token").getAsString());
             }
         } catch (Exception e) {
 
@@ -689,10 +689,10 @@ public class EAParser {
 
     /**
      * Parst den übergebenen String nach der Kopfzeile und überprüft, ob der
-     * Benutzer eingeloggt ist.
+     * User eingeloggt ist.
      *
      * @param input HTML-Code einer Seite auf EA
-     * @return Wahrheitswert, ob der Benutzer eingeloggt ist
+     * @return Wahrheitswert, ob der User eingeloggt ist
      */
     public boolean isLoggedIn(String input) {
         Document doc = Jsoup.parse(input);

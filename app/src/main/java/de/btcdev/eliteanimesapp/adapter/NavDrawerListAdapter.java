@@ -11,7 +11,7 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 import de.btcdev.eliteanimesapp.R;
-import de.btcdev.eliteanimesapp.data.Konfiguration;
+import de.btcdev.eliteanimesapp.data.Configuration;
 import de.btcdev.eliteanimesapp.data.NavDrawerItem;
 import de.btcdev.eliteanimesapp.gui.ParentActivity;
 
@@ -61,9 +61,9 @@ public class NavDrawerListAdapter extends BaseAdapter {
 
 		if (navDrawerItems.get(position).getCounterVisibility()) {
 			if(position == ParentActivity.navigation_kommentare)
-				textCount.setText(""+Konfiguration.getNewCommentCount());
+				textCount.setText(""+ Configuration.getNewCommentCount());
 			else if(position == ParentActivity.navigation_pns)
-				textCount.setText(""+Konfiguration.getNewMessageCount());
+				textCount.setText(""+ Configuration.getNewMessageCount());
 //			textCount.setText(navDrawerItems.get(position).getCount());
 		} else {
 			textCount.setVisibility(View.GONE);

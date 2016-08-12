@@ -6,11 +6,11 @@ import android.os.Parcelable;
 
 public class ListAnime implements Parcelable {
 
-	private String titel;
-	private int folgenAnzahl;
-	private int fortschritt;
-	private double bewertung;
-	private String link;
+	private String title;
+	private int episodeCount;
+	private int progress;
+	private double rating;
+	private String url;
 	private int id;
 	private String tokenId;
 
@@ -18,48 +18,48 @@ public class ListAnime implements Parcelable {
 
 	}
 
-	public ListAnime(String titel) {
-		setTitel(titel);
+	public ListAnime(String title) {
+		setTitle(title);
 	}
 
-	public String getTitel() {
-		return titel;
+	public String getTitle() {
+		return title;
 	}
 
-	public void setTitel(String titel) {
-		this.titel = titel;
+	public void setTitle(String title) {
+		this.title = title;
 	}
 
-	public int getFolgenAnzahl() {
-		return folgenAnzahl;
+	public int getEpisodeCount() {
+		return episodeCount;
 	}
 
-	public void setFolgenAnzahl(int folgenAnzahl) {
-		this.folgenAnzahl = folgenAnzahl;
+	public void setEpisodeCount(int episodeCount) {
+		this.episodeCount = episodeCount;
 	}
 
-	public int getFortschritt() {
-		return fortschritt;
+	public int getProgress() {
+		return progress;
 	}
 
-	public void setFortschritt(int fortschritt) {
-		this.fortschritt = fortschritt;
+	public void setProgress(int progress) {
+		this.progress = progress;
 	}
 
-	public double getBewertung() {
-		return bewertung;
+	public double getRating() {
+		return rating;
 	}
 
-	public void setBewertung(double bewertung) {
-		this.bewertung = bewertung;
+	public void setRating(double rating) {
+		this.rating = rating;
 	}
 
-	public String getLink() {
-		return link;
+	public String getUrl() {
+		return url;
 	}
 
-	public void setLink(String link) {
-		this.link = link;
+	public void setUrl(String url) {
+		this.url = url;
 	}
 
 	public int getId() {
@@ -87,8 +87,8 @@ public class ListAnime implements Parcelable {
 	}
 
 	public String toString() {
-		return titel + ", " + id + ", " + fortschritt + "/" + folgenAnzahl
-				+ ", " + bewertung;
+		return title + ", " + id + ", " + progress + "/" + episodeCount
+				+ ", " + rating;
 	}
 
 	@Override
@@ -99,11 +99,11 @@ public class ListAnime implements Parcelable {
 	@Override
 	public void writeToParcel(Parcel arg0, int arg1) {
 		Bundle bundle = new Bundle();
-		bundle.putString("Titel", titel);
-		bundle.putInt("Folgenanzahl", folgenAnzahl);
-		bundle.putInt("Fortschritt", fortschritt);
-		bundle.putDouble("Bewertung", bewertung);
-		bundle.putString("Link", link);
+		bundle.putString("Titel", title);
+		bundle.putInt("Folgenanzahl", episodeCount);
+		bundle.putInt("Fortschritt", progress);
+		bundle.putDouble("Bewertung", rating);
+		bundle.putString("Link", url);
 		bundle.putInt("Id", id);
 		bundle.putString("TokenId", tokenId);
 		arg0.writeBundle(bundle);
@@ -121,11 +121,11 @@ public class ListAnime implements Parcelable {
 
 	private ListAnime(Parcel in) {
 		Bundle bundle = in.readBundle();
-		titel = bundle.getString("Titel");
-		folgenAnzahl = bundle.getInt("Folgenanzahl");
-		fortschritt = bundle.getInt("Fortschritt");
-		bewertung = bundle.getDouble("Bewertung");
-		link = bundle.getString("Link");
+		title = bundle.getString("Titel");
+		episodeCount = bundle.getInt("Folgenanzahl");
+		progress = bundle.getInt("Fortschritt");
+		rating = bundle.getDouble("Bewertung");
+		url = bundle.getString("Link");
 		id = bundle.getInt("Id");
 		tokenId = bundle.getString("TokenId");
 	}

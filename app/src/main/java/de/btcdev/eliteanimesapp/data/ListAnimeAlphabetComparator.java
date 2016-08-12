@@ -9,7 +9,7 @@ public class ListAnimeAlphabetComparator implements Comparator<ListAnime> {
 	 */
 	@Override
 	public int compare(ListAnime lhs, ListAnime rhs) {
-		return lhs.getTitel().compareTo(rhs.getTitel());
+		return lhs.getTitle().compareTo(rhs.getTitle());
 	}
 
 }

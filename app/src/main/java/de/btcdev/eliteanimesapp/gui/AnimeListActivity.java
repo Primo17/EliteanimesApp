@@ -44,11 +44,11 @@ import de.btcdev.eliteanimesapp.adapter.OnAnimeRatedListener;
 import de.btcdev.eliteanimesapp.cache.AnimelistCacheThread;
 import de.btcdev.eliteanimesapp.data.EAException;
 import de.btcdev.eliteanimesapp.data.EAParser;
-import de.btcdev.eliteanimesapp.data.Konfiguration;
+import de.btcdev.eliteanimesapp.data.Configuration;
 import de.btcdev.eliteanimesapp.data.ListAnime;
 import de.btcdev.eliteanimesapp.data.ListAnimeAlphabetComparator;
 import de.btcdev.eliteanimesapp.data.ListAnimeRatingComparator;
-import de.btcdev.eliteanimesapp.data.Netzwerk;
+import de.btcdev.eliteanimesapp.data.NetworkService;
 import de.btcdev.eliteanimesapp.data.NewsThread;
 import de.btcdev.eliteanimesapp.json.ListAnimeDeserializer;
 
@@ -82,10 +82,10 @@ public class AnimeListActivity extends ParentActivity implements
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_anime_list);
 		ActionBar bar = getSupportActionBar();
-		netzwerk = Netzwerk.instance(this);
+		networkService = NetworkService.instance(this);
 		eaParser = new EAParser(this);
 		if (savedInstanceState != null) {
-			aktuellerUser = savedInstanceState.getString("Benutzer");
+			aktuellerUser = savedInstanceState.getString("User");
 			userID = savedInstanceState.getInt("UserID");
 			komplett = savedInstanceState.getParcelableArrayList("Komplett");
 			amSchauen = savedInstanceState.getParcelableArrayList("AmSchauen");
@@ -103,13 +103,13 @@ public class AnimeListActivity extends ParentActivity implements
 			Intent intent = getIntent();
 			Bundle bundle = intent.getExtras();
 			if (bundle != null) {
-				aktuellerUser = bundle.getString("Benutzer");
+				aktuellerUser = bundle.getString("User");
 				userID = bundle.getInt("UserID");
 				bar.setSubtitle(aktuellerUser);
 			}
 			animelistTask = new AnimelistTask();
-			if (aktuellerUser.equals(Konfiguration
-					.getBenutzername(getApplicationContext())))
+			if (aktuellerUser.equals(Configuration
+					.getUserName(getApplicationContext())))
 				animelistTask.ownList = true;
 			else
 				animelistTask.ownList = false;
@@ -120,14 +120,14 @@ public class AnimeListActivity extends ParentActivity implements
 	}
 
 	/**
-	 * Speichert den aktuellen Benutzer, seine UserID und seine Animelisten
+	 * Speichert den aktuellen User, seine UserID und seine Animelisten
 	 * 
 	 * @param savedInstanceState
 	 *            vom System erzeugtes Bundle zum Speichern der Daten
 	 */
 	@Override
 	public void onSaveInstanceState(Bundle savedInstanceState) {
-		savedInstanceState.putString("Benutzer", aktuellerUser);
+		savedInstanceState.putString("User", aktuellerUser);
 		savedInstanceState.putInt("UserID", userID);
 		savedInstanceState.putParcelableArrayList("Komplett", komplett);
 		savedInstanceState.putParcelableArrayList("AmSchauen", amSchauen);
@@ -325,8 +325,8 @@ public class AnimeListActivity extends ParentActivity implements
 	 */
 	public void refresh() {
 		animelistTask = new AnimelistTask();
-		if (aktuellerUser.equals(Konfiguration
-				.getBenutzername(getApplicationContext())))
+		if (aktuellerUser.equals(Configuration
+				.getUserName(getApplicationContext())))
 			animelistTask.ownList = true;
 		else
 			animelistTask.ownList = false;
@@ -350,25 +350,25 @@ public class AnimeListActivity extends ParentActivity implements
 	public void onItemClick(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
 		if (arg0.getId() == R.id.nav_animelist_list) {
 			if (arg2 == navigation_animeliste) {
-				if (aktuellerUser.equals(Konfiguration
-						.getBenutzername(getApplicationContext())))
+				if (aktuellerUser.equals(Configuration
+						.getUserName(getApplicationContext())))
 					mDrawerLayout.closeDrawer(Gravity.LEFT);
 				else {
 					Intent intent = new Intent(
 							this,
 							de.btcdev.eliteanimesapp.gui.AnimeListActivity.class);
-					intent.putExtra("Benutzer", Konfiguration
-							.getBenutzername(getApplicationContext()));
+					intent.putExtra("User", Configuration
+							.getUserName(getApplicationContext()));
 					intent.putExtra("UserID",
-							Konfiguration.getUserID(getApplicationContext()));
+							Configuration.getUserID(getApplicationContext()));
 					mDrawerLayout.closeDrawer(Gravity.LEFT);
 					startActivity(intent);
 				}
 			} else
 				super.onItemClick(arg0, arg1, arg2, arg3);
 		} else if (arg0.getId() == R.id.animelist_list) {
-			if (aktuellerUser.equals(Konfiguration
-					.getBenutzername(getApplicationContext()))) {
+			if (aktuellerUser.equals(Configuration
+					.getUserName(getApplicationContext()))) {
 				ListAnime selectedAnime;
 				int status;
 				switch (animelistSelection) {
@@ -425,7 +425,7 @@ public class AnimeListActivity extends ParentActivity implements
 					new NewsThread(getApplicationContext()).start();
 					if (this.isCancelled())
 						return null;
-					input = netzwerk.getAnimelist(aktuellerUser, userID);
+					input = networkService.getAnimeList(aktuellerUser, userID);
 					if (this.isCancelled())
 						return null;
 					komplett = new ArrayList<ListAnime>();
@@ -435,7 +435,7 @@ public class AnimeListActivity extends ParentActivity implements
 					geplant = new ArrayList<ListAnime>();
 					if (this.isCancelled())
 						return null;
-					eaParser.getListAnimes(input, komplett, amSchauen,
+					eaParser.getListAnime(input, komplett, amSchauen,
 							kurzAufgehoert, abgebrochen, geplant, ownList);
 					if (ownList)
 						new AnimelistCacheThread(
@@ -446,13 +446,13 @@ public class AnimeListActivity extends ParentActivity implements
 				else {
 					// teste ob Cache
 					if (!loadCache()) {
-						input = netzwerk.getAnimelist(aktuellerUser, userID);
+						input = networkService.getAnimeList(aktuellerUser, userID);
 						komplett = new ArrayList<ListAnime>();
 						amSchauen = new ArrayList<ListAnime>();
 						kurzAufgehoert = new ArrayList<ListAnime>();
 						abgebrochen = new ArrayList<ListAnime>();
 						geplant = new ArrayList<ListAnime>();
-						eaParser.getListAnimes(input, komplett, amSchauen,
+						eaParser.getListAnime(input, komplett, amSchauen,
 								kurzAufgehoert, abgebrochen, geplant, ownList);
 						new AnimelistCacheThread(
 								AnimelistCacheThread.MODE_SAVE_CACHE, komplett,
@@ -533,16 +533,16 @@ public class AnimeListActivity extends ParentActivity implements
 			if (prefs.contains("lastUser")) {
 				// Gibt es einen AnimelistCache?
 				if (prefs.contains("AnimelistCache")) {
-					// ist der Cache vom aktuellen Benutzer?
+					// ist der Cache vom aktuellen User?
 					if (prefs.getString("lastUser", "").equals(
-							Konfiguration
-									.getBenutzername(getApplicationContext()))) {
+							Configuration
+									.getUserName(getApplicationContext()))) {
 						komplett = new ArrayList<ListAnime>();
 						amSchauen = new ArrayList<ListAnime>();
 						kurzAufgehoert = new ArrayList<ListAnime>();
 						abgebrochen = new ArrayList<ListAnime>();
 						geplant = new ArrayList<ListAnime>();
-						// lese Cache aus und speicher in Konfiguration
+						// lese Cache aus und speicher in Configuration
 						String jsonKomplett = prefs.getString(
 								"AnimelistCacheKomplett", "");
 						String jsonAmSchauen = prefs.getString(
@@ -560,7 +560,7 @@ public class AnimeListActivity extends ParentActivity implements
 								&& !jsonGeplant.equals("")) {
 							// Konvertiere JSON-Strings zurück zu ArrayLists aus
 							// ListAnime-Objekten
-							// und setze Cache in Konfiguration
+							// und setze Cache in Configuration
 							try {
 								Gson gson = new GsonBuilder()
 										.registerTypeAdapter(ListAnime.class,
@@ -631,7 +631,7 @@ public class AnimeListActivity extends ParentActivity implements
 			anime = bundle.getParcelable("anime");
 			status = bundle.getInt("status");
 			AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-			builder.setTitle(anime.getTitel());
+			builder.setTitle(anime.getTitle());
 			// Get the layout inflater
 			LayoutInflater inflater = getActivity().getLayoutInflater();
 			// Inflate and set the layout for the dialog
@@ -653,21 +653,21 @@ public class AnimeListActivity extends ParentActivity implements
 			scoreAdapter
 					.setDropDownViewResource(R.layout.dialog_animelist_rate_dropdown);
 			scoreSpinner.setAdapter(scoreAdapter);
-			if (anime.getBewertung() == 0.0)
+			if (anime.getRating() == 0.0)
 				scoreSpinner.setSelection(0);
 			else {
 				scoreSpinner
-						.setSelection((int) Math.abs((anime.getBewertung() * 10) - 101));
+						.setSelection((int) Math.abs((anime.getRating() * 10) - 101));
 			}
 			categorySpinner = (Spinner) view
 					.findViewById(R.id.dialog_animelist_rate_category);
 			categorySpinner.setSelection(status - 1);
 			fortschritt = (EditText) view
 					.findViewById(R.id.dialog_animelist_rate_fortschritt);
-			fortschritt.setText("" + anime.getFortschritt());
+			fortschritt.setText("" + anime.getProgress());
 			folgenanzahl = (EditText) view
 					.findViewById(R.id.dialog_animelist_rate_folgenzahl);
-			folgenanzahl.setText("" + anime.getFolgenAnzahl());
+			folgenanzahl.setText("" + anime.getEpisodeCount());
 			builder.setView(view)
 					// Add action buttons
 					.setPositiveButton("Bewerten",
@@ -692,20 +692,20 @@ public class AnimeListActivity extends ParentActivity implements
 									new Thread(new Runnable() {
 										public void run() {
 											try {
-												Netzwerk.instance(getActivity())
+												NetworkService.instance(getActivity())
 														.rateAnime(
 																anime.getId(),
 																score,
 																seen,
-																anime.getFolgenAnzahl(),
+																anime.getEpisodeCount(),
 																statusNeu);
 											} catch (EAException e) {
 
 											}
 										}
 									}).start();
-									anime.setBewertung(score);
-									anime.setFortschritt(seen);
+									anime.setRating(score);
+									anime.setProgress(seen);
 									ratedListener.onAnimeRatingComplete(anime,
 											status, statusNeu);
 								}
@@ -728,10 +728,10 @@ public class AnimeListActivity extends ParentActivity implements
 	 * Liste und aktualisiert die Darstellung.
 	 */
 	@Override
-	public void onAnimeRatingComplete(ListAnime anime, int status, int statusNeu) {
+	public void onAnimeRatingComplete(ListAnime anime, int oldStatus, int newStatus) {
 		// aktualisiere Liste
-		if (status != statusNeu) {
-			switch (status) {
+		if (oldStatus != newStatus) {
+			switch (oldStatus) {
 			case 1:
 				amSchauen.remove(anime);
 				break;
@@ -748,7 +748,7 @@ public class AnimeListActivity extends ParentActivity implements
 				abgebrochen.remove(anime);
 				break;
 			}
-			switch (statusNeu) {
+			switch (newStatus) {
 			case 1:
 				amSchauen.add(anime);
 				break;

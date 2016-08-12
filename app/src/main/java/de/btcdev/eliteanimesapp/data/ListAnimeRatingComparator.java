@@ -12,9 +12,9 @@ public class ListAnimeRatingComparator implements Comparator<ListAnime> {
 	public int compare(ListAnime lhs, ListAnime rhs) {
 		if (lhs.getTokenId() == null || lhs.getTokenId().isEmpty()) {
 			return (-1)
-					* Double.compare(lhs.getBewertung(), rhs.getBewertung());
+					* Double.compare(lhs.getRating(), rhs.getRating());
 		} else {
-			int result = Double.compare(lhs.getBewertung(), rhs.getBewertung());
+			int result = Double.compare(lhs.getRating(), rhs.getRating());
 			if (result == 0) {
 				return rhs.getTokenId().compareTo(lhs.getTokenId());
 			} else {

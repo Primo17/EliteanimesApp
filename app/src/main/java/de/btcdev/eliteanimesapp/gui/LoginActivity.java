@@ -22,6 +22,8 @@ import android.widget.Toast;
 
 import com.google.analytics.tracking.android.EasyTracker;
 
+import javax.inject.Inject;
+
 import de.btcdev.eliteanimesapp.R;
 import de.btcdev.eliteanimesapp.data.Configuration;
 import de.btcdev.eliteanimesapp.data.EAException;
@@ -29,6 +31,7 @@ import de.btcdev.eliteanimesapp.data.EAParser;
 import de.btcdev.eliteanimesapp.data.NetworkService;
 import de.btcdev.eliteanimesapp.data.Profile;
 import de.btcdev.eliteanimesapp.data.ProfileCache;
+import de.btcdev.eliteanimesapp.services.LoginService;
 
 /**
  * Activity, die für den Login des Benutzers zuständig ist.
@@ -43,6 +46,12 @@ public class LoginActivity extends ParentActivity implements OnClickListener,
     private SharedPreferences prefs;
     private LoginTask loginTask;
     private ProfileCache profileCache;
+
+    @Inject
+    LoginService loginService;
+
+    private String userName;
+    private String password;
 
     /**
      * Erzeugt die Activity. Die ActionBar und die restliche grafische
@@ -148,11 +157,11 @@ public class LoginActivity extends ParentActivity implements OnClickListener,
             SharedPreferences defaultprefs = PreferenceManager
                     .getDefaultSharedPreferences(this);
             if (defaultprefs.getBoolean("pref_auto_login", false) && !logout) {
-                String benutzername = prefs.getString("Benutzername", "");
-                String passwort = prefs.getString("Passwort", "");
-                if (!benutzername.equals("") && !passwort.equals("")) {
-                    Configuration.setUserName(benutzername);
-                    Configuration.setPassword(passwort);
+                userName = prefs.getString("Benutzername", "");
+                password = prefs.getString("Passwort", "");
+                if (!userName.equals("") && !password.equals("")) {
+                    Configuration.setUserName(userName);
+                    Configuration.setPassword(password);
                     loginTask = new LoginTask();
                     loginTask.execute("");
                 }
@@ -190,8 +199,8 @@ public class LoginActivity extends ParentActivity implements OnClickListener,
     @Override
     public void onClick(View arg0) {
         if (arg0.getId() == de.btcdev.eliteanimesapp.R.id.login_button) {
-            String userName = loginUserNameView.getText().toString();
-            String password = loginPasswordView.getText().toString();
+            userName = loginUserNameView.getText().toString();
+            password = loginPasswordView.getText().toString();
             Configuration.setUserName(userName);
             Configuration.setPassword(password);
             boolean checked = loginCheckView.isChecked();
@@ -281,7 +290,7 @@ public class LoginActivity extends ParentActivity implements OnClickListener,
                 if (this.isCancelled())
                     return null;
                 networkService = NetworkService.instance(getApplicationContext());
-                String input = networkService.login();
+                String input = loginService.login(userName, password);
                 if (input != null)
                     new EAParser(getApplicationContext())
                             .parseLoginResult(input);

@@ -136,40 +136,6 @@ public class NetworkService {
     }
 
     /**
-     * Es wird versucht, den User mit den in der Configuration gesetzten
-     * Benutzernamen und Passwort einzuloggen. Zuvor wird überprüft, ob schon
-     * ein passender Cookie existiert, der User also schon eingeloggt ist.
-     * Wenn nicht, werden die Cookies von EA geladen und eine Post-Anfrage mit
-     * den entsprechenden Daten abgeschickt. Bei erfolgreichem Login werden die
-     * jeweiligen Cookies gespeichert und die UserID in der Configuration
-     * gesetzt.
-     *
-     * @throws EAException wenn ein Verbindungsfehler jeglicher Art auftritt
-     */
-    public String login() throws EAException {
-        if (!isLoggedIn()) {
-            cookies = httpclient.getCookieStore().getCookies();
-            List<NameValuePair> nvps = new ArrayList<>();
-            nvps.add(new BasicNameValuePair("name", Configuration
-                    .getUserName(context)));
-            nvps.add(new BasicNameValuePair("password", Configuration
-                    .getPassword()));
-            nvps.add(new BasicNameValuePair("apikey", getApikey()));
-            String input = doPOST(eaURL + "/api/login", nvps);
-            int userId = 0;
-            for (Cookie c : cookies) {
-                if (c.getName().equals("user_id"))
-                    userId = Integer.parseInt(c.getValue());
-            }
-            saveCookies();
-            if (userId != 0)
-                Configuration.setUserId(userId);
-            return input;
-        }
-        return null;
-    }
-
-    /**
      * Falls ein User eingeloggt ist, wird dieser ausgeloggt. Dazu werden
      * alle Login-Cookies gelöscht. (Der gesamte Vorgang wird in einem eigenen
      * Thread ausgeführt)

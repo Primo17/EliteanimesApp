@@ -38,10 +38,14 @@ import java.util.NoSuchElementException;
 import java.util.Properties;
 import java.util.Scanner;
 
+import javax.inject.Inject;
+import javax.inject.Singleton;
+
 /**
  * Klasse für alle verwendeten NetworkService-Aufgaben. Verwaltet die Adresse von EA,
  * die gesetzten Cookies und den HttpClient.
  */
+@Singleton
 public class NetworkService {
 
     private static Context context = null;
@@ -59,7 +63,7 @@ public class NetworkService {
      * @param context Context der aufrufenden Klasse, wird für String-Ressourcen
      *                benötigt.
      */
-    private NetworkService(Context context) {
+    public NetworkService(Context context) {
         httpclient = new DefaultHttpClient();
         ClientConnectionManager cmgr = httpclient.getConnectionManager();
         HttpParams param = httpclient.getParams();
@@ -196,7 +200,7 @@ public class NetworkService {
         nvps.add(new BasicNameValuePair("id", Integer
                 .toString(Configuration.getUserID(context))));
         nvps.add(new BasicNameValuePair("apikey", getApikey()));
-        return doPOST(eaURL + "/api/getProfile", nvps);
+        return doPOST(eaURL + "/api/getProfil", nvps);
     }
 
     /**
@@ -212,7 +216,7 @@ public class NetworkService {
         List<NameValuePair> nvps = new ArrayList<>();
         nvps.add(new BasicNameValuePair("id", Integer.toString(userId)));
         nvps.add(new BasicNameValuePair("apikey", getApikey()));
-        return doPOST(eaURL + "/api/getProfile", nvps);
+        return doPOST(eaURL + "/api/getProfil", nvps);
     }
 
     /**
@@ -547,7 +551,7 @@ public class NetworkService {
         List<NameValuePair> nvps = new ArrayList<>();
         nvps.add(new BasicNameValuePair("id", Integer.toString(id)));
         nvps.add(new BasicNameValuePair("apikey", getApikey()));
-        return doPOST(eaURL + "/api/getAnimeList", nvps);
+        return doPOST(eaURL + "/api/getAnimelist", nvps);
     }
 
     /**

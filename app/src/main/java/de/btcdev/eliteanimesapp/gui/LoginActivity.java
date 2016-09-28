@@ -24,6 +24,7 @@ import com.google.analytics.tracking.android.EasyTracker;
 
 import javax.inject.Inject;
 
+import de.btcdev.eliteanimesapp.EaApp;
 import de.btcdev.eliteanimesapp.R;
 import de.btcdev.eliteanimesapp.data.Configuration;
 import de.btcdev.eliteanimesapp.data.EAException;
@@ -63,6 +64,8 @@ public class LoginActivity extends ParentActivity implements OnClickListener,
      */
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        ((EaApp) getApplication()).getEaComponent().inject(this);
+        loginService.isSomeoneLoggedIn();
 
         PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
         Configuration.setContext(getApplicationContext());

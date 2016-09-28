@@ -1,7 +1,5 @@
 package de.btcdev.eliteanimesapp.gui;
 
-import java.util.ArrayList;
-
 import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -19,6 +17,9 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
 import android.widget.Toast;
+
+import java.util.ArrayList;
+
 import de.btcdev.eliteanimesapp.R;
 import de.btcdev.eliteanimesapp.adapter.NavDrawerListAdapter;
 import de.btcdev.eliteanimesapp.data.Configuration;

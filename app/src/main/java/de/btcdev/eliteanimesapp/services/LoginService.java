@@ -11,19 +11,25 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.inject.Inject;
+import javax.inject.Singleton;
 
 import de.btcdev.eliteanimesapp.data.Configuration;
 import de.btcdev.eliteanimesapp.data.EAException;
 import de.btcdev.eliteanimesapp.data.NetworkService;
 
+@Singleton
 public class LoginService {
 
     //TODO: remove the other methods from networkService and eaParser!
 
     private String eaURL = "http://www.eliteanimes.com";
 
+    private NetworkService networkService;
+
     @Inject
-    NetworkService networkService;
+    public LoginService(NetworkService networkService) {
+        this.networkService = networkService;
+    }
 
     /**
      * Es wird versucht, den User mit den in der Configuration gesetzten

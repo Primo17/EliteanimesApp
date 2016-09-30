@@ -8,7 +8,9 @@ import android.content.SharedPreferences;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
-import de.btcdev.eliteanimesapp.data.Configuration;
+import javax.inject.Inject;
+
+import de.btcdev.eliteanimesapp.data.ConfigurationService;
 import de.btcdev.eliteanimesapp.data.PrivateMessage;
 import de.btcdev.eliteanimesapp.json.PrivateMessageSerializer;
 
@@ -21,9 +23,12 @@ public class PrivateMessageCacheThread extends Thread {
 	private int mode;
 	private ArrayList<PrivateMessage> privateMessages;
 
+	@Inject
+	ConfigurationService configurationService;
+
 	@SuppressWarnings("unchecked")
 	public PrivateMessageCacheThread(int mode, ArrayList<PrivateMessage> privateMessages) {
-		context = Configuration.getContext();
+		context = configurationService.getContext();
 		prefs = context.getSharedPreferences("cache", Context.MODE_PRIVATE);
 		this.mode = mode;
 		this.privateMessages = (ArrayList<PrivateMessage>) privateMessages.clone();
@@ -41,7 +46,7 @@ public class PrivateMessageCacheThread extends Thread {
 	}
 
 	/**
-	 * Konvertiert den aktuell in der Configuration gespeicherten PrivateMessage-Cache zu
+	 * Konvertiert den aktuell in der ConfigurationService gespeicherten PrivateMessage-Cache zu
 	 * einem JSON-Objekt und speichert dieses.
 	 */
 	public void saveCache() {
@@ -52,7 +57,7 @@ public class PrivateMessageCacheThread extends Thread {
 		String json = gson.toJson(privateMessages);
 		// speicher JSON-Repräsentation und aktuellen User
 		SharedPreferences.Editor editor = prefs.edit();
-		editor.putString("lastUser", Configuration.getUserName(context));
+		editor.putString("lastUser", configurationService.getUserName(context));
 		editor.putString("PNCache", json);
 		editor.apply();
 	}

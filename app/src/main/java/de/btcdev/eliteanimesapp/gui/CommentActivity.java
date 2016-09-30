@@ -30,19 +30,27 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonParseException;
 import com.google.gson.reflect.TypeToken;
 
+import javax.inject.Inject;
+
+import de.btcdev.eliteanimesapp.EaApp;
 import de.btcdev.eliteanimesapp.R;
 import de.btcdev.eliteanimesapp.adapter.CommentAdapter;
 import de.btcdev.eliteanimesapp.cache.CommentCacheThread;
 import de.btcdev.eliteanimesapp.data.Comment;
+import de.btcdev.eliteanimesapp.data.ConfigurationService;
 import de.btcdev.eliteanimesapp.data.EAException;
 import de.btcdev.eliteanimesapp.data.EAParser;
-import de.btcdev.eliteanimesapp.data.Configuration;
 import de.btcdev.eliteanimesapp.data.NetworkService;
 import de.btcdev.eliteanimesapp.data.NewsThread;
 import de.btcdev.eliteanimesapp.json.CommentDeserializer;
 
 public class CommentActivity extends ParentActivity implements
 		OnItemClickListener {
+
+	@Inject
+	ConfigurationService configurationService;
+	@Inject
+	NetworkService networkService;
 
 	private String currentUser;
 	private int userId;
@@ -60,11 +68,11 @@ public class CommentActivity extends ParentActivity implements
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		((EaApp) getApplication()).getEaComponent().inject(this);
 		setContentView(R.layout.activity_kommentar);
 		actionBar = getSupportActionBar();
 		actionBar.setTitle("Kommentare");
 
-		networkService = NetworkService.instance(this);
 		eaParser = new EAParser(null);
 
 		if (savedInstanceState != null) {
@@ -89,8 +97,8 @@ public class CommentActivity extends ParentActivity implements
 			actionBar.setSubtitle(currentUser);
 			// Neue Kommentare vorhanden oder anderer
 			// User oder selbst neuer Comment gesendet
-			if (Configuration.getNewCommentCount() != 0
-					|| !Configuration.getUserName(getApplicationContext())
+			if (configurationService.getNewCommentCount() != 0
+					|| !configurationService.getUserName(getApplicationContext())
 							.equals(currentUser)
 					|| intentdata.getBoolean("Send")) {
 				pageCount = 1;
@@ -104,7 +112,7 @@ public class CommentActivity extends ParentActivity implements
 		}
 		handleNavigationDrawer(R.id.nav_kommentare, R.id.nav_kommentare_list,
 				"Kommentare", currentUser);
-		Configuration.setNewCommentCount(0, this);
+		configurationService.setNewCommentCount(0, this);
 	}
 
 	/**
@@ -154,7 +162,7 @@ public class CommentActivity extends ParentActivity implements
 	 *            die Kommentare in einer ArrayList
 	 */
 	public void fillViews(ArrayList<Comment> newComments) {
-		Configuration.setNewCommentCount(0, this);
+		configurationService.setNewCommentCount(0, this);
 		comments = newComments;
 		if (comments == null || comments.isEmpty()) {
 			LinearLayout lin = (LinearLayout) findViewById(R.id.comments_layout);
@@ -224,17 +232,17 @@ public class CommentActivity extends ParentActivity implements
 			}
 		} else if (arg0.getId() == R.id.nav_kommentare_list) {
 			if (arg2 == NAVIGATION_COMMENTS) {
-				if (currentUser.equals(Configuration
+				if (currentUser.equals(configurationService
 						.getUserName(getApplicationContext()))) {
 					mDrawerLayout.closeDrawer(Gravity.LEFT);
 				} else {
 					Intent intent = new Intent(
 							this,
 							CommentActivity.class);
-					intent.putExtra("User", Configuration
+					intent.putExtra("User", configurationService
 							.getUserName(getApplicationContext()));
 					intent.putExtra("UserID",
-							Configuration.getUserID(getApplicationContext()));
+							configurationService.getUserID(getApplicationContext()));
 					mDrawerLayout.closeDrawer(Gravity.LEFT);
 					startActivity(intent);
 				}
@@ -265,7 +273,7 @@ public class CommentActivity extends ParentActivity implements
 			Comment comment = comments.get(chosenPosition);
 			chosenPosition = -1;
 			String name = comment.getUserName();
-			if (name.equals(Configuration
+			if (name.equals(configurationService
 					.getUserName(getApplicationContext()))) {
 				Intent intent = new Intent(this,
 						ProfileActivity.class);
@@ -317,7 +325,7 @@ public class CommentActivity extends ParentActivity implements
 			chosenPosition = info.position;
 			if (chosenPosition < comments.size()) {
 				Comment comment = comments.get(chosenPosition);
-				String userName = Configuration
+				String userName = configurationService
 						.getUserName(getApplicationContext());
 				ArrayList<String> items = new ArrayList<String>();
 				if (comment.getUserName().equals(userName)
@@ -384,7 +392,6 @@ public class CommentActivity extends ParentActivity implements
 		protected ArrayList<Comment> doInBackground(String... params) {
 			String input;
 			eaParser = new EAParser(null);
-			networkService = NetworkService.instance(getApplicationContext());
 			new NewsThread(getApplicationContext()).start();
 			if (params[0].equals("more")) {
 				try {
@@ -462,7 +469,7 @@ public class CommentActivity extends ParentActivity implements
 		protected void onPostExecute(ArrayList<Comment> result) {
 
 			if (result != null && !result.isEmpty()) {
-				if (currentUser.equals(Configuration
+				if (currentUser.equals(configurationService
 						.getUserName(getApplicationContext()))
 						&& pageCount == 1) {
 					new CommentCacheThread(
@@ -547,12 +554,12 @@ public class CommentActivity extends ParentActivity implements
 			if (prefs.contains("CommentCache")) {
 				// ist der Cache vom aktuellen User?
 				if (prefs.getString("lastUser", "").equals(
-						Configuration.getUserName(getApplicationContext()))) {
-					// lese Cache aus und speicher in Configuration
+						configurationService.getUserName(getApplicationContext()))) {
+					// lese Cache aus und speicher in configurationService
 					String jsonCache = prefs.getString("CommentCache", "");
 					if (!jsonCache.equals("")) {
 						// Konvertiere JSON zurück zu ArrayList aus Kommentaren
-						// und setze Cache in Configuration
+						// und setze Cache in configurationService
 						try {
 							Gson gson = new GsonBuilder().registerTypeAdapter(
 									Comment.class,

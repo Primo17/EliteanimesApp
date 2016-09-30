@@ -24,8 +24,12 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import javax.inject.Inject;
+
+import de.btcdev.eliteanimesapp.EaApp;
 import de.btcdev.eliteanimesapp.R;
-import de.btcdev.eliteanimesapp.data.Configuration;
+import de.btcdev.eliteanimesapp.data.ConfigurationService;
 import de.btcdev.eliteanimesapp.data.NetworkService;
 import de.btcdev.eliteanimesapp.data.User;
 import de.btcdev.eliteanimesapp.data.EAException;
@@ -35,6 +39,11 @@ import de.btcdev.eliteanimesapp.data.NewsThread;
 public class SearchActivity extends ParentActivity implements
 		OnItemClickListener, OnClickListener {
 
+	@Inject
+	ConfigurationService configurationService;
+	@Inject
+	NetworkService networkService;
+
 	private EditText eingabe;
 	private Button searchButton;
 	private SearchTask task;
@@ -43,9 +52,9 @@ public class SearchActivity extends ParentActivity implements
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		((EaApp) getApplication()).getEaComponent().inject(this);
 		setContentView(R.layout.activity_search);
 		actionBar = getSupportActionBar();
-		networkService = NetworkService.instance(this);
 		eaParser = new EAParser(null);
 		eingabe = (EditText) findViewById(R.id.search_eingabe);
 		searchButton = (Button) findViewById(R.id.search_button);
@@ -112,7 +121,7 @@ public class SearchActivity extends ParentActivity implements
 			if (arg2 <= liste.size()) {
 				User user = liste.get(arg2);
 				if (user.getName().equals(
-						Configuration.getUserName(getApplicationContext()))) {
+						configurationService.getUserName(getApplicationContext()))) {
 					Intent intent = new Intent(this,
 							ProfileActivity.class);
 					startActivity(intent);
@@ -176,7 +185,6 @@ public class SearchActivity extends ParentActivity implements
 		@Override
 		protected ArrayList<User> doInBackground(String... params) {
 			String input;
-			networkService = NetworkService.instance(getApplicationContext());
 			eaParser = new EAParser(null);
 			new NewsThread(getApplicationContext()).start();
 			ArrayList<User> result;

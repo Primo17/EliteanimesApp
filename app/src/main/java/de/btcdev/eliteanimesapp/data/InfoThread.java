@@ -10,8 +10,12 @@ import android.content.pm.PackageInfo;
 import com.google.analytics.tracking.android.EasyTracker;
 import com.google.analytics.tracking.android.MapBuilder;
 
+import javax.inject.Inject;
+
 public class InfoThread extends Thread {
 
+	@Inject
+	ConfigurationService configurationService;
 	private Context context;
 //	private boolean info = false;
 //	private boolean status = false;
@@ -62,7 +66,7 @@ public class InfoThread extends Thread {
 	// nvps = new ArrayList<NameValuePair>();
 	// httppost = new HttpPost(url + "/info.php");
 	// nvps.add(new BasicNameValuePair("Benutzername",
-	// Configuration.getUserName()));
+	// ConfigurationService.getUserName()));
 	// nvps.add(new BasicNameValuePair("AppVersion", appversion));
 	// nvps.add(new BasicNameValuePair("AndroidVersion",
 	// androidversion));
@@ -85,7 +89,7 @@ public class InfoThread extends Thread {
 	// if (!status)
 	// nvps = null;
 	// nvps = new ArrayList<NameValuePair>();
-	// nvps.add(new BasicNameValuePair("Benutzername", Configuration
+	// nvps.add(new BasicNameValuePair("Benutzername", ConfigurationService
 	// .getUserName()));
 	// httppost = new HttpPost(url + "/status.php");
 	// httppost.setEntity(new UrlEncodedFormEntity(nvps, HTTP.UTF_8));
@@ -156,7 +160,7 @@ public class InfoThread extends Thread {
 		tracker.send(MapBuilder.createEvent(
 				"login_action",
 				"login",
-				Configuration.getUserName(context) + ", " + appVersion + ", "
+				configurationService.getUserName(context) + ", " + appVersion + ", "
 						+ androidVersion + ", " + phoneModel, null).build());
 	}
 }

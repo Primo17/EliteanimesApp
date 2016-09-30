@@ -19,6 +19,10 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.Toast;
+
+import javax.inject.Inject;
+
+import de.btcdev.eliteanimesapp.EaApp;
 import de.btcdev.eliteanimesapp.R;
 import de.btcdev.eliteanimesapp.adapter.BoardThreadAdapter;
 import de.btcdev.eliteanimesapp.data.EAException;
@@ -30,6 +34,9 @@ import de.btcdev.eliteanimesapp.data.Subboard;
 
 public class ThreadActivity extends ParentActivity implements
 		OnItemSelectedListener {
+
+	@Inject
+	NetworkService networkService;
 
 	private ListView listView;
 	private BoardThreadAdapter boardThreadAdapter;
@@ -44,6 +51,7 @@ public class ThreadActivity extends ParentActivity implements
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		((EaApp) getApplication()).getEaComponent().inject(this);
 		setContentView(R.layout.activity_thread);
 		listView = (ListView) findViewById(R.id.threads_list);
 		if (savedInstanceState != null) {
@@ -222,7 +230,6 @@ public class ThreadActivity extends ParentActivity implements
 		@Override
 		protected String doInBackground(String... params) {
 			String input;
-			networkService = NetworkService.instance(getApplicationContext());
 			eaParser = new EAParser(getApplicationContext());
 			try {
 				if (isCancelled())

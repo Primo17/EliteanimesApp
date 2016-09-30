@@ -19,6 +19,10 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ExpandableListView;
 import android.widget.ExpandableListView.OnChildClickListener;
 import android.widget.Toast;
+
+import javax.inject.Inject;
+
+import de.btcdev.eliteanimesapp.EaApp;
 import de.btcdev.eliteanimesapp.R;
 import de.btcdev.eliteanimesapp.adapter.BoardAdapter;
 import de.btcdev.eliteanimesapp.data.Board;
@@ -35,11 +39,14 @@ public class BoardActivity extends ParentActivity implements
 	private TreeMap<Integer, ArrayList<Board>> boardMap;
 	private Statistics statistics;
 	private BoardTask boardTask;
+	@Inject
+	NetworkService networkService;
 
 	@SuppressWarnings("unchecked")
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		((EaApp) getApplication()).getEaComponent().inject(this);
 		setContentView(R.layout.activity_foren);
 		listView = (ExpandableListView) findViewById(R.id.foren_list);
 		if (savedInstanceState != null) {
@@ -168,7 +175,6 @@ public class BoardActivity extends ParentActivity implements
 		protected String doInBackground(String... params) {
 			String input = null;
 			eaParser = new EAParser(getApplicationContext());
-			networkService = NetworkService.instance(getApplicationContext());
 			try {
 				if (isCancelled())
 					return "";

@@ -13,7 +13,7 @@ import java.util.List;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
-import de.btcdev.eliteanimesapp.data.Configuration;
+import de.btcdev.eliteanimesapp.data.ConfigurationService;
 import de.btcdev.eliteanimesapp.data.EAException;
 import de.btcdev.eliteanimesapp.data.NetworkService;
 
@@ -25,19 +25,21 @@ public class LoginService {
     private String eaURL = "http://www.eliteanimes.com";
 
     private NetworkService networkService;
+    private ConfigurationService configurationService;
 
     @Inject
-    public LoginService(NetworkService networkService) {
+    public LoginService(NetworkService networkService, ConfigurationService configurationService) {
         this.networkService = networkService;
+        this.configurationService = configurationService;
     }
 
     /**
-     * Es wird versucht, den User mit den in der Configuration gesetzten
+     * Es wird versucht, den User mit den in der ConfigurationService gesetzten
      * Benutzernamen und Passwort einzuloggen. Zuvor wird überprüft, ob schon
      * ein passender Cookie existiert, der User also schon eingeloggt ist.
      * Wenn nicht, werden die Cookies von EA geladen und eine Post-Anfrage mit
      * den entsprechenden Daten abgeschickt. Bei erfolgreichem Login werden die
-     * jeweiligen Cookies gespeichert und die UserID in der Configuration
+     * jeweiligen Cookies gespeichert und die UserID in der ConfigurationService
      * gesetzt.
      *
      * @throws EAException wenn ein Verbindungsfehler jeglicher Art auftritt
@@ -52,7 +54,7 @@ public class LoginService {
             int userId = networkService.getIdByCookie();
             networkService.saveCookies();
             if (userId != 0)
-                Configuration.setUserId(userId);
+                configurationService.setUserId(userId);
             return input;
         }
         return null;
@@ -84,7 +86,7 @@ public class LoginService {
 
     /**
      * Überprüft, ob schon Login-Cookies vorhanden sind und ob diese mit dem
-     * Benutzernamen der Configuration übereinstimmen.
+     * Benutzernamen der ConfigurationService übereinstimmen.
      *
      * @return Wahrheitswert, ob der aktuelle User schon eingeloggt ist
      */
@@ -117,7 +119,7 @@ public class LoginService {
             JsonObject obj = jsonParser.parse(input).getAsJsonObject();
             JsonElement token = obj.get("token");
             if (token != null) {
-                Configuration.setBoardToken(token.getAsString());
+                configurationService.setBoardToken(token.getAsString());
                 return true;
             }
             return false;
@@ -128,7 +130,7 @@ public class LoginService {
 
     /**
      * Parst den übergebenen JSON-String der API-Funktion getToken nach dem
-     * Token und setzt diesen in der Configuration.
+     * Token und setzt diesen in der ConfigurationService.
      *
      * @param input JSON-String der den Token enthält
      */
@@ -137,7 +139,7 @@ public class LoginService {
             JsonParser parser = new JsonParser();
             JsonObject object = parser.parse(input).getAsJsonObject();
             if (object.has("token")) {
-                Configuration.setBoardToken(object.get("token").getAsString());
+                configurationService.setBoardToken(object.get("token").getAsString());
             }
         } catch (Exception e) {
 

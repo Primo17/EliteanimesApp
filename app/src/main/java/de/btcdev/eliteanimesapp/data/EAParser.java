@@ -22,6 +22,8 @@ import com.google.gson.JsonParser;
 import com.google.gson.JsonSyntaxException;
 import com.google.gson.reflect.TypeToken;
 
+import javax.inject.Inject;
+
 import de.btcdev.eliteanimesapp.json.BoardDeserializer;
 import de.btcdev.eliteanimesapp.json.BoardPostDeserializer;
 import de.btcdev.eliteanimesapp.json.BoardThreadDeserializer;
@@ -42,6 +44,8 @@ import de.btcdev.eliteanimesapp.json.StatisticsDeserializer;
 public class EAParser {
 
     private Context context;
+    @Inject
+    ConfigurationService configurationService;
 
     /**
      * Erzeugt einen neuen EAParser
@@ -60,7 +64,7 @@ public class EAParser {
             JsonObject obj = jsonParser.parse(input).getAsJsonObject();
             JsonElement token = obj.get("token");
             if (token != null) {
-                Configuration.setBoardToken(token.getAsString());
+                configurationService.setBoardToken(token.getAsString());
                 return true;
             }
             return false;
@@ -646,7 +650,7 @@ public class EAParser {
 
     /**
      * Parst den übergebenen String nach den Neuigkeiten (Neue Nachrichten und
-     * Kommentare) und setzt die erhaltenen Werte in der Configuration.
+     * Kommentare) und setzt die erhaltenen Werte in der configurationService.
      *
      * @param input JSON der die News enthält
      */
@@ -662,8 +666,8 @@ public class EAParser {
             if (object.has("comment")) {
                 commentcount = object.get("comment").getAsInt();
             }
-            Configuration.setNewCommentCount(commentcount, context);
-            Configuration.setNewMessageCount(pncount, context);
+            configurationService.setNewCommentCount(commentcount, context);
+            configurationService.setNewMessageCount(pncount, context);
         } catch (Exception e) {
 
         }
@@ -671,7 +675,7 @@ public class EAParser {
 
     /**
      * Parst den übergebenen JSON-String der API-Funktion getToken nach dem
-     * Token und setzt diesen in der Configuration.
+     * Token und setzt diesen in der configurationService.
      *
      * @param input JSON-String der den Token enthält
      */
@@ -680,7 +684,7 @@ public class EAParser {
             JsonParser parser = new JsonParser();
             JsonObject object = parser.parse(input).getAsJsonObject();
             if (object.has("token")) {
-                Configuration.setBoardToken(object.get("token").getAsString());
+                configurationService.setBoardToken(object.get("token").getAsString());
             }
         } catch (Exception e) {
 

@@ -38,13 +38,16 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonParseException;
 import com.google.gson.reflect.TypeToken;
 
+import javax.inject.Inject;
+
+import de.btcdev.eliteanimesapp.EaApp;
 import de.btcdev.eliteanimesapp.R;
 import de.btcdev.eliteanimesapp.adapter.ListAnimeAdapter;
 import de.btcdev.eliteanimesapp.adapter.OnAnimeRatedListener;
 import de.btcdev.eliteanimesapp.cache.AnimelistCacheThread;
+import de.btcdev.eliteanimesapp.data.ConfigurationService;
 import de.btcdev.eliteanimesapp.data.EAException;
 import de.btcdev.eliteanimesapp.data.EAParser;
-import de.btcdev.eliteanimesapp.data.Configuration;
 import de.btcdev.eliteanimesapp.data.ListAnime;
 import de.btcdev.eliteanimesapp.data.ListAnimeAlphabetComparator;
 import de.btcdev.eliteanimesapp.data.ListAnimeRatingComparator;
@@ -54,6 +57,11 @@ import de.btcdev.eliteanimesapp.json.ListAnimeDeserializer;
 
 public class AnimeListActivity extends ParentActivity implements
 		OnItemClickListener, OnItemSelectedListener, OnAnimeRatedListener {
+
+	@Inject
+	ConfigurationService configurationService;
+	@Inject
+	NetworkService networkService;
 
 	private String currentUser;
 	private int userId;
@@ -80,9 +88,9 @@ public class AnimeListActivity extends ParentActivity implements
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		((EaApp) getApplication()).getEaComponent().inject(this);
 		setContentView(R.layout.activity_anime_list);
 		ActionBar bar = getSupportActionBar();
-		networkService = NetworkService.instance(this);
 		eaParser = new EAParser(this);
 		if (savedInstanceState != null) {
 			currentUser = savedInstanceState.getString("User");
@@ -108,7 +116,7 @@ public class AnimeListActivity extends ParentActivity implements
 				bar.setSubtitle(currentUser);
 			}
 			animelistTask = new AnimelistTask();
-			if (currentUser.equals(Configuration
+			if (currentUser.equals(configurationService
 					.getUserName(getApplicationContext())))
 				animelistTask.ownList = true;
 			else
@@ -325,7 +333,7 @@ public class AnimeListActivity extends ParentActivity implements
 	 */
 	public void refresh() {
 		animelistTask = new AnimelistTask();
-		if (currentUser.equals(Configuration
+		if (currentUser.equals(configurationService
 				.getUserName(getApplicationContext())))
 			animelistTask.ownList = true;
 		else
@@ -350,24 +358,24 @@ public class AnimeListActivity extends ParentActivity implements
 	public void onItemClick(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
 		if (arg0.getId() == R.id.nav_animelist_list) {
 			if (arg2 == NAVIGATION_ANIMELIST) {
-				if (currentUser.equals(Configuration
+				if (currentUser.equals(configurationService
 						.getUserName(getApplicationContext())))
 					mDrawerLayout.closeDrawer(Gravity.LEFT);
 				else {
 					Intent intent = new Intent(
 							this,
 							de.btcdev.eliteanimesapp.gui.AnimeListActivity.class);
-					intent.putExtra("User", Configuration
+					intent.putExtra("User", configurationService
 							.getUserName(getApplicationContext()));
 					intent.putExtra("UserID",
-							Configuration.getUserID(getApplicationContext()));
+							configurationService.getUserID(getApplicationContext()));
 					mDrawerLayout.closeDrawer(Gravity.LEFT);
 					startActivity(intent);
 				}
 			} else
 				super.onItemClick(arg0, arg1, arg2, arg3);
 		} else if (arg0.getId() == R.id.animelist_list) {
-			if (currentUser.equals(Configuration
+			if (currentUser.equals(configurationService
 					.getUserName(getApplicationContext()))) {
 				ListAnime selectedAnime;
 				int status;
@@ -535,14 +543,14 @@ public class AnimeListActivity extends ParentActivity implements
 				if (prefs.contains("AnimelistCache")) {
 					// ist der Cache vom aktuellen User?
 					if (prefs.getString("lastUser", "").equals(
-							Configuration
+							configurationService
 									.getUserName(getApplicationContext()))) {
 						completeAnime = new ArrayList<ListAnime>();
 						watchingAnime = new ArrayList<ListAnime>();
 						stalledAnime = new ArrayList<ListAnime>();
 						droppedAnime = new ArrayList<ListAnime>();
 						plannedAnime = new ArrayList<ListAnime>();
-						// lese Cache aus und speicher in Configuration
+						// lese Cache aus und speicher in configurationService
 						String jsonComplete = prefs.getString(
 								"AnimelistCacheKomplett", "");
 						String jsonWatching = prefs.getString(
@@ -560,7 +568,7 @@ public class AnimeListActivity extends ParentActivity implements
 								&& !jsonPlanned.equals("")) {
 							// Konvertiere JSON-Strings zurück zu ArrayLists aus
 							// ListAnime-Objekten
-							// und setze Cache in Configuration
+							// und setze Cache in configurationService
 							try {
 								Gson gson = new GsonBuilder()
 										.registerTypeAdapter(ListAnime.class,
@@ -609,6 +617,9 @@ public class AnimeListActivity extends ParentActivity implements
 		EditText progressView;
 		EditText episodeCountView;
 		OnAnimeRatedListener onAnimeRatedListener;
+
+		@Inject
+		NetworkService networkService;
 
 		public AnimeRatingDialogFragment() {
 
@@ -692,7 +703,7 @@ public class AnimeListActivity extends ParentActivity implements
 									new Thread(new Runnable() {
 										public void run() {
 											try {
-												NetworkService.instance(getActivity())
+												networkService
 														.rateAnime(
 																anime.getId(),
 																score,

@@ -17,6 +17,9 @@ import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.os.Parcel;
 import android.os.Parcelable;
+
+import javax.inject.Inject;
+
 import de.btcdev.eliteanimesapp.R;
 import de.btcdev.eliteanimesapp.cache.CommentLruCache;
 
@@ -29,6 +32,9 @@ public class Comment implements Parcelable {
 	private transient Bitmap avatar;
 	private String text;
 	private String avatarURL;
+
+	@Inject
+	ConfigurationService configurationService;
 
 	public Comment(int id) {
 		setId(id);
@@ -72,14 +78,14 @@ public class Comment implements Parcelable {
 				// First decode with inJustDecodeBounds=true to check dimensions
 				BitmapFactory.Options options = new BitmapFactory.Options();
 				options.inJustDecodeBounds = true;
-				BitmapFactory.decodeResource(Configuration.getContext()
+				BitmapFactory.decodeResource(configurationService.getContext()
 						.getResources(), R.drawable.noava, options);
 				// Calculate inSampleSize
 				options.inSampleSize = calculateInSampleSize(options, reqWidth,
 						reqHeight);
 				// Decode bitmap with inSampleSize set
 				options.inJustDecodeBounds = false;
-				avatar = BitmapFactory.decodeResource(Configuration.getContext()
+				avatar = BitmapFactory.decodeResource(configurationService.getContext()
 						.getResources(), R.drawable.noava, options);
 			} catch (Exception exc) {
 				System.out.println("Exception!" + exc.getClass().toString());
@@ -226,7 +232,7 @@ public class Comment implements Parcelable {
 
 		}
 		if (avatar == null) {
-			avatar = BitmapFactory.decodeResource(Configuration.getContext()
+			avatar = BitmapFactory.decodeResource(configurationService.getContext()
 					.getResources(), R.drawable.noava);
 		}
 	}

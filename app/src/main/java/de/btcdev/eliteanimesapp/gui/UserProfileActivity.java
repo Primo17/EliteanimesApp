@@ -15,6 +15,10 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import javax.inject.Inject;
+
+import de.btcdev.eliteanimesapp.EaApp;
 import de.btcdev.eliteanimesapp.R;
 import de.btcdev.eliteanimesapp.data.EAException;
 import de.btcdev.eliteanimesapp.data.EAParser;
@@ -30,6 +34,9 @@ import de.btcdev.eliteanimesapp.json.JsonErrorException;
 public class UserProfileActivity extends ParentActivity implements
 		OnItemClickListener {
 
+	@Inject
+	NetworkService networkService;
+
 	private ProfileCache profileCache;
 	private ImageView avatarView;
 	private ProfileTask profileTask;
@@ -39,13 +46,14 @@ public class UserProfileActivity extends ParentActivity implements
 
 	/**
 	 * Das UI wird erzeugt, NetworkService, Cache und Parser werden aus der
-	 * Configuration geladen. Anschließend wird ein neuer ProfileTask gestartet,
+	 * ConfigurationService geladen. Anschließend wird ein neuer ProfileTask gestartet,
 	 * falls das Profile noch nicht vollständig ist. Falls doch, wird gleich
 	 * fillViews aufgerufen.
 	 */
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		((EaApp) getApplication()).getEaComponent().inject(this);
 		if (savedInstanceState != null) {
 			currentUser = savedInstanceState.getString("User");
 			currentUserId = savedInstanceState.getInt("UserID");
@@ -61,7 +69,6 @@ public class UserProfileActivity extends ParentActivity implements
 		actionBar.setTitle("Profile");
 		actionBar.setSubtitle(currentUser);
 
-		networkService = NetworkService.instance(this);
 		eaParser = new EAParser(this);
 		profileCache = ProfileCache.instance();
 		Profile temp = profileCache.contains(currentUser);
@@ -145,8 +152,6 @@ public class UserProfileActivity extends ParentActivity implements
 				new Thread(new Runnable() {
 					public void run() {
 						try {
-							networkService = NetworkService
-									.instance(getApplicationContext());
 							networkService.addFriend("" + currentUserId);
 						} catch (Exception e) {
 
@@ -164,7 +169,6 @@ public class UserProfileActivity extends ParentActivity implements
 			new Thread(new Runnable() {
 				public void run() {
 					try {
-						networkService = NetworkService.instance(getApplicationContext());
 						networkService.deleteFriend("" + currentUserId);
 					} catch (Exception e) {
 
@@ -317,7 +321,6 @@ public class UserProfileActivity extends ParentActivity implements
 		protected Profile doInBackground(String... params) {
 			final String input;
 			final Profile profile;
-			networkService = NetworkService.instance(getApplicationContext());
 			eaParser = new EAParser(null);
 			try {
 				if (this.isCancelled())

@@ -26,7 +26,7 @@ import javax.inject.Inject;
 
 import de.btcdev.eliteanimesapp.EaApp;
 import de.btcdev.eliteanimesapp.R;
-import de.btcdev.eliteanimesapp.data.Configuration;
+import de.btcdev.eliteanimesapp.data.ConfigurationService;
 import de.btcdev.eliteanimesapp.data.EAException;
 import de.btcdev.eliteanimesapp.data.EAParser;
 import de.btcdev.eliteanimesapp.data.NetworkService;
@@ -50,6 +50,10 @@ public class LoginActivity extends ParentActivity implements OnClickListener,
 
     @Inject
     LoginService loginService;
+    @Inject
+    ConfigurationService configurationService;
+    @Inject
+    NetworkService networkService;
 
     private String userName;
     private String password;
@@ -68,9 +72,8 @@ public class LoginActivity extends ParentActivity implements OnClickListener,
         loginService.isSomeoneLoggedIn();
 
         PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
-        Configuration.setContext(getApplicationContext());
+        configurationService.setContext(getApplicationContext());
         prefs = getPreferences(Context.MODE_PRIVATE);
-        networkService = NetworkService.instance(this);
         tryLogin();
 
         setContentView(de.btcdev.eliteanimesapp.R.layout.activity_login);
@@ -127,18 +130,18 @@ public class LoginActivity extends ParentActivity implements OnClickListener,
         // überprüfe, ob Cookies vorhanden und geh zum Profile, wenn dies der
         // Fall ist
         if (networkService.hasCookies()
-                && Configuration.getUserID(getApplicationContext()) != 0
-                && Configuration.getUserName(getApplicationContext()) != null) {
+                && configurationService.getUserID(getApplicationContext()) != 0
+                && configurationService.getUserName(getApplicationContext()) != null) {
             profileCache = ProfileCache.instance();
             if (profileCache.getOwnProfile() == null) {
                 Profile temp = new Profile(
-                        Configuration.getUserName(getApplicationContext()));
-                temp.setUserId(Configuration.getUserID(getApplicationContext()));
+                        configurationService.getUserName(getApplicationContext()));
+                temp.setUserId(configurationService.getUserID(getApplicationContext()));
                 profileCache.setOwnProfile(temp);
             } else {
                 Profile p = profileCache.getOwnProfile();
                 Profile temp = new Profile(
-                        Configuration.getUserName(getApplicationContext()));
+                        configurationService.getUserName(getApplicationContext()));
                 if (!p.equals(temp)) {
                     profileCache.deleteProfil(temp.getUserName());
                     profileCache.setOwnProfile(temp);
@@ -163,8 +166,8 @@ public class LoginActivity extends ParentActivity implements OnClickListener,
                 userName = prefs.getString("Benutzername", "");
                 password = prefs.getString("Passwort", "");
                 if (!userName.equals("") && !password.equals("")) {
-                    Configuration.setUserName(userName);
-                    Configuration.setPassword(password);
+                    configurationService.setUserName(userName);
+                    configurationService.setPassword(password);
                     loginTask = new LoginTask();
                     loginTask.execute("");
                 }
@@ -193,7 +196,7 @@ public class LoginActivity extends ParentActivity implements OnClickListener,
     }
 
     /**
-     * Die Eingaben für Benutzername und Passwort werden in der Configuration
+     * Die Eingaben für Benutzername und Passwort werden in der configurationService
      * gespeichert, falls gewünscht auch im Dateisystem. Anschließend wird ein
      * neuer Login-Task aufgerufen.
      *
@@ -204,8 +207,8 @@ public class LoginActivity extends ParentActivity implements OnClickListener,
         if (arg0.getId() == de.btcdev.eliteanimesapp.R.id.login_button) {
             userName = loginUserNameView.getText().toString();
             password = loginPasswordView.getText().toString();
-            Configuration.setUserName(userName);
-            Configuration.setPassword(password);
+            configurationService.setUserName(userName);
+            configurationService.setPassword(password);
             boolean checked = loginCheckView.isChecked();
             SharedPreferences.Editor meinEditor = prefs.edit();
             SharedPreferences defaultprefs = PreferenceManager
@@ -214,12 +217,12 @@ public class LoginActivity extends ParentActivity implements OnClickListener,
                     true);
             if (checked) {
                 if (savePassword) {
-                    meinEditor.putString("Benutzername", Configuration
+                    meinEditor.putString("Benutzername", configurationService
                             .getUserName(getApplicationContext()));
                     meinEditor.putString("Passwort",
-                            Configuration.getPassword());
+                            configurationService.getPassword());
                 } else {
-                    meinEditor.putString("Benutzername", Configuration
+                    meinEditor.putString("Benutzername", configurationService
                             .getUserName(getApplicationContext()));
                     if (prefs.contains("Passwort"))
                         meinEditor.remove("Passwort");
@@ -262,8 +265,7 @@ public class LoginActivity extends ParentActivity implements OnClickListener,
                 break;
             case NAVIGATION_LOGOUT:
                 try {
-                    networkService = NetworkService.instance(this);
-                    networkService.logout();
+                    loginService.logout();
                     mDrawerLayout.closeDrawer(Gravity.LEFT);
                 } catch (EAException e) {
                     Toast.makeText(this, e.getMessage(), Toast.LENGTH_LONG).show();
@@ -292,7 +294,6 @@ public class LoginActivity extends ParentActivity implements OnClickListener,
             try {
                 if (this.isCancelled())
                     return null;
-                networkService = NetworkService.instance(getApplicationContext());
                 String input = loginService.login(userName, password);
                 if (input != null)
                     new EAParser(getApplicationContext())
@@ -332,20 +333,19 @@ public class LoginActivity extends ParentActivity implements OnClickListener,
         @SuppressWarnings("deprecation")
         @Override
         protected void onPostExecute(String loginString) {
-            networkService = NetworkService.instance(getApplicationContext());
             if (networkService.isLoggedIn()) {
                 profileCache = ProfileCache.instance();
                 if (profileCache.getOwnProfile() == null) {
                     Profile temp = new Profile(
-                            Configuration
+                            configurationService
                                     .getUserName(getApplicationContext()));
-                    temp.setUserId(Configuration
+                    temp.setUserId(configurationService
                             .getUserID(getApplicationContext()));
                     profileCache.setOwnProfile(temp);
                 } else {
                     Profile p = profileCache.getOwnProfile();
                     Profile temp = new Profile(
-                            Configuration
+                            configurationService
                                     .getUserName(getApplicationContext()));
                     if (!p.equals(temp)) {
                         profileCache.deleteProfil(temp.getUserName());

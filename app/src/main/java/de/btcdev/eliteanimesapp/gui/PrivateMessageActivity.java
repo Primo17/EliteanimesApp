@@ -30,12 +30,15 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonParseException;
 import com.google.gson.reflect.TypeToken;
 
+import javax.inject.Inject;
+
+import de.btcdev.eliteanimesapp.EaApp;
 import de.btcdev.eliteanimesapp.R;
 import de.btcdev.eliteanimesapp.adapter.PrivateMessageAdapter;
 import de.btcdev.eliteanimesapp.cache.PrivateMessageCacheThread;
+import de.btcdev.eliteanimesapp.data.ConfigurationService;
 import de.btcdev.eliteanimesapp.data.EAException;
 import de.btcdev.eliteanimesapp.data.EAParser;
-import de.btcdev.eliteanimesapp.data.Configuration;
 import de.btcdev.eliteanimesapp.data.NetworkService;
 import de.btcdev.eliteanimesapp.data.NewsThread;
 import de.btcdev.eliteanimesapp.data.PrivateMessage;
@@ -49,13 +52,18 @@ public class PrivateMessageActivity extends ParentActivity implements OnItemClic
 	private int chosenPosition;
 	private PrivateMessageAdapter privateMessageAdapter;
 
+	@Inject
+	ConfigurationService configurationService;
+	@Inject
+	NetworkService networkService;
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		((EaApp) getApplication()).getEaComponent().inject(this);
 		setContentView(R.layout.activity_pn);
 		actionBar = getSupportActionBar();
 		actionBar.setTitle("Meine Nachrichten");
-		networkService = NetworkService.instance(this);
 		eaParser = new EAParser(null);
 		if (savedInstanceState != null) {
 			privateMessages = savedInstanceState.getParcelableArrayList("PNs");
@@ -67,7 +75,7 @@ public class PrivateMessageActivity extends ParentActivity implements OnItemClic
 				fillViews(privateMessages);
 		} else {
 			// Neue Nachrichten vorhanden
-			if (Configuration.getNewMessageCount() != 0) {
+			if (configurationService.getNewMessageCount() != 0) {
 				pageCount = 1;
 				privateMessageTask = new PrivateMessageTask();
 				privateMessageTask.execute("no_cache");
@@ -261,7 +269,6 @@ public class PrivateMessageActivity extends ParentActivity implements OnItemClic
 		@Override
 		protected ArrayList<PrivateMessage> doInBackground(String... params) {
 			String input;
-			networkService = NetworkService.instance(getApplicationContext());
 			eaParser = new EAParser(null);
 			new NewsThread(getApplicationContext()).start();
 			try {
@@ -397,13 +404,13 @@ public class PrivateMessageActivity extends ParentActivity implements OnItemClic
 				if (prefs.contains("PNCache")) {
 					// ist der Cache vom aktuellen User?
 					if (prefs.getString("lastUser", "").equals(
-							Configuration
+							configurationService
 									.getUserName(getApplicationContext()))) {
-						// lese Cache aus und speicher in Configuration
+						// lese Cache aus und speicher in ConfigurationService
 						String jsonCache = prefs.getString("PNCache", "");
 						if (!jsonCache.equals("")) {
 							// Konvertiere JSON zurück zu ArrayList aus PNs
-							// und setze Cache in Configuration
+							// und setze Cache in ConfigurationService
 							try {
 								Gson gson = new GsonBuilder()
 										.registerTypeAdapter(PrivateMessage.class,

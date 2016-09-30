@@ -10,8 +10,11 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import javax.inject.Inject;
+
 import de.btcdev.eliteanimesapp.R;
-import de.btcdev.eliteanimesapp.data.Configuration;
+import de.btcdev.eliteanimesapp.data.ConfigurationService;
 import de.btcdev.eliteanimesapp.data.NavDrawerItem;
 import de.btcdev.eliteanimesapp.gui.ParentActivity;
 
@@ -19,6 +22,9 @@ public class NavDrawerListAdapter extends BaseAdapter {
 
 	private Context context;
 	private ArrayList<NavDrawerItem> navDrawerItems;
+
+	@Inject
+	ConfigurationService configurationService;
 
 	public NavDrawerListAdapter(Context context,
 			ArrayList<NavDrawerItem> navDrawerItems) {
@@ -61,9 +67,9 @@ public class NavDrawerListAdapter extends BaseAdapter {
 
 		if (navDrawerItems.get(position).getCounterVisibility()) {
 			if(position == ParentActivity.NAVIGATION_COMMENTS)
-				textCount.setText(""+ Configuration.getNewCommentCount());
+				textCount.setText(""+ configurationService.getNewCommentCount());
 			else if(position == ParentActivity.NAVIGATION_PRIVATE_MESSAGES)
-				textCount.setText(""+ Configuration.getNewMessageCount());
+				textCount.setText(""+ configurationService.getNewMessageCount());
 //			textCount.setMessage(navDrawerItems.get(position).getCount());
 		} else {
 			textCount.setVisibility(View.GONE);

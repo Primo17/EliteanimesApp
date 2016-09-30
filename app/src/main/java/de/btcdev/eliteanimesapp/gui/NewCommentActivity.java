@@ -18,6 +18,10 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import javax.inject.Inject;
+
+import de.btcdev.eliteanimesapp.EaApp;
 import de.btcdev.eliteanimesapp.R;
 import de.btcdev.eliteanimesapp.data.Comment;
 import de.btcdev.eliteanimesapp.data.EAException;
@@ -25,6 +29,9 @@ import de.btcdev.eliteanimesapp.data.NetworkService;
 
 public class NewCommentActivity extends ParentActivity implements
 		OnItemClickListener {
+
+	@Inject
+	NetworkService networkService;
 
 	private EditText commentInputView;
 	private String currentUser;
@@ -43,6 +50,7 @@ public class NewCommentActivity extends ParentActivity implements
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		((EaApp) getApplication()).getEaComponent().inject(this);
 		setContentView(R.layout.activity_neuer_kommentar);
 		commentInputView = (EditText) findViewById(R.id.new_comment_text);
 		actionBar = getSupportActionBar();
@@ -78,7 +86,6 @@ public class NewCommentActivity extends ParentActivity implements
 			editedComment = bundle.getParcelable("Comment");
 			commentInputView.setText(Html.fromHtml(editedComment.getText()));
 		}
-		networkService = NetworkService.instance(this);
 		handleNavigationDrawer(R.id.nav_neuer_kommentar,
 				R.id.nav_neuer_kommentar_list, "Neuer Comment", currentUser);
 	}
@@ -150,7 +157,6 @@ public class NewCommentActivity extends ParentActivity implements
 		@Override
 		protected String doInBackground(String... params) {
 			boolean send = false;
-			networkService = NetworkService.instance(getApplicationContext());
 			try {
 				if (status.equals("Editieren")) {
 					editedComment.setText(commentInput);

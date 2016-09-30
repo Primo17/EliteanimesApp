@@ -8,8 +8,10 @@ import android.content.SharedPreferences;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
+import javax.inject.Inject;
+
 import de.btcdev.eliteanimesapp.data.Comment;
-import de.btcdev.eliteanimesapp.data.Configuration;
+import de.btcdev.eliteanimesapp.data.ConfigurationService;
 import de.btcdev.eliteanimesapp.json.CommentSerializer;
 
 public class CommentCacheThread extends Thread {
@@ -21,9 +23,12 @@ public class CommentCacheThread extends Thread {
 	public static final int MODE_SAVE_CACHE = 2;
 	private ArrayList<Comment> comments;
 
+	@Inject
+	ConfigurationService configurationService;
+
 	@SuppressWarnings("unchecked")
 	public CommentCacheThread(int mode, ArrayList<Comment> comments) {
-		context = Configuration.getContext();
+		context = configurationService.getContext();
 		prefs = context.getSharedPreferences("cache", Context.MODE_PRIVATE);
 		this.mode = mode;
 		this.comments = (ArrayList<Comment>) comments.clone();
@@ -39,7 +44,7 @@ public class CommentCacheThread extends Thread {
 	}
 
 	/**
-	 * Konvertiert den aktuell in der Configuration gespeicherten
+	 * Konvertiert den aktuell in der ConfigurationService gespeicherten
 	 * Comment-Cache zu einem JSON-Objekt und speichert dieses.
 	 */
 	public void saveCache() {
@@ -50,7 +55,7 @@ public class CommentCacheThread extends Thread {
 		String json = gson.toJson(comments);
 		// speicher JSON-Repräsentation und aktuellen User
 		SharedPreferences.Editor editor = prefs.edit();
-		editor.putString("lastUser", Configuration.getUserName(context));
+		editor.putString("lastUser", configurationService.getUserName(context));
 		editor.putString("CommentCache", json);
 		editor.apply();
 	}

@@ -2,13 +2,15 @@ package de.btcdev.eliteanimesapp.data;
 
 import android.content.Context;
 
+import javax.inject.Inject;
+
 public class NewsThread extends Thread {
 
 	private EAParser eaParser;
-	private NetworkService networkService;
+	@Inject
+	NetworkService networkService;
 
 	public NewsThread(Context context) {
-		networkService = NetworkService.instance(context);
 		eaParser = new EAParser(null);
 	}
 

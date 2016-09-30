@@ -16,6 +16,10 @@ import android.webkit.WebView;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.Toast;
+
+import javax.inject.Inject;
+
+import de.btcdev.eliteanimesapp.EaApp;
 import de.btcdev.eliteanimesapp.R;
 import de.btcdev.eliteanimesapp.data.EAException;
 import de.btcdev.eliteanimesapp.data.EAParser;
@@ -28,6 +32,9 @@ import de.btcdev.eliteanimesapp.data.NewsThread;
 public class ProfileDescriptionActivity extends ParentActivity implements
 		OnItemClickListener {
 
+	@Inject
+	NetworkService networkService;
+
 	private String currentUser = null;
 	private int userId = 0;
 	private boolean showSpoiler;
@@ -36,12 +43,13 @@ public class ProfileDescriptionActivity extends ParentActivity implements
 	private WebView webView;
 
 	/**
-	 * ActionBar wird erzeugt, NetworkService und Parser werden aus der Configuration
+	 * ActionBar wird erzeugt, NetworkService und Parser werden aus der ConfigurationService
 	 * geladen. Anschließend wird ein neuer ProfileDescriptionTask aufgerufen.
 	 */
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		((EaApp) getApplication()).getEaComponent().inject(this);
 		if (savedInstanceState != null) {
 			currentUser = savedInstanceState.getString(currentUser);
 			userId = savedInstanceState.getInt("UserID");
@@ -57,7 +65,6 @@ public class ProfileDescriptionActivity extends ParentActivity implements
 		actionBar.setTitle("Über");
 		actionBar.setSubtitle(currentUser);
 
-		networkService = NetworkService.instance(this);
 		eaParser = new EAParser(null);
 
 		profileDescriptionTask = new ProfileDescriptionTask();
@@ -177,7 +184,6 @@ public class ProfileDescriptionActivity extends ParentActivity implements
 		 */
 		@Override
 		protected String doInBackground(String... params) {
-			networkService = NetworkService.instance(getApplicationContext());
 			eaParser = new EAParser(null);
 			try {
 				if (isCancelled())

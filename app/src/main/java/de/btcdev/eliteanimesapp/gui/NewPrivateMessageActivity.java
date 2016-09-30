@@ -15,6 +15,10 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import javax.inject.Inject;
+
+import de.btcdev.eliteanimesapp.EaApp;
 import de.btcdev.eliteanimesapp.R;
 import de.btcdev.eliteanimesapp.data.EAException;
 import de.btcdev.eliteanimesapp.data.EAParser;
@@ -24,6 +28,9 @@ import de.btcdev.eliteanimesapp.data.PrivateMessage;
 
 public class NewPrivateMessageActivity extends ParentActivity implements
 		OnItemClickListener {
+
+	@Inject
+	NetworkService networkService;
 
 	private EditText privateMessageInputView;
 	private PrivateMessage privateMessage;
@@ -35,10 +42,10 @@ public class NewPrivateMessageActivity extends ParentActivity implements
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		((EaApp) getApplication()).getEaComponent().inject(this);
 		setContentView(R.layout.activity_neue_pn);
 		actionBar = getSupportActionBar();
 		actionBar.setTitle("Neue Nachricht");
-		networkService = NetworkService.instance(this);
 		eaParser = new EAParser(null);
 		if (savedInstanceState != null) {
 			privateMessage = savedInstanceState.getParcelable("PrivateMessage");
@@ -51,7 +58,7 @@ public class NewPrivateMessageActivity extends ParentActivity implements
 				new Thread(new Runnable() {
 					public void run() {
 						try {
-							NetworkService.instance(getApplicationContext()).getPrivateMessage(
+							networkService.getPrivateMessage(
 									privateMessage.getId());
 						} catch (Exception e) {
 
@@ -177,7 +184,6 @@ public class NewPrivateMessageActivity extends ParentActivity implements
 		@Override
 		protected String doInBackground(String... params) {
 			String input;
-			networkService = NetworkService.instance(getApplicationContext());
 			eaParser = new EAParser(null);
 			if (params[0].equals("")) {
 				// Alte Nachricht soll abgerufen werden

@@ -2,6 +2,7 @@ package de.btcdev.eliteanimesapp.gui;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -16,8 +17,12 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import javax.inject.Inject;
+
+import de.btcdev.eliteanimesapp.EaApp;
 import de.btcdev.eliteanimesapp.R;
-import de.btcdev.eliteanimesapp.data.Configuration;
+import de.btcdev.eliteanimesapp.data.ConfigurationService;
 import de.btcdev.eliteanimesapp.data.EAException;
 import de.btcdev.eliteanimesapp.data.EAParser;
 import de.btcdev.eliteanimesapp.data.NetworkService;
@@ -32,26 +37,32 @@ import de.btcdev.eliteanimesapp.json.JsonErrorException;
 public class ProfileActivity extends ParentActivity implements
 		OnItemClickListener {
 
+	@Inject
+	NetworkService networkService;
+
 	private ProfileCache profileCache;
 	private ImageView avatarView;
 	private ProfileTask profileTask;
 
+	@Inject
+	ConfigurationService configurationService;
+
 	/**
 	 * Das UI wird erzeugt, NetworkService, Cache und Parser werden aus der
-	 * Configuration geladen. Anschließend wird ein neuer ProfileTask gestartet,
+	 * configurationService geladen. Anschließend wird ein neuer ProfileTask gestartet,
 	 * falls das Profile noch nicht vollständig ist. Falls doch, wird gleich
 	 * fillViews aufgerufen.
 	 */
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		((EaApp) getApplication()).getEaComponent().inject(this);
 		setContentView(R.layout.activity_profil);
 		avatarView = (ImageView) findViewById(R.id.profilbild_eigenes);
 		actionBar = getSupportActionBar();
 		actionBar.setTitle("Profile");
-		actionBar.setSubtitle(Configuration.getUserName(getApplicationContext()));
+		actionBar.setSubtitle(configurationService.getUserName(getApplicationContext()));
 
-		networkService = NetworkService.instance(this);
 		eaParser = new EAParser(null);
 		profileCache = ProfileCache.instance();
 		Profile ownProfile = profileCache.getOwnProfile();
@@ -63,7 +74,7 @@ public class ProfileActivity extends ParentActivity implements
 		}
 
 		handleNavigationDrawer(R.id.nav_profil, R.id.nav_profil_list, "Profile",
-				Configuration.getUserName(this));
+				configurationService.getUserName(this));
 	}
 
 	/**
@@ -197,34 +208,34 @@ public class ProfileActivity extends ParentActivity implements
 					this,
 					ProfileDescriptionActivity.class);
 			intent.putExtra("User",
-					Configuration.getUserName(getApplicationContext()));
+					configurationService.getUserName(getApplicationContext()));
 			intent.putExtra("UserID",
-					Configuration.getUserID(getApplicationContext()));
+					configurationService.getUserID(getApplicationContext()));
 			startActivity(intent);
 		} else if (v.getId() == R.id.profil_kommentare) {
 			Intent intent = new Intent(this,
 					CommentActivity.class);
 			intent.putExtra("User",
-					Configuration.getUserName(getApplicationContext()));
+					configurationService.getUserName(getApplicationContext()));
 			intent.putExtra("UserID",
-					Configuration.getUserID(getApplicationContext()));
+					configurationService.getUserID(getApplicationContext()));
 			startActivity(intent);
 		} else if (v.getId() == R.id.profil_freunde) {
 			Intent intent = new Intent(this,
 					FriendActivity.class);
 			intent.putExtra("User",
-					Configuration.getUserName(getApplicationContext()));
+					configurationService.getUserName(getApplicationContext()));
 			intent.putExtra("UserID",
-					Configuration.getUserID(getApplicationContext()));
+					configurationService.getUserID(getApplicationContext()));
 			startActivity(intent);
 
 		} else if (v.getId() == R.id.profil_animeliste) {
 			Intent intent = new Intent(this,
 					de.btcdev.eliteanimesapp.gui.AnimeListActivity.class);
 			intent.putExtra("User",
-					Configuration.getUserName(getApplicationContext()));
+					configurationService.getUserName(getApplicationContext()));
 			intent.putExtra("UserID",
-					Configuration.getUserID(getApplicationContext()));
+					configurationService.getUserID(getApplicationContext()));
 			startActivity(intent);
 		} else if (v.getId() == R.id.profil_pns) {
 			Intent intent = new Intent(this,
@@ -254,7 +265,6 @@ public class ProfileActivity extends ParentActivity implements
 		@Override
 		protected Profile doInBackground(String... params) {
 			final String input;
-			networkService = NetworkService.instance(getApplicationContext());
 			Profile profile;
 			try {
 				if (this.isCancelled())
@@ -262,12 +272,11 @@ public class ProfileActivity extends ParentActivity implements
 				input = networkService.getProfile();
 				if (this.isCancelled())
 					return null;
-				if (Configuration.getBoardToken() == null) {
+				if (configurationService.getBoardToken() == null) {
 					Thread t = new Thread(new Runnable() {
 						public void run() {
 							try {
-								new EAParser(null).getToken(NetworkService.instance(
-										getApplicationContext()).getToken());
+								new EAParser(null).getToken(networkService.getToken());
 							} catch (EAException e) {
 
 							}
@@ -309,7 +318,6 @@ public class ProfileActivity extends ParentActivity implements
 		@Override
 		protected void onPostExecute(Profile profile) {
 			if (loginError) {
-				networkService = NetworkService.instance(getApplicationContext());
 				networkService.deleteCookies();
 				Toast.makeText(getApplicationContext(),
 						"Bitte erneut einloggen.", Toast.LENGTH_SHORT).show();

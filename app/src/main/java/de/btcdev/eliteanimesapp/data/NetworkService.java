@@ -38,7 +38,6 @@ import java.util.NoSuchElementException;
 import java.util.Properties;
 import java.util.Scanner;
 
-import javax.inject.Inject;
 import javax.inject.Singleton;
 
 /**
@@ -56,6 +55,8 @@ public class NetworkService {
     private String apikey = "8HB3GcTOiKm973zW9c1ioWwJa4ThDPzV";
     private boolean hasCookies = false;
 
+    private ConfigurationService configurationService;
+
     /**
      * Ein neues NetworkService wird erzeugt. Dafür wird ein neuer HttpClient mit
      * passendem User-Agent gesetzt.
@@ -63,7 +64,7 @@ public class NetworkService {
      * @param context Context der aufrufenden Klasse, wird für String-Ressourcen
      *                benötigt.
      */
-    public NetworkService(Context context) {
+    public NetworkService(Context context, ConfigurationService configurationService) {
         httpclient = new DefaultHttpClient();
         ClientConnectionManager cmgr = httpclient.getConnectionManager();
         HttpParams param = httpclient.getParams();
@@ -73,15 +74,16 @@ public class NetworkService {
                 "Mozilla/5.0 (Windows NT 6.1; WOW64; rv:25.0) Gecko/20100101 Firefox/25.0");
         NetworkService.context = context;
         hasCookies = loadCookies();
+        this.configurationService = configurationService;
     }
 
-    public static NetworkService instance(Context context) {
+    /*public static NetworkService instance(Context context) {
         if (unique == null)
-            unique = new NetworkService(context);
+            unique = new NetworkService(context, null);
         if (NetworkService.context == null)
             NetworkService.context = context;
         return unique;
-    }
+    }*/
 
     /**
      * Ruft die übergebene Url als GET auf.
@@ -140,31 +142,6 @@ public class NetworkService {
     }
 
     /**
-     * Falls ein User eingeloggt ist, wird dieser ausgeloggt. Dazu werden
-     * alle Login-Cookies gelöscht. (Der gesamte Vorgang wird in einem eigenen
-     * Thread ausgeführt)
-     *
-     * @throws EAException
-     */
-    public void logout() throws EAException {
-        if (isLoggedIn()) {
-            new Thread(new Runnable() {
-                public void run() {
-                    try {
-                        List<NameValuePair> nvps = new ArrayList<>();
-                        nvps.add(new BasicNameValuePair("apikey", getApikey()));
-                        doPOST(eaURL + "/api/logout", nvps);
-                        cookies = httpclient.getCookieStore().getCookies();
-                    } catch (Exception e) {
-                        System.out.println(e);
-                    }
-                }
-            }).start();
-            deleteCookies();
-        }
-    }
-
-    /**
      * L�dt den Token als JSON.
      *
      * @return JSON mit dem Token
@@ -198,7 +175,7 @@ public class NetworkService {
     public String getProfile() throws EAException {
         List<NameValuePair> nvps = new ArrayList<>();
         nvps.add(new BasicNameValuePair("id", Integer
-                .toString(Configuration.getUserID(context))));
+                .toString(configurationService.getUserID(context))));
         nvps.add(new BasicNameValuePair("apikey", getApikey()));
         return doPOST(eaURL + "/api/getProfil", nvps);
     }
@@ -284,10 +261,10 @@ public class NetworkService {
      */
     public boolean postComment(String comment, String userName, int userId)
             throws EAException {
-        if (Configuration.getBoardToken() != null) {
+        if (configurationService.getBoardToken() != null) {
             List<NameValuePair> nvps = new ArrayList<>();
             nvps.add(new BasicNameValuePair("comment", comment));
-            nvps.add(new BasicNameValuePair("forumtoken", Configuration
+            nvps.add(new BasicNameValuePair("forumtoken", configurationService
                     .getBoardToken()));
             nvps.add(new BasicNameValuePair("id", "" + userId));
             nvps.add(new BasicNameValuePair("name", userName));
@@ -308,17 +285,17 @@ public class NetworkService {
      */
     public void editComment(Comment comment, String userName, int userId)
             throws EAException {
-        if (Configuration.getBoardToken() != null) {
+        if (configurationService.getBoardToken() != null) {
             List<NameValuePair> nvps = new ArrayList<>();
             nvps.add(new BasicNameValuePair("commentedit", comment
                     .getText()));
             nvps.add(new BasicNameValuePair("commentid", Integer
                     .toString(comment.getId())));
             nvps.add(new BasicNameValuePair("editcomment", "Editieren"));
-            nvps.add(new BasicNameValuePair("forumtoken", Configuration
+            nvps.add(new BasicNameValuePair("forumtoken", configurationService
                     .getBoardToken()));
             nvps.add(new BasicNameValuePair("fromuser", ""
-                    + Configuration.getUserID(context)));
+                    + configurationService.getUserID(context)));
             nvps.add(new BasicNameValuePair("touser", "" + userId));
             doPOST(eaURL + "/profil/" + userId
                     + "/" + userName, nvps);
@@ -332,9 +309,9 @@ public class NetworkService {
      * @param commentId Comment-ID des zu löschenden Kommentars
      */
     public void deleteComment(String commentId) throws EAException {
-        if (Configuration.getBoardToken() != null) {
+        if (configurationService.getBoardToken() != null) {
             doGET(eaURL + "/commentdelete.php?id="
-                    + commentId + "&ft=" + Configuration.getBoardToken());
+                    + commentId + "&ft=" + configurationService.getBoardToken());
         }
     }
 
@@ -442,9 +419,9 @@ public class NetworkService {
      * @throws EAException
      */
     public void addFriend(String id) throws EAException {
-        if (Configuration.getBoardToken() != null) {
+        if (configurationService.getBoardToken() != null) {
             doGET(eaURL + "/friend/add/" + id + "/"
-                    + Configuration.getBoardToken());
+                    + configurationService.getBoardToken());
         }
     }
 
@@ -455,9 +432,9 @@ public class NetworkService {
      * @throws EAException
      */
     public void deleteFriend(String id) throws EAException {
-        if (Configuration.getBoardToken() != null) {
+        if (configurationService.getBoardToken() != null) {
             doGET(eaURL + "/friend/delete/" + id
-                    + "/" + Configuration.getBoardToken());
+                    + "/" + configurationService.getBoardToken());
         }
     }
 
@@ -480,9 +457,9 @@ public class NetworkService {
      * @throws EAException Bei allen Fehlern
      */
     public void acceptFriendRequest(String id) throws EAException {
-        if (Configuration.getBoardToken() != null) {
+        if (configurationService.getBoardToken() != null) {
             doGET(eaURL + "/friend/accept/" + id
-                    + "/" + Configuration.getBoardToken());
+                    + "/" + configurationService.getBoardToken());
         }
     }
 
@@ -493,9 +470,9 @@ public class NetworkService {
      * @throws EAException Bei Fehlern aller Art
      */
     public void declineFriendRequest(String id) throws EAException {
-        if (Configuration.getBoardToken() != null) {
+        if (configurationService.getBoardToken() != null) {
             doGET(eaURL + "/friend/decline/" + id
-                    + "/" + Configuration.getBoardToken());
+                    + "/" + configurationService.getBoardToken());
         }
     }
 
@@ -518,9 +495,9 @@ public class NetworkService {
      * @throws EAException bei allen Fehlern
      */
     public void unblockUser(String id) throws EAException {
-        if (Configuration.getBoardToken() != null) {
+        if (configurationService.getBoardToken() != null) {
             doGET(eaURL + "/blockuser.php?id=" + id
-                    + "&ft=" + Configuration.getBoardToken() + "&unblock");
+                    + "&ft=" + configurationService.getBoardToken() + "&unblock");
         }
     }
 
@@ -567,10 +544,10 @@ public class NetworkService {
      */
     public void rateAnime(int id, double score, int progress,
                           int episodeCount, int status) throws EAException {
-        if (Configuration.getBoardToken() != null) {
+        if (configurationService.getBoardToken() != null) {
             List<NameValuePair> nvps = new ArrayList<>();
             nvps.add(new BasicNameValuePair("bewerten", "Bewerten"));
-            nvps.add(new BasicNameValuePair("forumtoken", Configuration
+            nvps.add(new BasicNameValuePair("forumtoken", configurationService
                     .getBoardToken()));
             nvps.add(new BasicNameValuePair("id", "" + id));
             nvps.add(new BasicNameValuePair("score", "" + score));
@@ -578,8 +555,8 @@ public class NetworkService {
             nvps.add(new BasicNameValuePair("status", "" + status));
             nvps.add(new BasicNameValuePair("von", "" + episodeCount));
             doPOST(eaURL + "/animelist/"
-                    + Configuration.getUserID(context) + "/"
-                    + Configuration.getUserName(context), nvps);
+                    + configurationService.getUserID(context) + "/"
+                    + configurationService.getUserName(context), nvps);
         }
     }
 
@@ -756,7 +733,7 @@ public class NetworkService {
 
     /**
      * Überprüft, ob schon Login-Cookies vorhanden sind und ob diese mit dem
-     * Benutzernamen der Configuration übereinstimmen.
+     * Benutzernamen der configurationService übereinstimmen.
      *
      * @return Wahrheitswert, ob der aktuelle User schon eingeloggt ist
      */
@@ -767,7 +744,7 @@ public class NetworkService {
             if (c.getName().equals("user_name"))
                 userName = c.getValue();
         }
-        return userName != null && Configuration.getUserName(context) != null && Configuration.getUserName(context).equals(userName);
+        return userName != null && configurationService.getUserName(context) != null && configurationService.getUserName(context).equals(userName);
     }
 
     /**
@@ -810,10 +787,10 @@ public class NetworkService {
             httpclient.setCookieStore(store);
             for (Cookie c : cookies) {
                 if (c.getName().equals("user_id")) {
-                    Configuration.setUserId(Integer.parseInt(c.getValue()));
+                    configurationService.setUserId(Integer.parseInt(c.getValue()));
                 }
                 if (c.getName().equals("user_name")) {
-                    Configuration.setUserName(c.getValue());
+                    configurationService.setUserName(c.getValue());
                 }
             }
             httpclient.getCookieStore().getCookies();

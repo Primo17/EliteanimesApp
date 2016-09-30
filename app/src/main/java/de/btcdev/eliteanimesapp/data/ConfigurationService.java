@@ -9,6 +9,10 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.TaskStackBuilder;
+
+import javax.inject.Singleton;
+
+import de.btcdev.eliteanimesapp.EaApp;
 import de.btcdev.eliteanimesapp.R;
 import de.btcdev.eliteanimesapp.database.UserDataHelper;
 import de.btcdev.eliteanimesapp.gui.CommentActivity;
@@ -16,27 +20,34 @@ import de.btcdev.eliteanimesapp.gui.PrivateMessageActivity;
 import de.btcdev.eliteanimesapp.gui.ProfileActivity;
 
 /**
- * Abstrakte Klasse zur Verwaltung von Daten, die immer wiederkehren und so
- * nicht immer neu berechnet werden müssen.
+ * Service for all configurations like global values
  */
-public abstract class Configuration {
+@Singleton
+public class ConfigurationService {
 
-	private static String userName;
+	private EaApp eaApp;
+	private String userName;
 	//TODO remove this ASAP
-	private static String password;
-	private static int userId;
-	private static String boardToken;
-	private static int newCommentCount;
-	private static int newMessageCount;
-	private static Context context;
-	private static int notificationId;
+	private String password;
+	private int userId;
+	private String boardToken;
+	private int newCommentCount;
+	private int newMessageCount;
+	private Context context;
+	private int notificationId;
+
+	//TODO: save all values to sharedprefs before setting, load if not available
+
+	public ConfigurationService(EaApp app) {
+		this.eaApp = eaApp;
+	}
 
 	/**
 	 * Gibt das aktuelle Passwort zurück
 	 * 
 	 * @return verwendetes Passwort
 	 */
-	public static String getPassword() {
+	public String getPassword() {
 		return password;
 	}
 
@@ -46,8 +57,8 @@ public abstract class Configuration {
 	 * @param password
 	 *            zu setzendes Passwort
 	 */
-	public static void setPassword(String password) {
-		Configuration.password = password;
+	public void setPassword(String password) {
+		this.password = password;
 	}
 
 	/**
@@ -55,19 +66,20 @@ public abstract class Configuration {
 	 * 
 	 * @return aktuelle UserID
 	 */
-	public static int getUserID(Context context) {
+	public int getUserID(Context context) {
 		if (context != null)
-			Configuration.context = context;
+			this.context = context;
 		if (userId == 0) {
-			if (Configuration.context != null) {
-				Bundle bundle = new UserDataHelper(Configuration.context)
+			if (this.context != null) {
+				Bundle bundle = new UserDataHelper(this.context)
 						.getData();
 				userId = bundle.getInt("userid");
 			}
 		}
-		if (userId == 0) {
-			userId = NetworkService.instance(Configuration.context).getIdByCookie();
-		}
+		//TODO: Fix this abomination
+		/*if (userId == 0) {
+			userId = NetworkService.instance(this.context).getIdByCookie();
+		}*/
 		return userId;
 	}
 
@@ -77,10 +89,10 @@ public abstract class Configuration {
 	 * @param userId
 	 *            UserID des eingeloggten Benutzers
 	 */
-	public static void setUserId(int userId) {
-		Configuration.userId = userId;
+	public void setUserId(int userId) {
+		this.userId = userId;
 		if (context != null) {
-			new UserDataHelper(context).updateData(userName, Configuration.userId,
+			new UserDataHelper(context).updateData(userName, this.userId,
 					boardToken);
 		}
 	}
@@ -91,11 +103,11 @@ public abstract class Configuration {
 	 * @param userName
 	 *            Benutzername des eingeloggten Benutzers
 	 */
-	public static void setUserName(String userName) {
-		Configuration.userName = new String(userName);
+	public void setUserName(String userName) {
+		this.userName = new String(userName);
 		new InfoThread(context);
 		if (context != null) {
-			new UserDataHelper(context).updateData(Configuration.userName, userId,
+			new UserDataHelper(context).updateData(this.userName, userId,
 					boardToken);
 		}
 	}
@@ -105,32 +117,33 @@ public abstract class Configuration {
 	 * 
 	 * @return aktueller Benutzername
 	 */
-	public static String getUserName(Context context) {
+	public String getUserName(Context context) {
 		if (context != null)
-			Configuration.context = context;
+			this.context = context;
 		if (userName == null || userName.isEmpty()) {
-			if (Configuration.context != null) {
-				Bundle bundle = new UserDataHelper(Configuration.context)
+			if (this.context != null) {
+				Bundle bundle = new UserDataHelper(this.context)
 						.getData();
 				userName = bundle.getString("name");
 			}
 		}
-		if (userName == null) {
-			userName = NetworkService.instance(Configuration.context)
+		//TODO: fix this abomination
+		/*if (userName == null) {
+			userName = NetworkService.instance(this.context)
 					.getUserByCookie();
-		}
+		}*/
 		return userName;
 	}
 
-	public static Context getContext() {
+	public Context getContext() {
 		return context;
 	}
 
-	public static void setContext(Context context) {
-		Configuration.context = context;
+	public void setContext(Context context) {
+		this.context = context;
 	}
 
-	public static String getBoardToken() {
+	public String getBoardToken() {
 		if (boardToken == null || boardToken.isEmpty()) {
 			if (context != null) {
 				Bundle bundle = new UserDataHelper(context).getData();
@@ -140,48 +153,48 @@ public abstract class Configuration {
 		return boardToken;
 	}
 
-	public static void setBoardToken(String boardToken) {
-		Configuration.boardToken = boardToken;
+	public void setBoardToken(String boardToken) {
+		this.boardToken = boardToken;
 		if (context != null) {
 			new UserDataHelper(context).updateData(userName, userId,
-					Configuration.boardToken);
+					this.boardToken);
 		}
 	}
 
-	public static int getNewCommentCount() {
+	public int getNewCommentCount() {
 		return newCommentCount;
 	}
 
-	public static void setNewCommentCount(int newCommentCount, Context context) {
+	public void setNewCommentCount(int newCommentCount, Context context) {
 		if (context != null)
-			Configuration.context = context;
-		if (newCommentCount > Configuration.newCommentCount) {
+			this.context = context;
+		if (newCommentCount > this.newCommentCount) {
 			SharedPreferences defaultprefs = PreferenceManager
-					.getDefaultSharedPreferences(Configuration.context);
+					.getDefaultSharedPreferences(this.context);
 			if (defaultprefs.getBoolean("pref_notifications", true))
 				createCommentNotification(newCommentCount,
-						Configuration.context);
+						this.context);
 		}
-		Configuration.newCommentCount = newCommentCount;
+		this.newCommentCount = newCommentCount;
 	}
 
-	public static int getNewMessageCount() {
+	public int getNewMessageCount() {
 		return newMessageCount;
 	}
 
-	public static void setNewMessageCount(int newMessageCount, Context context) {
+	public void setNewMessageCount(int newMessageCount, Context context) {
 		if (context != null)
-			Configuration.context = context;
-		if (newMessageCount > Configuration.newMessageCount) {
+			this.context = context;
+		if (newMessageCount > this.newMessageCount) {
 			SharedPreferences defaultprefs = PreferenceManager
-					.getDefaultSharedPreferences(Configuration.context);
+					.getDefaultSharedPreferences(this.context);
 			if (defaultprefs.getBoolean("pref_notifications", true))
-				createPrivateMessageNotification(newMessageCount, Configuration.context);
+				createPrivateMessageNotification(newMessageCount, this.context);
 		}
-		Configuration.newMessageCount = newMessageCount;
+		this.newMessageCount = newMessageCount;
 	}
 
-	public static void createCommentNotification(int count, Context context) {
+	public void createCommentNotification(int count, Context context) {
 		String text;
 		if (count == 1) {
 			text = " neuer Kommentar vorhanden";
@@ -208,7 +221,7 @@ public abstract class Configuration {
 		mNotificationManager.notify(notificationId, mBuilder.build());
 	}
 
-	public static void createPrivateMessageNotification(int count, Context context) {
+	public void createPrivateMessageNotification(int count, Context context) {
 		String text;
 		if (count == 1) {
 			text = " neue Private Nachricht vorhanden";

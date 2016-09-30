@@ -14,6 +14,9 @@ import org.apache.http.params.HttpParams;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+
+import javax.inject.Inject;
+
 import de.btcdev.eliteanimesapp.R;
 
 /**
@@ -34,6 +37,9 @@ public class Profile {
 	private int friend;
 	private transient Bitmap avatar;
 	private String avatarURL;
+
+	@Inject
+	ConfigurationService configurationService;
 
 	/**
 	 * Erzeugt ein neues Profile.
@@ -97,7 +103,7 @@ public class Profile {
 				// First decode with inJustDecodeBounds=true to check dimensions
 				BitmapFactory.Options options = new BitmapFactory.Options();
 				options.inJustDecodeBounds = true;
-				BitmapFactory.decodeResource(Configuration.getContext()
+				BitmapFactory.decodeResource(configurationService.getContext()
 						.getResources(), R.drawable.noava, options);
 				// Calculate inSampleSize
 				options.inSampleSize = calculateInSampleSize(options, reqWidth,
@@ -105,7 +111,7 @@ public class Profile {
 				// Decode bitmap with inSampleSize set
 				options.inJustDecodeBounds = false;
 				avatar = BitmapFactory
-						.decodeResource(Configuration.getContext()
+						.decodeResource(configurationService.getContext()
 								.getResources(), R.drawable.noava, options);
 			} else {
 				// First decode with inJustDecodeBounds=true to check dimensions

@@ -22,12 +22,16 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import javax.inject.Inject;
+
+import de.btcdev.eliteanimesapp.EaApp;
 import de.btcdev.eliteanimesapp.R;
 import de.btcdev.eliteanimesapp.adapter.FriendAdapter;
 import de.btcdev.eliteanimesapp.data.EAException;
 import de.btcdev.eliteanimesapp.data.EAParser;
 import de.btcdev.eliteanimesapp.data.Friend;
-import de.btcdev.eliteanimesapp.data.Configuration;
+import de.btcdev.eliteanimesapp.data.ConfigurationService;
 import de.btcdev.eliteanimesapp.data.NetworkService;
 import de.btcdev.eliteanimesapp.data.NewsThread;
 
@@ -36,6 +40,11 @@ import de.btcdev.eliteanimesapp.data.NewsThread;
  */
 public class FriendActivity extends ParentActivity implements
 		OnItemClickListener {
+
+	@Inject
+	ConfigurationService configurationService;
+	@Inject
+	NetworkService networkService;
 
 	private String currentUser;
 	private int userId = 0;
@@ -56,9 +65,9 @@ public class FriendActivity extends ParentActivity implements
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		((EaApp) getApplication()).getEaComponent().inject(this);
 		setContentView(R.layout.activity_freunde);
 		actionBar = getSupportActionBar();
-		networkService = NetworkService.instance(this);
 		eaParser = new EAParser(this);
 
 		if (savedInstanceState != null) {
@@ -194,7 +203,7 @@ public class FriendActivity extends ParentActivity implements
 			int id = friend.getId();
 			Intent intent;
 			if (friend.getName().equals(
-					Configuration.getUserName(getApplicationContext())))
+					configurationService.getUserName(getApplicationContext())))
 				intent = new Intent(this,
 						ProfileActivity.class);
 			else {
@@ -223,7 +232,6 @@ public class FriendActivity extends ParentActivity implements
 			new Thread(new Runnable() {
 				public void run() {
 					try {
-						networkService = NetworkService.instance(getApplicationContext());
 						networkService.deleteFriend(id);
 					} catch (Exception e) {
 
@@ -270,7 +278,6 @@ public class FriendActivity extends ParentActivity implements
 		@Override
 		protected ArrayList<Friend> doInBackground(String... arg0) {
 			eaParser = new EAParser(null);
-			networkService = NetworkService.instance(getApplicationContext());
 			try {
 				if (isCancelled())
 					return null;

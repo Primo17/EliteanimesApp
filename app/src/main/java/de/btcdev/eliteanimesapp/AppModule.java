@@ -1,6 +1,7 @@
 package de.btcdev.eliteanimesapp;
 
 import android.app.Application;
+import android.graphics.Bitmap;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -13,6 +14,7 @@ import de.btcdev.eliteanimesapp.data.Board;
 import de.btcdev.eliteanimesapp.data.BoardPost;
 import de.btcdev.eliteanimesapp.data.BoardThread;
 import de.btcdev.eliteanimesapp.data.Comment;
+import de.btcdev.eliteanimesapp.data.ConfigurationService;
 import de.btcdev.eliteanimesapp.data.Friend;
 import de.btcdev.eliteanimesapp.data.FriendRequest;
 import de.btcdev.eliteanimesapp.data.ListAnime;
@@ -40,28 +42,34 @@ import de.btcdev.eliteanimesapp.services.LoginService;
 @Module
 public class AppModule {
 
-    Application eaApp = null;
+    EaApp eaApp = null;
 
-    public AppModule(Application application) {
+    public AppModule(EaApp application) {
         eaApp = application;
     }
 
     @Provides
     @Singleton
-    Application providesApplication() {
+    EaApp providesApplication() {
         return eaApp;
     }
 
     @Provides
     @Singleton
-    NetworkService provideNetworkService(Application application) {
-        return new NetworkService(application.getApplicationContext());
+    ConfigurationService provideConfigurationService(EaApp eaApp) {
+        return new ConfigurationService(eaApp);
     }
 
     @Provides
     @Singleton
-    LoginService provideLoginService(NetworkService networkService) {
-        return new LoginService(networkService);
+    NetworkService provideNetworkService(EaApp application, ConfigurationService configurationService) {
+        return new NetworkService(application.getApplicationContext(), configurationService);
+    }
+
+    @Provides
+    @Singleton
+    LoginService provideLoginService(NetworkService networkService, ConfigurationService configurationService) {
+        return new LoginService(networkService, configurationService);
     }
 
     @Provides

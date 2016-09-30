@@ -12,6 +12,10 @@ import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.Toast;
+
+import javax.inject.Inject;
+
+import de.btcdev.eliteanimesapp.EaApp;
 import de.btcdev.eliteanimesapp.R;
 import de.btcdev.eliteanimesapp.data.EAException;
 import de.btcdev.eliteanimesapp.data.EAParser;
@@ -20,6 +24,9 @@ import de.btcdev.eliteanimesapp.data.BoardThread;
 import de.btcdev.eliteanimesapp.data.NetworkService;
 
 public class NewPostActivity extends ParentActivity {
+
+	@Inject
+	NetworkService networkService;
 
 	private BoardThread boardThread;
 	private boolean editMode;
@@ -36,6 +43,7 @@ public class NewPostActivity extends ParentActivity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		((EaApp) getApplication()).getEaComponent().inject(this);
 		setContentView(R.layout.activity_new_post);
 		postInputView = (EditText) findViewById(R.id.new_post_text);
 		actionBar = getSupportActionBar();
@@ -138,7 +146,6 @@ public class NewPostActivity extends ParentActivity {
 		@Override
 		protected String doInBackground(String... params) {
 			boolean send = false;
-			networkService = NetworkService.instance(getApplicationContext());
 			try {
 				if (edit) {
 					send = networkService.editPost(postInput, editPost.getId());

@@ -8,7 +8,9 @@ import android.content.SharedPreferences;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
-import de.btcdev.eliteanimesapp.data.Configuration;
+import javax.inject.Inject;
+
+import de.btcdev.eliteanimesapp.data.ConfigurationService;
 import de.btcdev.eliteanimesapp.data.EAException;
 import de.btcdev.eliteanimesapp.data.EAParser;
 import de.btcdev.eliteanimesapp.data.ListAnime;
@@ -26,16 +28,21 @@ public class AnimelistCacheThread extends Thread {
 	private ArrayList<ListAnime> complete, watching, stalled,
 			dropped, planned;
 
+	@Inject
+	ConfigurationService configurationService;
+	@Inject
+	NetworkService networkService;
+
 	/**
 	 * Lädt je nach Modus die Animeliste aus dem Speicher, speichert sie dorthin
 	 * oder lädt die Animeliste aus dem Internet neu und setzt sie in der
-	 * Configuration.
+	 * ConfigurationService.
 	 * 
 	 * @param mode
 	 *            einer der drei oben genannten Modi
 	 */
 	public AnimelistCacheThread(int mode) {
-		context = Configuration.getContext();
+		context = configurationService.getContext();
 		prefs = context.getSharedPreferences("cache", Context.MODE_PRIVATE);
 		this.mode = mode;
 		start();
@@ -46,7 +53,7 @@ public class AnimelistCacheThread extends Thread {
 								ArrayList<ListAnime> watching,
 								ArrayList<ListAnime> stalled,
 								ArrayList<ListAnime> dropped, ArrayList<ListAnime> planned) {
-		context = Configuration.getContext();
+		context = configurationService.getContext();
 		prefs = context.getSharedPreferences("cache", Context.MODE_PRIVATE);
 		this.mode = mode;
 		this.complete = (ArrayList<ListAnime>) complete.clone();
@@ -89,7 +96,7 @@ public class AnimelistCacheThread extends Thread {
 		String jsonPlanned = gson.toJson(planned);
 		// speicher JSON-Repräsentation und aktuellen User
 		SharedPreferences.Editor editor = prefs.edit();
-		editor.putString("lastUser", Configuration.getUserName(context));
+		editor.putString("lastUser", configurationService.getUserName(context));
 		editor.putBoolean("AnimelistCache", true);
 		editor.putString("AnimelistCacheKomplett", jsonComplete);
 		editor.putString("AnimelistCacheAmSchauen", jsonWatching);
@@ -106,14 +113,13 @@ public class AnimelistCacheThread extends Thread {
 
 	/**
 	 * Lädt die Animeliste des angemeldeten Benutzers aus dem Internet und
-	 * speichert diese in der Configuration.
+	 * speichert diese in der ConfigurationService.
 	 */
 	public void getOnline() {
 		try {
-			NetworkService networkService = NetworkService.instance(context);
 			EAParser eaParser = new EAParser(context);
 			String input = networkService.getAnimeList(
-					Configuration.getUserName(context), Configuration.getUserID(context));
+					configurationService.getUserName(context), configurationService.getUserID(context));
 			complete = new ArrayList<ListAnime>();
 			watching = new ArrayList<ListAnime>();
 			stalled = new ArrayList<ListAnime>();

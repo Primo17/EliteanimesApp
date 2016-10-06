@@ -17,7 +17,6 @@ out/
 .gradle/
 build/
 /*/build/
-app/build.gradle
 
 # Local configuration file (sdk path, etc)
 local.properties
@@ -40,4 +39,6 @@ captures/
 *.jks
 
 app/src/main/assets/api.properties
-api.properties
+/api.properties
+/keystore.properties
+/projectFilesBackup/

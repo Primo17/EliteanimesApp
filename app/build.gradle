@@ -1,0 +1,49 @@
+apply plugin: 'com.android.application'
+apply plugin: 'com.neenbedankt.android-apt'
+
+dependencies {
+    compile 'com.google.code.gson:gson:2.4'
+    compile 'com.android.support:appcompat-v7:24.1.1'
+    compile 'org.jsoup:jsoup:1.9.1'
+    compile 'com.google.dagger:dagger:2.7'
+    apt "com.google.dagger:dagger-compiler:2.7"
+    provided 'javax.annotation:jsr250-api:1.0'
+    compile 'javax.inject:javax.inject:1'
+    compile fileTree(dir: 'libs', include: ['*.jar'])
+}
+
+// Load keystore
+def keystorePropertiesFile = rootProject.file("keystore.properties");
+def keystoreProperties = new Properties()
+keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
+
+android {
+    signingConfigs {
+        btcdev {
+            storeFile file(keystoreProperties['storeFile'])
+            storePassword keystoreProperties['storePassword']
+            keyAlias keystoreProperties['keyAlias']
+            keyPassword keystoreProperties['keyPassword']
+        }
+    }
+    compileSdkVersion 24
+    buildToolsVersion "24.0.1"
+    defaultConfig {
+        applicationId "de.btcdev.eliteanimesapp"
+        minSdkVersion 9
+        targetSdkVersion 24
+    }
+    buildTypes {
+        release {
+            // proguard is deactivated for now
+            //minifyEnabled true
+            //proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-project.txt'
+            signingConfig signingConfigs.btcdev
+        }
+        debug {
+            signingConfig signingConfigs.btcdev
+        }
+    }
+
+    useLibrary 'org.apache.http.legacy'
+}

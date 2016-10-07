@@ -92,6 +92,11 @@ public class PrivateMessageActivity extends ParentActivity implements OnItemClic
 	}
 
 	@Override
+	protected void injectDependencies() {
+		((EaApp) getApplication()).getEaComponent().inject(this);
+	}
+
+	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		// Inflate the menu; this adds items to the action actionBar if it is present.
 		getMenuInflater().inflate(R.menu.pn, menu);
@@ -270,7 +275,7 @@ public class PrivateMessageActivity extends ParentActivity implements OnItemClic
 		protected ArrayList<PrivateMessage> doInBackground(String... params) {
 			String input;
 			eaParser = new EAParser(null);
-			new NewsThread(getApplicationContext()).start();
+            NewsThread.getNews(networkService);
 			try {
 				if (params[0].equals("no_cache")) {
 					if (isCancelled())

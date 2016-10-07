@@ -84,6 +84,11 @@ public class UserProfileActivity extends ParentActivity implements
 		}
 	}
 
+	@Override
+	protected void injectDependencies() {
+		((EaApp) getApplication()).getEaComponent().inject(this);
+	}
+
 	/**
 	 * Wird aufgerufen, wenn die Activity pausiert wird. Ein laufender
 	 * ProfileTask wird dabei abgebrochen.
@@ -321,14 +326,14 @@ public class UserProfileActivity extends ParentActivity implements
 		protected Profile doInBackground(String... params) {
 			final String input;
 			final Profile profile;
-			eaParser = new EAParser(null);
+			eaParser = new EAParser(getApplicationContext());
 			try {
 				if (this.isCancelled())
 					return null;
 				input = networkService.getProfile(currentUser, currentUserId);
 				if (this.isCancelled())
 					return null;
-				new NewsThread(getApplicationContext()).start();
+                NewsThread.getNews(networkService);
 				profile = eaParser.getProfile(input);
 				if (this.isCancelled())
 					return null;

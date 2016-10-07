@@ -86,6 +86,11 @@ public class PostActivity extends ParentActivity implements
 				boardThread.getName(), null);
 	}
 
+	@Override
+	protected void injectDependencies() {
+		((EaApp) getApplication()).getEaComponent().inject(this);
+	}
+
 	/**
 	 * Wird aufgerufen, wenn die Activity pausiert wird. Ein laufender BoardTask
 	 * wird dabei abgebrochen.

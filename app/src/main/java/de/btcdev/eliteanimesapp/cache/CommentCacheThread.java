@@ -16,38 +16,26 @@ import de.btcdev.eliteanimesapp.json.CommentSerializer;
 
 public class CommentCacheThread extends Thread {
 
-	private Context context;
 	private SharedPreferences prefs;
-	private int mode;
-	public static final int MODE_LOAD_CACHE = 1;
-	public static final int MODE_SAVE_CACHE = 2;
 	private ArrayList<Comment> comments;
+	private String userName;
 
-	@Inject
-	ConfigurationService configurationService;
-
-	@SuppressWarnings("unchecked")
-	public CommentCacheThread(int mode, ArrayList<Comment> comments) {
-		context = configurationService.getContext();
+	public CommentCacheThread(Context context, ArrayList<Comment> comments, String userName) {
 		prefs = context.getSharedPreferences("cache", Context.MODE_PRIVATE);
-		this.mode = mode;
-		this.comments = (ArrayList<Comment>) comments.clone();
+		this.comments = new ArrayList<>(comments);
+		this.userName = userName;
 		start();
 	}
 
 	public void run() {
-		/*if (mode == MODE_LOAD_CACHE) {
-			// aktuell nicht mehr implementiert
-		} else */
-		if (mode == MODE_SAVE_CACHE)
-			saveCache();
+		saveCache();
 	}
 
 	/**
 	 * Konvertiert den aktuell in der ConfigurationService gespeicherten
 	 * Comment-Cache zu einem JSON-Objekt und speichert dieses.
 	 */
-	public void saveCache() {
+	private void saveCache() {
 		// Konvertiere zu JSON
 		Gson gson = new GsonBuilder()
 				.registerTypeAdapter(Comment.class, new CommentSerializer())
@@ -55,7 +43,7 @@ public class CommentCacheThread extends Thread {
 		String json = gson.toJson(comments);
 		// speicher JSON-Repräsentation und aktuellen User
 		SharedPreferences.Editor editor = prefs.edit();
-		editor.putString("lastUser", configurationService.getUserName(context));
+		editor.putString("lastUser", userName);
 		editor.putString("CommentCache", json);
 		editor.apply();
 	}

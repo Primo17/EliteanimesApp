@@ -10,6 +10,7 @@ import android.preference.PreferenceManager;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.TaskStackBuilder;
 
+import javax.inject.Inject;
 import javax.inject.Singleton;
 
 import de.btcdev.eliteanimesapp.EaApp;
@@ -37,9 +38,18 @@ public class ConfigurationService {
 	private int notificationId;
 
 	//TODO: save all values to sharedprefs before setting, load if not available
+	/* TODO: Remove ConfigurationService access from:
+	 	BoardPost, Comment, Profile -> Bitmap for avatar
+	 		should be managed by e.g. a BitmapService or ImageService
+	 		Bitmap and Link should be set by calling class, but maybe together in one setter for
+	 		consistency
+	 	InfoThread? AnimelistCacheThread? CommentCacheThread? PrivateMessageCacheThread?
+	*/
 
+	@Inject
 	public ConfigurationService(EaApp app) {
-		this.eaApp = eaApp;
+		this.eaApp = app;
+		this.context = app.getApplicationContext();
 	}
 
 	/**
@@ -105,7 +115,7 @@ public class ConfigurationService {
 	 */
 	public void setUserName(String userName) {
 		this.userName = new String(userName);
-		new InfoThread(context);
+		InfoThread.runInfoThread(context, userName);
 		if (context != null) {
 			new UserDataHelper(context).updateData(this.userName, userId,
 					boardToken);
@@ -136,7 +146,7 @@ public class ConfigurationService {
 	}
 
 	public Context getContext() {
-		return context;
+		return eaApp.getApplicationContext();
 	}
 
 	public void setContext(Context context) {

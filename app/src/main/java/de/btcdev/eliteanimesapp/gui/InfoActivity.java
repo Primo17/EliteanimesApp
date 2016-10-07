@@ -13,6 +13,7 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
 
+import de.btcdev.eliteanimesapp.EaApp;
 import de.btcdev.eliteanimesapp.R;
 import de.btcdev.eliteanimesapp.adapter.InfoAdapter;
 
@@ -46,6 +47,11 @@ public class InfoActivity extends ParentActivity implements OnItemClickListener 
         fillViews();
 
         handleNavigationDrawer(R.id.nav_info, R.id.nav_info_list, "Info", null);
+    }
+
+    @Override
+    protected void injectDependencies() {
+        ((EaApp) getApplication()).getEaComponent().inject(this);
     }
 
     @Override

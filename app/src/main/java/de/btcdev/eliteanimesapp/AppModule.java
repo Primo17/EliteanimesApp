@@ -1,6 +1,7 @@
 package de.btcdev.eliteanimesapp;
 
 import android.app.Application;
+import android.content.Context;
 import android.graphics.Bitmap;
 
 import com.google.gson.Gson;
@@ -37,6 +38,7 @@ import de.btcdev.eliteanimesapp.json.PrivateMessageSerializer;
 import de.btcdev.eliteanimesapp.json.ProfileDeserializer;
 import de.btcdev.eliteanimesapp.json.SearchUserDeserializer;
 import de.btcdev.eliteanimesapp.json.StatisticsDeserializer;
+import de.btcdev.eliteanimesapp.services.ImageService;
 import de.btcdev.eliteanimesapp.services.LoginService;
 
 @Module
@@ -55,6 +57,11 @@ public class AppModule {
     }
 
     @Provides
+    Context provideContext() {
+        return eaApp.getApplicationContext();
+    }
+
+    @Provides
     @Singleton
     ConfigurationService provideConfigurationService(EaApp eaApp) {
         return new ConfigurationService(eaApp);
@@ -70,6 +77,11 @@ public class AppModule {
     @Singleton
     LoginService provideLoginService(NetworkService networkService, ConfigurationService configurationService) {
         return new LoginService(networkService, configurationService);
+    }
+
+    @Provides
+    ImageService provideImageService(NetworkService networkService, Context context) {
+        return new ImageService(networkService, context);
     }
 
     @Provides

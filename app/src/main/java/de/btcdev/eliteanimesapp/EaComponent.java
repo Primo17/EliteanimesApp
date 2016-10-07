@@ -38,6 +38,7 @@ public interface EaComponent {
     void inject(CommentActivity activity);
     void inject(FriendActivity activity);
     void inject(InfoActivity activity);
+    void inject(LoginActivity activity);
     void inject(NewCommentActivity activity);
     void inject(NewPostActivity activity);
     void inject(NewPrivateMessageActivity activity);

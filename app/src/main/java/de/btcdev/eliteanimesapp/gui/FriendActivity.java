@@ -96,6 +96,11 @@ public class FriendActivity extends ParentActivity implements
 				"Freunde", currentUser);
 	}
 
+	@Override
+	protected void injectDependencies() {
+		((EaApp) getApplication()).getEaComponent().inject(this);
+	}
+
 	/**
 	 * Wird aufgerufen, wenn die Activity pausiert wird. Ein laufender
 	 * FriendTask wird dabei abgebrochen.
@@ -285,7 +290,7 @@ public class FriendActivity extends ParentActivity implements
 						userId);
 				if (isCancelled())
 					return null;
-				new NewsThread(getApplicationContext()).start();
+                NewsThread.getNews(networkService);
 				ArrayList<Friend> result = eaParser.getFriendList(input);
 				return result;
 			} catch (EAException e) {

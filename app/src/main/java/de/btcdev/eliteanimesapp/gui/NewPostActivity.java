@@ -71,6 +71,11 @@ public class NewPostActivity extends ParentActivity {
 				actionBarTitle, boardThread.getName());
 	}
 
+	@Override
+	protected void injectDependencies() {
+		((EaApp) getApplication()).getEaComponent().inject(this);
+	}
+
 	/**
 	 * Erzeugt das Menü.
 	 */

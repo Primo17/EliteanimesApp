@@ -38,6 +38,7 @@ import java.util.NoSuchElementException;
 import java.util.Properties;
 import java.util.Scanner;
 
+import javax.inject.Inject;
 import javax.inject.Singleton;
 
 /**
@@ -64,7 +65,10 @@ public class NetworkService {
      * @param context Context der aufrufenden Klasse, wird für String-Ressourcen
      *                benötigt.
      */
+    @Inject
     public NetworkService(Context context, ConfigurationService configurationService) {
+        NetworkService.context = context;
+        this.configurationService = configurationService;
         httpclient = new DefaultHttpClient();
         ClientConnectionManager cmgr = httpclient.getConnectionManager();
         HttpParams param = httpclient.getParams();
@@ -72,9 +76,7 @@ public class NetworkService {
                 param, cmgr.getSchemeRegistry()), param);
         param.setParameter(CoreProtocolPNames.USER_AGENT,
                 "Mozilla/5.0 (Windows NT 6.1; WOW64; rv:25.0) Gecko/20100101 Firefox/25.0");
-        NetworkService.context = context;
         hasCookies = loadCookies();
-        this.configurationService = configurationService;
     }
 
     /*public static NetworkService instance(Context context) {

@@ -22,14 +22,20 @@ public class NavDrawerListAdapter extends BaseAdapter {
 
 	private Context context;
 	private ArrayList<NavDrawerItem> navDrawerItems;
+	private ConfigurationService configurationService;
 
-	@Inject
-	ConfigurationService configurationService;
+	public static NavDrawerListAdapter instance(Context context,
+												ArrayList<NavDrawerItem> items,
+												ConfigurationService configurationService) {
+		return new NavDrawerListAdapter(context, items, configurationService);
+	}
 
-	public NavDrawerListAdapter(Context context,
-			ArrayList<NavDrawerItem> navDrawerItems) {
+	private NavDrawerListAdapter(Context context,
+								 ArrayList<NavDrawerItem> navDrawerItems,
+								 ConfigurationService configurationService) {
 		this.context = context;
 		this.navDrawerItems = navDrawerItems;
+		this.configurationService = configurationService;
 	}
 
 	@Override

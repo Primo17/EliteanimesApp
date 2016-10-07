@@ -69,6 +69,11 @@ public class SearchActivity extends ParentActivity implements
 	}
 
 	@Override
+	protected void injectDependencies() {
+		((EaApp) getApplication()).getEaComponent().inject(this);
+	}
+
+	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		// Inflate the menu; this adds items to the action actionBar if it is present.
 		getMenuInflater().inflate(R.menu.search, menu);
@@ -186,7 +191,7 @@ public class SearchActivity extends ParentActivity implements
 		protected ArrayList<User> doInBackground(String... params) {
 			String input;
 			eaParser = new EAParser(null);
-			new NewsThread(getApplicationContext()).start();
+            NewsThread.getNews(networkService);
 			ArrayList<User> result;
 			try {
 				if (isCancelled())

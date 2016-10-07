@@ -77,6 +77,11 @@ public class ProfileActivity extends ParentActivity implements
 				configurationService.getUserName(this));
 	}
 
+    @Override
+    protected void injectDependencies() {
+        ((EaApp) getApplication()).getEaComponent().inject(this);
+    }
+
 	/**
 	 * Wird aufgerufen, wenn die Activity pausiert wird. Ein laufender
 	 * ProfileTask wird dabei abgebrochen.
@@ -276,7 +281,7 @@ public class ProfileActivity extends ParentActivity implements
 					Thread t = new Thread(new Runnable() {
 						public void run() {
 							try {
-								new EAParser(null).getToken(networkService.getToken());
+								new EAParser(null).getToken(networkService.getToken(), configurationService);
 							} catch (EAException e) {
 
 							}
@@ -284,9 +289,9 @@ public class ProfileActivity extends ParentActivity implements
 					});
 					t.start();
 				}
-				new NewsThread(getApplicationContext()).start();
+                NewsThread.getNews(networkService);
 				try {
-					eaParser = new EAParser(null);
+					eaParser = new EAParser(getApplicationContext());
 					profile = eaParser.getProfile(input);
 				} catch (JsonErrorException ex) {
 					if (ex != null && ex.getMessage() != null) {

@@ -69,8 +69,10 @@ public abstract class ParentActivity extends ActionBarActivity implements
 	@Override
 	protected void onCreate(@Nullable Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		((EaApp) getApplication()).getEaComponent().inject(this);
+		injectDependencies();
 	}
+
+	protected abstract void injectDependencies();
 
 	public void handleNavigationDrawer(int layoutId, int listId,
 									   final String name, final String sub) {
@@ -80,8 +82,7 @@ public abstract class ParentActivity extends ActionBarActivity implements
 		navDrawerItems = new ArrayList<>();
 		navDrawerItems = setNavigationDrawer(navDrawerItems,
 				getApplicationContext());
-		navDrawerListAdapter = new NavDrawerListAdapter(getApplicationContext(),
-				navDrawerItems);
+		navDrawerListAdapter = NavDrawerListAdapter.instance(getApplicationContext(), navDrawerItems, configurationService);
 		mDrawerList.setAdapter(navDrawerListAdapter);
 		actionBar.setDisplayHomeAsUpEnabled(true);
 		actionBar.setHomeButtonEnabled(true);

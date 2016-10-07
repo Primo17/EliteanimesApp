@@ -37,6 +37,7 @@ import de.btcdev.eliteanimesapp.json.PrivateMessageDeserializer;
 import de.btcdev.eliteanimesapp.json.ProfileDeserializer;
 import de.btcdev.eliteanimesapp.json.SearchUserDeserializer;
 import de.btcdev.eliteanimesapp.json.StatisticsDeserializer;
+import de.btcdev.eliteanimesapp.services.ImageService;
 
 /**
  * Klasse für alle verwendeten Parsing-Aufgaben
@@ -44,8 +45,6 @@ import de.btcdev.eliteanimesapp.json.StatisticsDeserializer;
 public class EAParser {
 
     private Context context;
-    @Inject
-    ConfigurationService configurationService;
 
     /**
      * Erzeugt einen neuen EAParser
@@ -56,7 +55,7 @@ public class EAParser {
         this.context = context;
     }
 
-    public boolean parseLoginResult(String input) {
+    public boolean parseLoginResult(String input, ConfigurationService configurationService) {
         try {
             if (input == null || input.isEmpty())
                 return false;
@@ -88,6 +87,9 @@ public class EAParser {
                     new ProfileDeserializer()).create();
             try {
                 profile = gson.fromJson(input, Profile.class);
+                //TODO: real instantiation later in profile service
+                ImageService imageService = new ImageService(null, context);
+                profile.setAvatar(imageService.getBitmapFromUrl(profile.getAvatarURL(), ImageService.profileSize));
             } catch (JsonParseException ex) {
                 JsonError error = gson.fromJson(input, JsonError.class);
                 throw new JsonErrorException(error.getError());
@@ -152,6 +154,11 @@ public class EAParser {
             Type collectionType = new TypeToken<ArrayList<Comment>>() {
             }.getType();
             comments = gson.fromJson(input, collectionType);
+            //TODO: call and instantiate image service the correct way
+            final ImageService imageService = new ImageService(null, context);
+            for (Comment comment: comments) {
+                comment.setAvatar(imageService.getBitmapFromUrl(comment.getAvatarURL(), ImageService.commentSize));
+            }
             return comments;
         } catch (Exception e) {
             return comments;
@@ -666,8 +673,9 @@ public class EAParser {
             if (object.has("comment")) {
                 commentcount = object.get("comment").getAsInt();
             }
-            configurationService.setNewCommentCount(commentcount, context);
-            configurationService.setNewMessageCount(pncount, context);
+            //TODO: the news should be set in the configurationService !
+            //configurationService.setNewCommentCount(commentcount, context);
+            //configurationService.setNewMessageCount(pncount, context);
         } catch (Exception e) {
 
         }
@@ -679,7 +687,7 @@ public class EAParser {
      *
      * @param input JSON-String der den Token enthält
      */
-    public void getToken(String input) {
+    public void getToken(String input, ConfigurationService configurationService) {
         try {
             JsonParser parser = new JsonParser();
             JsonObject object = parser.parse(input).getAsJsonObject();

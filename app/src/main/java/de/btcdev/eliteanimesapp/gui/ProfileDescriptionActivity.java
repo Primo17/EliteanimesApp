@@ -73,6 +73,11 @@ public class ProfileDescriptionActivity extends ParentActivity implements
 				R.id.nav_profil_beschreibung_list, "Über", currentUser);
 	}
 
+	@Override
+	protected void injectDependencies() {
+		((EaApp) getApplication()).getEaComponent().inject(this);
+	}
+
 	/**
 	 * Erzeugt das Optionsmenü.
 	 */
@@ -192,7 +197,7 @@ public class ProfileDescriptionActivity extends ParentActivity implements
 						userId);
 				if (isCancelled())
 					return null;
-				new NewsThread(getApplicationContext()).start();
+                NewsThread.getNews(networkService);
 				String output = eaParser.getProfileDescription(input);
 				return output;
 			} catch (EAException e) {

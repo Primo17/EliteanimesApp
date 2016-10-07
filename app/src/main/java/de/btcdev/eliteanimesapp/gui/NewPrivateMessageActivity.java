@@ -73,6 +73,11 @@ public class NewPrivateMessageActivity extends ParentActivity implements
 				"Neue Nachricht", privateMessage.getUserName());
 	}
 
+	@Override
+	protected void injectDependencies() {
+		((EaApp) getApplication()).getEaComponent().inject(this);
+	}
+
 	/**
 	 * Wird aufgerufen, wenn die Activity pausiert wird. Ein laufender PrivateMessageTask
 	 * wird dabei abgebrochen.
@@ -190,7 +195,7 @@ public class NewPrivateMessageActivity extends ParentActivity implements
 				if (!sendMode) {
 					try {
 						input = networkService.getPrivateMessage(privateMessage.getId());
-						new NewsThread(getApplicationContext()).start();
+                        NewsThread.getNews(networkService);
 						eaParser = new EAParser(null);
 						privateMessage = eaParser.getPrivateMessage(privateMessage, input);
 						return null;

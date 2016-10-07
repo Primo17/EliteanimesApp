@@ -7,10 +7,14 @@ import javax.inject.Inject;
 public class NewsThread extends Thread {
 
 	private EAParser eaParser;
-	@Inject
-	NetworkService networkService;
+	private NetworkService networkService;
 
-	public NewsThread(Context context) {
+	public static void getNews(NetworkService networkService) {
+		new NewsThread(networkService).start();
+	}
+
+	private NewsThread(NetworkService networkService) {
+		this.networkService = networkService;
 		eaParser = new EAParser(null);
 	}
 

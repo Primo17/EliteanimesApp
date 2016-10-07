@@ -68,11 +68,11 @@ public class LoginActivity extends ParentActivity implements OnClickListener,
      */
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        ((EaApp) getApplication()).getEaComponent().inject(this);
+        //TODO call: just for testing nullpointer
+        loginServiceParent.isSomeoneLoggedIn();
         loginService.isSomeoneLoggedIn();
 
         PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
-        configurationService.setContext(getApplicationContext());
         prefs = getPreferences(Context.MODE_PRIVATE);
         tryLogin();
 
@@ -94,6 +94,11 @@ public class LoginActivity extends ParentActivity implements OnClickListener,
             loginCheckView.setChecked(prefs.getBoolean("Checked", false));
         handleNavigationDrawer(R.id.nav_login, R.id.nav_login_list, "Login",
                 null);
+    }
+
+    @Override
+    protected void injectDependencies() {
+        ((EaApp) getApplication()).getEaComponent().inject(this);
     }
 
     /**
@@ -297,7 +302,7 @@ public class LoginActivity extends ParentActivity implements OnClickListener,
                 String input = loginService.login(userName, password);
                 if (input != null)
                     new EAParser(getApplicationContext())
-                            .parseLoginResult(input);
+                            .parseLoginResult(input, configurationService);
                 if (this.isCancelled())
                     return null;
             } catch (EAException e) {

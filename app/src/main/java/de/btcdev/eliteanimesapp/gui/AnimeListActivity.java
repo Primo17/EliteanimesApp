@@ -127,6 +127,11 @@ public class AnimeListActivity extends ParentActivity implements
 				"Animeliste", currentUser);
 	}
 
+	@Override
+	protected void injectDependencies() {
+		((EaApp) getApplication()).getEaComponent().inject(this);
+	}
+
 	/**
 	 * Speichert den aktuellen User, seine UserID und seine Animelisten
 	 * 
@@ -430,7 +435,7 @@ public class AnimeListActivity extends ParentActivity implements
 				if (params[0].equals("no_cache") || !ownList) {
 					if (this.isCancelled())
 						return null;
-					new NewsThread(getApplicationContext()).start();
+					NewsThread.getNews(networkService);
 					if (this.isCancelled())
 						return null;
 					input = networkService.getAnimeList(currentUser, userId);

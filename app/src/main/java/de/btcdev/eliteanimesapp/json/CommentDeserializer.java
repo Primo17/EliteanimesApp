@@ -28,9 +28,9 @@ public class CommentDeserializer implements JsonDeserializer<Comment> {
 			comment.setUserId(jsonObject.get("uid").getAsInt());
 			String image = jsonObject.get("image").getAsString();
 			if (image.equals(""))
-				comment.setAvatar("noava.png");
+				comment.setAvatarURL("noava.png");
 			else
-				comment.setAvatar(image);
+				comment.setAvatarURL(image);
 			comment.setText(jsonObject.get("text").getAsString());
 			return comment;
 		} else {

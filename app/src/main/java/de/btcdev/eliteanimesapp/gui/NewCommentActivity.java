@@ -90,6 +90,11 @@ public class NewCommentActivity extends ParentActivity implements
 				R.id.nav_neuer_kommentar_list, "Neuer Comment", currentUser);
 	}
 
+	@Override
+	protected void injectDependencies() {
+		((EaApp) getApplication()).getEaComponent().inject(this);
+	}
+
 	/**
 	 * Erzeugt das Menü.
 	 */

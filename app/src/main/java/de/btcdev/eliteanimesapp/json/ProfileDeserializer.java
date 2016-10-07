@@ -78,9 +78,9 @@ public class ProfileDeserializer implements JsonDeserializer<Profile> {
 			if (jsonObject.has("image")) {
 				String image = jsonObject.get("image").getAsString();
 				if (image.equals("")) {
-					profile.setAvatar("noava.png");
+					profile.setAvatarURL("noava.png");
 				} else
-					profile.setAvatar(image);
+					profile.setAvatarURL(image);
 			}
 			return profile;
 		}

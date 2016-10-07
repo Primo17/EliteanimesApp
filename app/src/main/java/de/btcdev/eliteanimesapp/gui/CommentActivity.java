@@ -115,6 +115,11 @@ public class CommentActivity extends ParentActivity implements
 		configurationService.setNewCommentCount(0, this);
 	}
 
+	@Override
+	protected void injectDependencies() {
+		((EaApp) getApplication()).getEaComponent().inject(this);
+	}
+
 	/**
 	 * Erzeugt das Menü
 	 */
@@ -392,7 +397,7 @@ public class CommentActivity extends ParentActivity implements
 		protected ArrayList<Comment> doInBackground(String... params) {
 			String input;
 			eaParser = new EAParser(null);
-			new NewsThread(getApplicationContext()).start();
+            NewsThread.getNews(networkService);
 			if (params[0].equals("more")) {
 				try {
 					if (isCancelled())
@@ -472,8 +477,7 @@ public class CommentActivity extends ParentActivity implements
 				if (currentUser.equals(configurationService
 						.getUserName(getApplicationContext()))
 						&& pageCount == 1) {
-					new CommentCacheThread(
-							CommentCacheThread.MODE_SAVE_CACHE, result);
+					new CommentCacheThread(getApplicationContext(), result, configurationService.getUserName(getApplicationContext()));
 				}
 			}
 			if (more || delete) {

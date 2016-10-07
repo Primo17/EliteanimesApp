@@ -116,6 +116,11 @@ public class AccountSettingsActivity extends ParentActivity implements
 				null);
 	}
 
+	@Override
+	protected void injectDependencies() {
+		((EaApp) getApplication()).getEaComponent().inject(this);
+	}
+
 	/**
 	 * Wird aufgerufen, wenn die Activity pausiert wird. Ein laufender
 	 * FriendTask wird dabei abgebrochen.
@@ -516,7 +521,7 @@ public class AccountSettingsActivity extends ParentActivity implements
 				if (this.isCancelled())
 					return null;
 				input = networkService.getFriendRequests();
-				new NewsThread(getApplicationContext()).start();
+				NewsThread.getNews(networkService);
 				if (this.isCancelled())
 					return null;
 				friendRequests = new EAParser(null).getFriendRequests(input);

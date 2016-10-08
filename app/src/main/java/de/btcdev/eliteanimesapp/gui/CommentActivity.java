@@ -1,8 +1,5 @@
 package de.btcdev.eliteanimesapp.gui;
 
-import java.lang.reflect.Type;
-import java.util.ArrayList;
-
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -30,27 +27,21 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonParseException;
 import com.google.gson.reflect.TypeToken;
 
-import javax.inject.Inject;
+import java.lang.reflect.Type;
+import java.util.ArrayList;
 
 import de.btcdev.eliteanimesapp.EaApp;
 import de.btcdev.eliteanimesapp.R;
 import de.btcdev.eliteanimesapp.adapter.CommentAdapter;
 import de.btcdev.eliteanimesapp.cache.CommentCacheThread;
 import de.btcdev.eliteanimesapp.data.Comment;
-import de.btcdev.eliteanimesapp.data.ConfigurationService;
 import de.btcdev.eliteanimesapp.data.EAException;
 import de.btcdev.eliteanimesapp.data.EAParser;
-import de.btcdev.eliteanimesapp.data.NetworkService;
 import de.btcdev.eliteanimesapp.data.NewsThread;
 import de.btcdev.eliteanimesapp.json.CommentDeserializer;
 
 public class CommentActivity extends ParentActivity implements
 		OnItemClickListener {
-
-	@Inject
-	ConfigurationService configurationService;
-	@Inject
-	NetworkService networkService;
 
 	private String currentUser;
 	private int userId;

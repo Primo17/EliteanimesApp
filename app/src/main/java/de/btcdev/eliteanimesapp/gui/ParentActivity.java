@@ -23,7 +23,6 @@ import java.util.ArrayList;
 
 import javax.inject.Inject;
 
-import de.btcdev.eliteanimesapp.EaApp;
 import de.btcdev.eliteanimesapp.R;
 import de.btcdev.eliteanimesapp.adapter.NavDrawerListAdapter;
 import de.btcdev.eliteanimesapp.data.ConfigurationService;
@@ -40,16 +39,15 @@ public abstract class ParentActivity extends ActionBarActivity implements
 	@Inject
 	ConfigurationService configurationService;
 	@Inject
-	NetworkService networkServiceParent;
+	NetworkService networkService;
 	@Inject
-	LoginService loginServiceParent;
+	LoginService loginService;
 
 	protected DrawerLayout mDrawerLayout;
 	protected ListView mDrawerList;
 	protected ActionBarDrawerToggle mDrawerToggle;
 	protected ArrayList<NavDrawerItem> navDrawerItems;
 	protected NavDrawerListAdapter navDrawerListAdapter;
-	protected NetworkService networkService;
 	protected EAParser eaParser;
 	protected final int load_dialog = 0;
 	protected ProgressDialog loadDialog;
@@ -215,7 +213,7 @@ public abstract class ParentActivity extends ActionBarActivity implements
 	 */
 	@Override
 	public void onItemClick(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
-		if (!networkServiceParent.isLoggedIn()) {
+		if (!networkService.isLoggedIn()) {
 			Toast.makeText(this, "Erst nach Login möglich!", Toast.LENGTH_SHORT)
 					.show();
 		} else {
@@ -295,7 +293,7 @@ public abstract class ParentActivity extends ActionBarActivity implements
 				break;
 			case NAVIGATION_LOGOUT:
 				try {
-					loginServiceParent.logout();
+					loginService.logout();
 					intent = new Intent(this,
 							de.btcdev.eliteanimesapp.gui.LoginActivity.class);
 					intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);

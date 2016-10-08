@@ -4,6 +4,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
 
@@ -91,24 +92,14 @@ public class LoginService {
      * @return Wahrheitswert, ob der aktuelle User schon eingeloggt ist
      */
     public boolean isLoggedIn(String expectedUserName) {
-        String userName = networkService.getUserByCookie();
-        return userName != null && expectedUserName != null && expectedUserName.equals(userName);
+        String loggedInUser = networkService.getUserByCookie();
+        return StringUtils.isNoneEmpty(expectedUserName, loggedInUser)
+                && expectedUserName.equals(loggedInUser);
     }
 
     public boolean isSomeoneLoggedIn() {
-        return !networkService.getUserByCookie().isEmpty();
-    }
-
-    /**
-     * L�dt den Token als JSON.
-     *
-     * @return JSON mit dem Token
-     * @throws EAException bei allen Fehlern
-     */
-    public String getToken() throws EAException {
-        List<NameValuePair> nvps = new ArrayList<>();
-        nvps.add(new BasicNameValuePair("apikey", networkService.getApikey()));
-        return networkService.doPOST(eaURL + "/api/getToken", nvps);
+        String loggedInUser = networkService.getUserByCookie();
+        return StringUtils.isNotEmpty(loggedInUser);
     }
 
     public boolean parseLoginResult(String input) {
@@ -131,18 +122,16 @@ public class LoginService {
     /**
      * Parst den übergebenen JSON-String der API-Funktion getToken nach dem
      * Token und setzt diesen in der ConfigurationService.
-     *
-     * @param input JSON-String der den Token enthält
      */
-    public void getToken(String input) {
-        try {
-            JsonParser parser = new JsonParser();
-            JsonObject object = parser.parse(input).getAsJsonObject();
-            if (object.has("token")) {
-                configurationService.setBoardToken(object.get("token").getAsString());
-            }
-        } catch (Exception e) {
+    public void getToken() throws EAException {
+        List<NameValuePair> nvps = new ArrayList<>();
+        nvps.add(new BasicNameValuePair("apikey", networkService.getApikey()));
+        String input = networkService.doPOST(eaURL + "/api/getToken", nvps);
 
+        JsonParser parser = new JsonParser();
+        JsonObject object = parser.parse(input).getAsJsonObject();
+        if (object.has("token")) {
+            configurationService.setBoardToken(object.get("token").getAsString());
         }
     }
 

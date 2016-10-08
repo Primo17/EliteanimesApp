@@ -13,20 +13,14 @@ import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import javax.inject.Inject;
-
 import de.btcdev.eliteanimesapp.EaApp;
 import de.btcdev.eliteanimesapp.R;
-import de.btcdev.eliteanimesapp.data.EAException;
-import de.btcdev.eliteanimesapp.data.EAParser;
 import de.btcdev.eliteanimesapp.data.BoardPost;
 import de.btcdev.eliteanimesapp.data.BoardThread;
-import de.btcdev.eliteanimesapp.data.NetworkService;
+import de.btcdev.eliteanimesapp.data.EAException;
+import de.btcdev.eliteanimesapp.data.EAParser;
 
 public class NewPostActivity extends ParentActivity {
-
-	@Inject
-	NetworkService networkService;
 
 	private BoardThread boardThread;
 	private boolean editMode;

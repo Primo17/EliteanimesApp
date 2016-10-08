@@ -16,21 +16,15 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import javax.inject.Inject;
-
 import de.btcdev.eliteanimesapp.EaApp;
 import de.btcdev.eliteanimesapp.R;
 import de.btcdev.eliteanimesapp.data.EAException;
 import de.btcdev.eliteanimesapp.data.EAParser;
-import de.btcdev.eliteanimesapp.data.NetworkService;
 import de.btcdev.eliteanimesapp.data.NewsThread;
 import de.btcdev.eliteanimesapp.data.PrivateMessage;
 
 public class NewPrivateMessageActivity extends ParentActivity implements
 		OnItemClickListener {
-
-	@Inject
-	NetworkService networkService;
 
 	private EditText privateMessageInputView;
 	private PrivateMessage privateMessage;

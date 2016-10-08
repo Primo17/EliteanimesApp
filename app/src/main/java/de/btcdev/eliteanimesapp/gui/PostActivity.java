@@ -1,7 +1,5 @@
 package de.btcdev.eliteanimesapp.gui;
 
-import java.util.ArrayList;
-
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -23,25 +21,18 @@ import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.Toast;
 
-import javax.inject.Inject;
+import java.util.ArrayList;
 
 import de.btcdev.eliteanimesapp.EaApp;
 import de.btcdev.eliteanimesapp.R;
 import de.btcdev.eliteanimesapp.adapter.BoardPostAdapter;
-import de.btcdev.eliteanimesapp.data.ConfigurationService;
-import de.btcdev.eliteanimesapp.data.EAException;
-import de.btcdev.eliteanimesapp.data.EAParser;
 import de.btcdev.eliteanimesapp.data.BoardPost;
 import de.btcdev.eliteanimesapp.data.BoardThread;
-import de.btcdev.eliteanimesapp.data.NetworkService;
+import de.btcdev.eliteanimesapp.data.EAException;
+import de.btcdev.eliteanimesapp.data.EAParser;
 
 public class PostActivity extends ParentActivity implements
 		OnItemSelectedListener {
-
-	@Inject
-	ConfigurationService configurationService;
-	@Inject
-	NetworkService networkService;
 
 	private BoardThread boardThread;
 	private ArrayList<BoardPost> postList;

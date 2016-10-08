@@ -1,7 +1,5 @@
 package de.btcdev.eliteanimesapp.gui;
 
-import java.util.ArrayList;
-
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
@@ -36,12 +34,14 @@ import android.widget.RadioButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.util.ArrayList;
+
 import javax.inject.Inject;
 
 import de.btcdev.eliteanimesapp.EaApp;
 import de.btcdev.eliteanimesapp.R;
-import de.btcdev.eliteanimesapp.adapter.FriendRequestAdapter;
 import de.btcdev.eliteanimesapp.adapter.BlockedAdapter;
+import de.btcdev.eliteanimesapp.adapter.FriendRequestAdapter;
 import de.btcdev.eliteanimesapp.data.EAException;
 import de.btcdev.eliteanimesapp.data.EAParser;
 import de.btcdev.eliteanimesapp.data.FriendRequest;
@@ -50,9 +50,6 @@ import de.btcdev.eliteanimesapp.data.NewsThread;
 
 public class AccountSettingsActivity extends ParentActivity implements
 		OnItemClickListener {
-
-	@Inject
-	public NetworkService networkService;
 
 	private AccountPagerAdapter accountPagerAdapter;
 	private ViewPager viewPager;

@@ -1,7 +1,5 @@
 package de.btcdev.eliteanimesapp.gui;
 
-import java.util.ArrayList;
-
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Typeface;
@@ -23,7 +21,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import javax.inject.Inject;
+import java.util.ArrayList;
 
 import de.btcdev.eliteanimesapp.EaApp;
 import de.btcdev.eliteanimesapp.R;
@@ -31,8 +29,6 @@ import de.btcdev.eliteanimesapp.adapter.FriendAdapter;
 import de.btcdev.eliteanimesapp.data.EAException;
 import de.btcdev.eliteanimesapp.data.EAParser;
 import de.btcdev.eliteanimesapp.data.Friend;
-import de.btcdev.eliteanimesapp.data.ConfigurationService;
-import de.btcdev.eliteanimesapp.data.NetworkService;
 import de.btcdev.eliteanimesapp.data.NewsThread;
 
 /**
@@ -40,11 +36,6 @@ import de.btcdev.eliteanimesapp.data.NewsThread;
  */
 public class FriendActivity extends ParentActivity implements
 		OnItemClickListener {
-
-	@Inject
-	ConfigurationService configurationService;
-	@Inject
-	NetworkService networkService;
 
 	private String currentUser;
 	private int userId = 0;

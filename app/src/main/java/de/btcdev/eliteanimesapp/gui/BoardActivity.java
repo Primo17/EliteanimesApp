@@ -1,9 +1,5 @@
 package de.btcdev.eliteanimesapp.gui;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.TreeMap;
-
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
@@ -20,7 +16,9 @@ import android.widget.ExpandableListView;
 import android.widget.ExpandableListView.OnChildClickListener;
 import android.widget.Toast;
 
-import javax.inject.Inject;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.TreeMap;
 
 import de.btcdev.eliteanimesapp.EaApp;
 import de.btcdev.eliteanimesapp.R;
@@ -28,7 +26,6 @@ import de.btcdev.eliteanimesapp.adapter.BoardAdapter;
 import de.btcdev.eliteanimesapp.data.Board;
 import de.btcdev.eliteanimesapp.data.EAException;
 import de.btcdev.eliteanimesapp.data.EAParser;
-import de.btcdev.eliteanimesapp.data.NetworkService;
 import de.btcdev.eliteanimesapp.data.Statistics;
 
 public class BoardActivity extends ParentActivity implements
@@ -39,8 +36,6 @@ public class BoardActivity extends ParentActivity implements
 	private TreeMap<Integer, ArrayList<Board>> boardMap;
 	private Statistics statistics;
 	private BoardTask boardTask;
-	@Inject
-	NetworkService networkService;
 
 	@SuppressWarnings("unchecked")
 	@Override

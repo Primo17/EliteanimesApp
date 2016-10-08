@@ -144,18 +144,6 @@ public class NetworkService {
     }
 
     /**
-     * L�dt den Token als JSON.
-     *
-     * @return JSON mit dem Token
-     * @throws EAException bei allen Fehlern
-     */
-    public String getToken() throws EAException {
-        List<NameValuePair> nvps = new ArrayList<>();
-        nvps.add(new BasicNameValuePair("apikey", getApikey()));
-        return doPOST(eaURL + "/api/getToken", nvps);
-    }
-
-    /**
      * Lädt die Anzahl neuer Kommentare und Privater Nachrichten und gibt diese
      * als JSON zurück.
      *

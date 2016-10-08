@@ -1,7 +1,5 @@
 package de.btcdev.eliteanimesapp.gui;
 
-import java.util.ArrayList;
-
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Typeface;
@@ -25,24 +23,17 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import javax.inject.Inject;
+import java.util.ArrayList;
 
 import de.btcdev.eliteanimesapp.EaApp;
 import de.btcdev.eliteanimesapp.R;
-import de.btcdev.eliteanimesapp.data.ConfigurationService;
-import de.btcdev.eliteanimesapp.data.NetworkService;
-import de.btcdev.eliteanimesapp.data.User;
 import de.btcdev.eliteanimesapp.data.EAException;
 import de.btcdev.eliteanimesapp.data.EAParser;
 import de.btcdev.eliteanimesapp.data.NewsThread;
+import de.btcdev.eliteanimesapp.data.User;
 
 public class SearchActivity extends ParentActivity implements
 		OnItemClickListener, OnClickListener {
-
-	@Inject
-	ConfigurationService configurationService;
-	@Inject
-	NetworkService networkService;
 
 	private EditText eingabe;
 	private Button searchButton;

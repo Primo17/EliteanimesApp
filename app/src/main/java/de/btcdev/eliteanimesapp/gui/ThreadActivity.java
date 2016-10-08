@@ -1,7 +1,5 @@
 package de.btcdev.eliteanimesapp.gui;
 
-import java.util.ArrayList;
-
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
@@ -20,23 +18,19 @@ import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.Toast;
 
-import javax.inject.Inject;
+import java.util.ArrayList;
 
 import de.btcdev.eliteanimesapp.EaApp;
 import de.btcdev.eliteanimesapp.R;
 import de.btcdev.eliteanimesapp.adapter.BoardThreadAdapter;
-import de.btcdev.eliteanimesapp.data.EAException;
-import de.btcdev.eliteanimesapp.data.EAParser;
 import de.btcdev.eliteanimesapp.data.Board;
 import de.btcdev.eliteanimesapp.data.BoardThread;
-import de.btcdev.eliteanimesapp.data.NetworkService;
+import de.btcdev.eliteanimesapp.data.EAException;
+import de.btcdev.eliteanimesapp.data.EAParser;
 import de.btcdev.eliteanimesapp.data.Subboard;
 
 public class ThreadActivity extends ParentActivity implements
 		OnItemSelectedListener {
-
-	@Inject
-	NetworkService networkService;
 
 	private ListView listView;
 	private BoardThreadAdapter boardThreadAdapter;

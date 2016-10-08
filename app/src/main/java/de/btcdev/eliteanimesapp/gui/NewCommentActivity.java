@@ -19,19 +19,13 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import javax.inject.Inject;
-
 import de.btcdev.eliteanimesapp.EaApp;
 import de.btcdev.eliteanimesapp.R;
 import de.btcdev.eliteanimesapp.data.Comment;
 import de.btcdev.eliteanimesapp.data.EAException;
-import de.btcdev.eliteanimesapp.data.NetworkService;
 
 public class NewCommentActivity extends ParentActivity implements
 		OnItemClickListener {
-
-	@Inject
-	NetworkService networkService;
 
 	private EditText commentInputView;
 	private String currentUser;

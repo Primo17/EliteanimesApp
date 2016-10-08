@@ -22,17 +22,11 @@ import android.widget.Toast;
 
 import com.google.analytics.tracking.android.EasyTracker;
 
-import javax.inject.Inject;
-
 import de.btcdev.eliteanimesapp.EaApp;
 import de.btcdev.eliteanimesapp.R;
-import de.btcdev.eliteanimesapp.data.ConfigurationService;
 import de.btcdev.eliteanimesapp.data.EAException;
-import de.btcdev.eliteanimesapp.data.EAParser;
-import de.btcdev.eliteanimesapp.data.NetworkService;
 import de.btcdev.eliteanimesapp.data.Profile;
 import de.btcdev.eliteanimesapp.data.ProfileCache;
-import de.btcdev.eliteanimesapp.services.LoginService;
 
 /**
  * Activity, die für den Login des Benutzers zuständig ist.
@@ -48,13 +42,6 @@ public class LoginActivity extends ParentActivity implements OnClickListener,
     private LoginTask loginTask;
     private ProfileCache profileCache;
 
-    @Inject
-    LoginService loginService;
-    @Inject
-    ConfigurationService configurationService;
-    @Inject
-    NetworkService networkService;
-
     private String userName;
     private String password;
 
@@ -69,8 +56,6 @@ public class LoginActivity extends ParentActivity implements OnClickListener,
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         //TODO call: just for testing nullpointer
-        loginServiceParent.isSomeoneLoggedIn();
-        loginService.isSomeoneLoggedIn();
 
         PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
         prefs = getPreferences(Context.MODE_PRIVATE);
@@ -301,8 +286,7 @@ public class LoginActivity extends ParentActivity implements OnClickListener,
                     return null;
                 String input = loginService.login(userName, password);
                 if (input != null)
-                    new EAParser(getApplicationContext())
-                            .parseLoginResult(input, configurationService);
+                    loginService.parseLoginResult(input);
                 if (this.isCancelled())
                     return null;
             } catch (EAException e) {

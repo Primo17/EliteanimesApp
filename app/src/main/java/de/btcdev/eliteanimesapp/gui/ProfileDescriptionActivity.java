@@ -17,13 +17,10 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.Toast;
 
-import javax.inject.Inject;
-
 import de.btcdev.eliteanimesapp.EaApp;
 import de.btcdev.eliteanimesapp.R;
 import de.btcdev.eliteanimesapp.data.EAException;
 import de.btcdev.eliteanimesapp.data.EAParser;
-import de.btcdev.eliteanimesapp.data.NetworkService;
 import de.btcdev.eliteanimesapp.data.NewsThread;
 
 /**
@@ -31,9 +28,6 @@ import de.btcdev.eliteanimesapp.data.NewsThread;
  */
 public class ProfileDescriptionActivity extends ParentActivity implements
 		OnItemClickListener {
-
-	@Inject
-	NetworkService networkService;
 
 	private String currentUser = null;
 	private int userId = 0;

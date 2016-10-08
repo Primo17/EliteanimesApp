@@ -1,10 +1,5 @@
 package de.btcdev.eliteanimesapp.gui;
 
-import java.lang.reflect.Type;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Locale;
-
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -38,6 +33,11 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonParseException;
 import com.google.gson.reflect.TypeToken;
 
+import java.lang.reflect.Type;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Locale;
+
 import javax.inject.Inject;
 
 import de.btcdev.eliteanimesapp.EaApp;
@@ -45,7 +45,6 @@ import de.btcdev.eliteanimesapp.R;
 import de.btcdev.eliteanimesapp.adapter.ListAnimeAdapter;
 import de.btcdev.eliteanimesapp.adapter.OnAnimeRatedListener;
 import de.btcdev.eliteanimesapp.cache.AnimelistCacheThread;
-import de.btcdev.eliteanimesapp.data.ConfigurationService;
 import de.btcdev.eliteanimesapp.data.EAException;
 import de.btcdev.eliteanimesapp.data.EAParser;
 import de.btcdev.eliteanimesapp.data.ListAnime;
@@ -57,11 +56,6 @@ import de.btcdev.eliteanimesapp.json.ListAnimeDeserializer;
 
 public class AnimeListActivity extends ParentActivity implements
 		OnItemClickListener, OnItemSelectedListener, OnAnimeRatedListener {
-
-	@Inject
-	ConfigurationService configurationService;
-	@Inject
-	NetworkService networkService;
 
 	private String currentUser;
 	private int userId;

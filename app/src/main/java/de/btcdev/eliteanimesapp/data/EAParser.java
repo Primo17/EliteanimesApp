@@ -53,23 +53,6 @@ public class EAParser {
         this.context = context;
     }
 
-    public boolean parseLoginResult(String input, ConfigurationService configurationService) {
-        try {
-            if (input == null || input.isEmpty())
-                return false;
-            JsonParser jsonParser = new JsonParser();
-            JsonObject obj = jsonParser.parse(input).getAsJsonObject();
-            JsonElement token = obj.get("token");
-            if (token != null) {
-                configurationService.setBoardToken(token.getAsString());
-                return true;
-            }
-            return false;
-        } catch (IllegalStateException e) {
-            return false;
-        }
-    }
-
     /**
      * Parst den übergebenen String nach den tabellarischen Profildaten.
      *
@@ -293,19 +276,6 @@ public class EAParser {
         } catch (Exception e) {
             return privateMessage;
         }
-    }
-
-    /**
-     * Parst den übergebenen String nach dem Input der empfangenen PrivateMessage, der bei
-     * einer neuen Nachricht mitgeschickt werden muss.
-     *
-     * @param input HTML-Code der PrivateMessage
-     * @return Input der PrivateMessage
-     */
-    public String getPrivateMessageInput(String input) {
-        Document doc = Jsoup.parse(input);
-        Elements privateMessageInput = doc.select("textarea");
-        return privateMessageInput.text();
     }
 
     /**
@@ -683,42 +653,6 @@ public class EAParser {
             //configurationService.setNewMessageCount(pncount, context);
         } catch (Exception e) {
 
-        }
-    }
-
-    /**
-     * Parst den übergebenen JSON-String der API-Funktion getToken nach dem
-     * Token und setzt diesen in der configurationService.
-     *
-     * @param input JSON-String der den Token enthält
-     */
-    public void getToken(String input, ConfigurationService configurationService) {
-        try {
-            JsonParser parser = new JsonParser();
-            JsonObject object = parser.parse(input).getAsJsonObject();
-            if (object.has("token")) {
-                configurationService.setBoardToken(object.get("token").getAsString());
-            }
-        } catch (Exception e) {
-
-        }
-    }
-
-    /**
-     * Parst den übergebenen String nach der Kopfzeile und überprüft, ob der
-     * User eingeloggt ist.
-     *
-     * @param input HTML-Code einer Seite auf EA
-     * @return Wahrheitswert, ob der User eingeloggt ist
-     */
-    public boolean isLoggedIn(String input) {
-        Document doc = Jsoup.parse(input);
-        Elements content = doc.select("div.head div");
-        if (content != null && content.size() > 0) {
-            String status = content.attr("class");
-            return status.equals("profilbuttons");
-        } else {
-            return false;
         }
     }
 

@@ -16,13 +16,10 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import javax.inject.Inject;
-
 import de.btcdev.eliteanimesapp.EaApp;
 import de.btcdev.eliteanimesapp.R;
 import de.btcdev.eliteanimesapp.data.EAException;
 import de.btcdev.eliteanimesapp.data.EAParser;
-import de.btcdev.eliteanimesapp.data.NetworkService;
 import de.btcdev.eliteanimesapp.data.NewsThread;
 import de.btcdev.eliteanimesapp.data.Profile;
 import de.btcdev.eliteanimesapp.data.ProfileCache;
@@ -33,9 +30,6 @@ import de.btcdev.eliteanimesapp.json.JsonErrorException;
  */
 public class UserProfileActivity extends ParentActivity implements
 		OnItemClickListener {
-
-	@Inject
-	NetworkService networkService;
 
 	private ProfileCache profileCache;
 	private ImageView avatarView;

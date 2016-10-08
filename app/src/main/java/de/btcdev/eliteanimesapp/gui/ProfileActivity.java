@@ -2,7 +2,6 @@ package de.btcdev.eliteanimesapp.gui;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.Bitmap;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -25,7 +24,6 @@ import de.btcdev.eliteanimesapp.R;
 import de.btcdev.eliteanimesapp.data.ConfigurationService;
 import de.btcdev.eliteanimesapp.data.EAException;
 import de.btcdev.eliteanimesapp.data.EAParser;
-import de.btcdev.eliteanimesapp.data.NetworkService;
 import de.btcdev.eliteanimesapp.data.NewsThread;
 import de.btcdev.eliteanimesapp.data.Profile;
 import de.btcdev.eliteanimesapp.data.ProfileCache;
@@ -36,9 +34,6 @@ import de.btcdev.eliteanimesapp.json.JsonErrorException;
  */
 public class ProfileActivity extends ParentActivity implements
 		OnItemClickListener {
-
-	@Inject
-	NetworkService networkService;
 
 	private ProfileCache profileCache;
 	private ImageView avatarView;
@@ -281,7 +276,7 @@ public class ProfileActivity extends ParentActivity implements
 					Thread t = new Thread(new Runnable() {
 						public void run() {
 							try {
-								new EAParser(null).getToken(networkService.getToken(), configurationService);
+								loginService.getToken();
 							} catch (EAException e) {
 
 							}

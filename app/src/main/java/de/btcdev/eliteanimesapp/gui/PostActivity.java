@@ -50,7 +50,7 @@ public class PostActivity extends ParentActivity implements
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		((EaApp) getApplication()).getEaComponent().inject(this);
+
 		setContentView(R.layout.activity_post);
 		listView = (ListView) findViewById(R.id.threads_list);
 		if (savedInstanceState != null) {

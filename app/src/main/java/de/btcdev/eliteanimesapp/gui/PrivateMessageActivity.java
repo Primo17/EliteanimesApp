@@ -51,7 +51,7 @@ public class PrivateMessageActivity extends ParentActivity implements OnItemClic
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		((EaApp) getApplication()).getEaComponent().inject(this);
+
 		setContentView(R.layout.activity_pn);
 		actionBar = getSupportActionBar();
 		actionBar.setTitle("Meine Nachrichten");

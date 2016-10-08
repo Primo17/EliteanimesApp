@@ -9,6 +9,7 @@ import android.os.Parcelable;
 import javax.inject.Inject;
 
 import de.btcdev.eliteanimesapp.R;
+import de.btcdev.eliteanimesapp.services.ConfigurationService;
 
 public class BoardPost implements Parcelable {
 

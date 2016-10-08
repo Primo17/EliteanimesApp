@@ -55,7 +55,6 @@ public class LoginActivity extends ParentActivity implements OnClickListener,
      */
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        //TODO call: just for testing nullpointer
 
         PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
         prefs = getPreferences(Context.MODE_PRIVATE);
@@ -322,7 +321,7 @@ public class LoginActivity extends ParentActivity implements OnClickListener,
         @SuppressWarnings("deprecation")
         @Override
         protected void onPostExecute(String loginString) {
-            if (networkService.isLoggedIn()) {
+            if (loginService.isSomeoneLoggedIn()) {
                 profileCache = ProfileCache.instance();
                 if (profileCache.getOwnProfile() == null) {
                     Profile temp = new Profile(

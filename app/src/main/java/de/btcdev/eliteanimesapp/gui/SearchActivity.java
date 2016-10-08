@@ -43,7 +43,7 @@ public class SearchActivity extends ParentActivity implements
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		((EaApp) getApplication()).getEaComponent().inject(this);
+
 		setContentView(R.layout.activity_search);
 		actionBar = getSupportActionBar();
 		eaParser = new EAParser(null);

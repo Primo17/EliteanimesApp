@@ -25,11 +25,11 @@ import javax.inject.Inject;
 
 import de.btcdev.eliteanimesapp.R;
 import de.btcdev.eliteanimesapp.adapter.NavDrawerListAdapter;
-import de.btcdev.eliteanimesapp.data.ConfigurationService;
 import de.btcdev.eliteanimesapp.data.EAException;
 import de.btcdev.eliteanimesapp.data.EAParser;
 import de.btcdev.eliteanimesapp.data.NavDrawerItem;
 import de.btcdev.eliteanimesapp.data.NetworkService;
+import de.btcdev.eliteanimesapp.services.ConfigurationService;
 import de.btcdev.eliteanimesapp.services.LoginService;
 
 public abstract class ParentActivity extends ActionBarActivity implements
@@ -213,7 +213,7 @@ public abstract class ParentActivity extends ActionBarActivity implements
 	 */
 	@Override
 	public void onItemClick(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
-		if (!networkService.isLoggedIn()) {
+		if (!loginService.isSomeoneLoggedIn()) {
 			Toast.makeText(this, "Erst nach Login möglich!", Toast.LENGTH_SHORT)
 					.show();
 		} else {

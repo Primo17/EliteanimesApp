@@ -1,7 +1,5 @@
 package de.btcdev.eliteanimesapp.adapter;
 
-import java.util.ArrayList;
-
 import android.app.Activity;
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -11,12 +9,12 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import javax.inject.Inject;
+import java.util.ArrayList;
 
 import de.btcdev.eliteanimesapp.R;
-import de.btcdev.eliteanimesapp.data.ConfigurationService;
 import de.btcdev.eliteanimesapp.data.NavDrawerItem;
 import de.btcdev.eliteanimesapp.gui.ParentActivity;
+import de.btcdev.eliteanimesapp.services.ConfigurationService;
 
 public class NavDrawerListAdapter extends BaseAdapter {
 

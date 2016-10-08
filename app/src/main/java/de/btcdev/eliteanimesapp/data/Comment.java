@@ -1,17 +1,5 @@
 package de.btcdev.eliteanimesapp.data;
 
-import java.io.InputStream;
-
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.entity.BufferedHttpEntity;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.params.BasicHttpParams;
-import org.apache.http.params.HttpConnectionParams;
-import org.apache.http.params.HttpParams;
-
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
@@ -21,7 +9,7 @@ import android.os.Parcelable;
 import javax.inject.Inject;
 
 import de.btcdev.eliteanimesapp.R;
-import de.btcdev.eliteanimesapp.cache.CommentLruCache;
+import de.btcdev.eliteanimesapp.services.ConfigurationService;
 
 public class Comment implements Parcelable {
 

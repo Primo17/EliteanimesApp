@@ -82,7 +82,7 @@ public class AnimeListActivity extends ParentActivity implements
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		((EaApp) getApplication()).getEaComponent().inject(this);
+
 		setContentView(R.layout.activity_anime_list);
 		ActionBar bar = getSupportActionBar();
 		eaParser = new EAParser(this);

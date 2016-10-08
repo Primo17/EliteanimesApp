@@ -16,20 +16,25 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import javax.inject.Inject;
+
 import de.btcdev.eliteanimesapp.EaApp;
 import de.btcdev.eliteanimesapp.R;
 import de.btcdev.eliteanimesapp.data.EAException;
-import de.btcdev.eliteanimesapp.data.EAParser;
 import de.btcdev.eliteanimesapp.data.NewsThread;
 import de.btcdev.eliteanimesapp.data.Profile;
 import de.btcdev.eliteanimesapp.data.ProfileCache;
 import de.btcdev.eliteanimesapp.json.JsonErrorException;
+import de.btcdev.eliteanimesapp.services.ProfileService;
 
 /**
  * Activity-Klasse zur Darstellung eines fremden Profils
  */
 public class UserProfileActivity extends ParentActivity implements
 		OnItemClickListener {
+
+	@Inject
+	ProfileService profileService;
 
 	private ProfileCache profileCache;
 	private ImageView avatarView;
@@ -47,7 +52,7 @@ public class UserProfileActivity extends ParentActivity implements
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		((EaApp) getApplication()).getEaComponent().inject(this);
+
 		if (savedInstanceState != null) {
 			currentUser = savedInstanceState.getString("User");
 			currentUserId = savedInstanceState.getInt("UserID");
@@ -63,7 +68,6 @@ public class UserProfileActivity extends ParentActivity implements
 		actionBar.setTitle("Profile");
 		actionBar.setSubtitle(currentUser);
 
-		eaParser = new EAParser(this);
 		profileCache = ProfileCache.instance();
 		Profile temp = profileCache.contains(currentUser);
 
@@ -320,24 +324,16 @@ public class UserProfileActivity extends ParentActivity implements
 		protected Profile doInBackground(String... params) {
 			final String input;
 			final Profile profile;
-			eaParser = new EAParser(getApplicationContext());
 			try {
 				if (this.isCancelled())
 					return null;
-				input = networkService.getProfile(currentUser, currentUserId);
-				if (this.isCancelled())
-					return null;
                 NewsThread.getNews(networkService);
-				profile = eaParser.getProfile(input);
-				if (this.isCancelled())
-					return null;
+				profile = profileService.getProfile(currentUserId);
 				return profile;
-			} catch (EAException e) {
-				publishProgress("Exception", e.getMessage());
-			} catch (JsonErrorException e) {
+			} catch (EAException | JsonErrorException e) {
 				publishProgress("Exception", e.getMessage());
 			}
-			return null;
+            return null;
 
 		}
 

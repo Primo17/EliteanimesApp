@@ -12,18 +12,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.inject.Inject;
-import javax.inject.Singleton;
 
-import de.btcdev.eliteanimesapp.data.ConfigurationService;
 import de.btcdev.eliteanimesapp.data.EAException;
 import de.btcdev.eliteanimesapp.data.NetworkService;
 
-@Singleton
 public class LoginService {
-
-    //TODO: remove the other methods from networkService and eaParser!
-
-    private String eaURL = "http://www.eliteanimes.com";
 
     private NetworkService networkService;
     private ConfigurationService configurationService;
@@ -51,7 +44,7 @@ public class LoginService {
             nvps.add(new BasicNameValuePair("name", userName));
             nvps.add(new BasicNameValuePair("password", password));
             nvps.add(new BasicNameValuePair("apikey", networkService.getApikey()));
-            String input = networkService.doPOST(eaURL + "/api/login", nvps);
+            String input = networkService.doPOST(NetworkService.eaURL + "/api/login", nvps);
             int userId = networkService.getIdByCookie();
             networkService.saveCookies();
             if (userId != 0)
@@ -75,7 +68,7 @@ public class LoginService {
                     try {
                         List<NameValuePair> nvps = new ArrayList<>();
                         nvps.add(new BasicNameValuePair("apikey", networkService.getApikey()));
-                        networkService.doPOST(eaURL + "/api/logout", nvps);
+                        networkService.doPOST(NetworkService.eaURL + "/api/logout", nvps);
                     } catch (Exception e) {
                         System.out.println(e);
                     }
@@ -126,7 +119,7 @@ public class LoginService {
     public void getToken() throws EAException {
         List<NameValuePair> nvps = new ArrayList<>();
         nvps.add(new BasicNameValuePair("apikey", networkService.getApikey()));
-        String input = networkService.doPOST(eaURL + "/api/getToken", nvps);
+        String input = networkService.doPOST(NetworkService.eaURL + "/api/getToken", nvps);
 
         JsonParser parser = new JsonParser();
         JsonObject object = parser.parse(input).getAsJsonObject();

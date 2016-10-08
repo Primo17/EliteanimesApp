@@ -41,6 +41,8 @@ import java.util.Scanner;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
+import de.btcdev.eliteanimesapp.services.ConfigurationService;
+
 /**
  * Klasse für alle verwendeten NetworkService-Aufgaben. Verwaltet die Adresse von EA,
  * die gesetzten Cookies und den HttpClient.
@@ -50,7 +52,7 @@ public class NetworkService {
 
     private static Context context = null;
     private static NetworkService unique = null;
-    private String eaURL = "http://www.eliteanimes.com";
+    public static final String eaURL = "http://www.eliteanimes.com";
     private DefaultHttpClient httpclient;
     private List<Cookie> cookies;
     private String apikey = "8HB3GcTOiKm973zW9c1ioWwJa4ThDPzV";
@@ -154,36 +156,6 @@ public class NetworkService {
         List<NameValuePair> nvps = new ArrayList<>();
         nvps.add(new BasicNameValuePair("apikey", getApikey()));
         return doPOST(eaURL + "/api/getUserUpdates", nvps);
-    }
-
-    /**
-     * Lädt den HTML-Code des eigenen Profils und gibt diesen als String zurück.
-     *
-     * @return HTML-Code des eigenen Profils als String
-     * @throws EAException bei Verbindungs- und Streamfehlern jeglicher Art
-     */
-    public String getProfile() throws EAException {
-        List<NameValuePair> nvps = new ArrayList<>();
-        nvps.add(new BasicNameValuePair("id", Integer
-                .toString(configurationService.getUserID(context))));
-        nvps.add(new BasicNameValuePair("apikey", getApikey()));
-        return doPOST(eaURL + "/api/getProfil", nvps);
-    }
-
-    /**
-     * Lädt den HTML-Code des Profils mit den übergebenen Daten und gibt diesen
-     * als String zurück.
-     *
-     * @param userName der Benutzername des gewünschten Profils
-     * @param userId       die UserID des gewünschten Profils
-     * @return HTML-Code des Profils als String
-     * @throws EAException bei Verbindungs- und Streamfehlern jeglicher Art
-     */
-    public String getProfile(String userName, int userId) throws EAException {
-        List<NameValuePair> nvps = new ArrayList<>();
-        nvps.add(new BasicNameValuePair("id", Integer.toString(userId)));
-        nvps.add(new BasicNameValuePair("apikey", getApikey()));
-        return doPOST(eaURL + "/api/getProfil", nvps);
     }
 
     /**
@@ -719,22 +691,6 @@ public class NetworkService {
             }
         }
         return stringWriter.toString();
-    }
-
-    /**
-     * Überprüft, ob schon Login-Cookies vorhanden sind und ob diese mit dem
-     * Benutzernamen der configurationService übereinstimmen.
-     *
-     * @return Wahrheitswert, ob der aktuelle User schon eingeloggt ist
-     */
-    public boolean isLoggedIn() {
-        cookies = httpclient.getCookieStore().getCookies();
-        String userName = "";
-        for (Cookie c : cookies) {
-            if (c.getName().equals("user_name"))
-                userName = c.getValue();
-        }
-        return userName != null && configurationService.getUserName(context) != null && configurationService.getUserName(context).equals(userName);
     }
 
     /**

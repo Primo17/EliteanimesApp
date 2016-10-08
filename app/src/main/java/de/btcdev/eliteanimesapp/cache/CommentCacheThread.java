@@ -1,17 +1,14 @@
 package de.btcdev.eliteanimesapp.cache;
 
-import java.util.ArrayList;
-
 import android.content.Context;
 import android.content.SharedPreferences;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
-import javax.inject.Inject;
+import java.util.ArrayList;
 
 import de.btcdev.eliteanimesapp.data.Comment;
-import de.btcdev.eliteanimesapp.data.ConfigurationService;
 import de.btcdev.eliteanimesapp.json.CommentSerializer;
 
 public class CommentCacheThread extends Thread {

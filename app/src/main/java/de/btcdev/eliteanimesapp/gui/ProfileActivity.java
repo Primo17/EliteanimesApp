@@ -21,13 +21,12 @@ import javax.inject.Inject;
 
 import de.btcdev.eliteanimesapp.EaApp;
 import de.btcdev.eliteanimesapp.R;
-import de.btcdev.eliteanimesapp.data.ConfigurationService;
 import de.btcdev.eliteanimesapp.data.EAException;
-import de.btcdev.eliteanimesapp.data.EAParser;
 import de.btcdev.eliteanimesapp.data.NewsThread;
 import de.btcdev.eliteanimesapp.data.Profile;
 import de.btcdev.eliteanimesapp.data.ProfileCache;
 import de.btcdev.eliteanimesapp.json.JsonErrorException;
+import de.btcdev.eliteanimesapp.services.ProfileService;
 
 /**
  * Activity für die Anzeige des eigenen Profils.
@@ -35,12 +34,12 @@ import de.btcdev.eliteanimesapp.json.JsonErrorException;
 public class ProfileActivity extends ParentActivity implements
 		OnItemClickListener {
 
+	@Inject
+	ProfileService profileService;
+
 	private ProfileCache profileCache;
 	private ImageView avatarView;
 	private ProfileTask profileTask;
-
-	@Inject
-	ConfigurationService configurationService;
 
 	/**
 	 * Das UI wird erzeugt, NetworkService, Cache und Parser werden aus der
@@ -51,14 +50,13 @@ public class ProfileActivity extends ParentActivity implements
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		((EaApp) getApplication()).getEaComponent().inject(this);
+
 		setContentView(R.layout.activity_profil);
 		avatarView = (ImageView) findViewById(R.id.profilbild_eigenes);
 		actionBar = getSupportActionBar();
 		actionBar.setTitle("Profile");
 		actionBar.setSubtitle(configurationService.getUserName(getApplicationContext()));
 
-		eaParser = new EAParser(null);
 		profileCache = ProfileCache.instance();
 		Profile ownProfile = profileCache.getOwnProfile();
 		if (ownProfile != null && ownProfile.isComplete())
@@ -269,9 +267,6 @@ public class ProfileActivity extends ParentActivity implements
 			try {
 				if (this.isCancelled())
 					return null;
-				input = networkService.getProfile();
-				if (this.isCancelled())
-					return null;
 				if (configurationService.getBoardToken() == null) {
 					Thread t = new Thread(new Runnable() {
 						public void run() {
@@ -286,8 +281,7 @@ public class ProfileActivity extends ParentActivity implements
 				}
                 NewsThread.getNews(networkService);
 				try {
-					eaParser = new EAParser(getApplicationContext());
-					profile = eaParser.getProfile(input);
+                    profile = profileService.getProfile();
 				} catch (JsonErrorException ex) {
 					if (ex != null && ex.getMessage() != null) {
 						if (ex.getMessage().equals("You need to Login"))

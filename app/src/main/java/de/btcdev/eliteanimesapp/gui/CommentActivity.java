@@ -59,7 +59,7 @@ public class CommentActivity extends ParentActivity implements
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		((EaApp) getApplication()).getEaComponent().inject(this);
+
 		setContentView(R.layout.activity_kommentar);
 		actionBar = getSupportActionBar();
 		actionBar.setTitle("Kommentare");

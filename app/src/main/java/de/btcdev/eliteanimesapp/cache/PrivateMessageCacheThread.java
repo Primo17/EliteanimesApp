@@ -1,18 +1,18 @@
 package de.btcdev.eliteanimesapp.cache;
 
-import java.util.ArrayList;
-
 import android.content.Context;
 import android.content.SharedPreferences;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
+import java.util.ArrayList;
+
 import javax.inject.Inject;
 
-import de.btcdev.eliteanimesapp.data.ConfigurationService;
 import de.btcdev.eliteanimesapp.data.PrivateMessage;
 import de.btcdev.eliteanimesapp.json.PrivateMessageSerializer;
+import de.btcdev.eliteanimesapp.services.ConfigurationService;
 
 public class PrivateMessageCacheThread extends Thread {
 

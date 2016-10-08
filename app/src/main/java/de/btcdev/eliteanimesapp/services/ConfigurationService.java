@@ -1,4 +1,4 @@
-package de.btcdev.eliteanimesapp.data;
+package de.btcdev.eliteanimesapp.services;
 
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -15,6 +15,7 @@ import javax.inject.Singleton;
 
 import de.btcdev.eliteanimesapp.EaApp;
 import de.btcdev.eliteanimesapp.R;
+import de.btcdev.eliteanimesapp.data.InfoThread;
 import de.btcdev.eliteanimesapp.database.UserDataHelper;
 import de.btcdev.eliteanimesapp.gui.CommentActivity;
 import de.btcdev.eliteanimesapp.gui.PrivateMessageActivity;
@@ -41,6 +42,7 @@ public class ConfigurationService {
 	/* TODO: Remove ConfigurationService access from:
 	 	InfoThread? AnimelistCacheThread? PrivateMessageCacheThread?
 	*/
+	//TODO: remove context parameters from various methods
 
 	@Inject
 	public ConfigurationService(EaApp app) {

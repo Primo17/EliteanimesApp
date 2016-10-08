@@ -44,7 +44,7 @@ public class NewCommentActivity extends ParentActivity implements
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		((EaApp) getApplication()).getEaComponent().inject(this);
+
 		setContentView(R.layout.activity_neuer_kommentar);
 		commentInputView = (EditText) findViewById(R.id.new_comment_text);
 		actionBar = getSupportActionBar();

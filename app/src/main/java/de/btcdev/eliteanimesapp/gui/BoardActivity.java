@@ -41,7 +41,7 @@ public class BoardActivity extends ParentActivity implements
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		((EaApp) getApplication()).getEaComponent().inject(this);
+
 		setContentView(R.layout.activity_foren);
 		listView = (ExpandableListView) findViewById(R.id.foren_list);
 		if (savedInstanceState != null) {

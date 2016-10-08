@@ -17,17 +17,23 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.Toast;
 
+import javax.inject.Inject;
+
 import de.btcdev.eliteanimesapp.EaApp;
 import de.btcdev.eliteanimesapp.R;
 import de.btcdev.eliteanimesapp.data.EAException;
 import de.btcdev.eliteanimesapp.data.EAParser;
 import de.btcdev.eliteanimesapp.data.NewsThread;
+import de.btcdev.eliteanimesapp.services.ProfileService;
 
 /**
  * Activity zur Anzeige einer Profilbeschreibung
  */
 public class ProfileDescriptionActivity extends ParentActivity implements
 		OnItemClickListener {
+
+	@Inject
+	ProfileService profileService;
 
 	private String currentUser = null;
 	private int userId = 0;
@@ -43,7 +49,7 @@ public class ProfileDescriptionActivity extends ParentActivity implements
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		((EaApp) getApplication()).getEaComponent().inject(this);
+
 		if (savedInstanceState != null) {
 			currentUser = savedInstanceState.getString(currentUser);
 			userId = savedInstanceState.getInt("UserID");
@@ -113,9 +119,8 @@ public class ProfileDescriptionActivity extends ParentActivity implements
 			return true;
 		case R.id.profil_beschreibung_spoiler:
 			showSpoiler = !showSpoiler;
-			EAParser parser = new EAParser(this);
 			webView.loadDataWithBaseURL("http://www.eliteanimes.com",
-					parser.showSpoiler(showSpoiler, description), "text/html",
+					eaParser.showSpoiler(showSpoiler, description), "text/html",
 					"utf-8", null);
 		default:
 			return super.onOptionsItemSelected(item);
@@ -156,9 +161,8 @@ public class ProfileDescriptionActivity extends ParentActivity implements
 		WebSettings settings = webView.getSettings();
 		settings.setDefaultZoom(ZoomDensity.FAR);
 		settings.setBuiltInZoomControls(true);
-		EAParser parser = new EAParser(this);
 		webView.loadDataWithBaseURL("http://www.eliteanimes.com",
-				parser.showSpoiler(showSpoiler, description), "text/html",
+				eaParser.showSpoiler(showSpoiler, description), "text/html",
 				"utf-8", null);
 	}
 
@@ -183,17 +187,11 @@ public class ProfileDescriptionActivity extends ParentActivity implements
 		 */
 		@Override
 		protected String doInBackground(String... params) {
-			eaParser = new EAParser(null);
 			try {
 				if (isCancelled())
 					return null;
-				String input = networkService.getProfileDescription(currentUser,
-						userId);
-				if (isCancelled())
-					return null;
                 NewsThread.getNews(networkService);
-				String output = eaParser.getProfileDescription(input);
-				return output;
+                return profileService.getProfileDescription(userId);
 			} catch (EAException e) {
 				publishProgress("Exception", e.getMessage());
 			}

@@ -37,7 +37,7 @@ public class NewPostActivity extends ParentActivity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		((EaApp) getApplication()).getEaComponent().inject(this);
+
 		setContentView(R.layout.activity_new_post);
 		postInputView = (EditText) findViewById(R.id.new_post_text);
 		actionBar = getSupportActionBar();

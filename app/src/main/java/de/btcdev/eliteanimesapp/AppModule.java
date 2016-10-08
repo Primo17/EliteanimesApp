@@ -1,8 +1,6 @@
 package de.btcdev.eliteanimesapp;
 
-import android.app.Application;
 import android.content.Context;
-import android.graphics.Bitmap;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -15,7 +13,6 @@ import de.btcdev.eliteanimesapp.data.Board;
 import de.btcdev.eliteanimesapp.data.BoardPost;
 import de.btcdev.eliteanimesapp.data.BoardThread;
 import de.btcdev.eliteanimesapp.data.Comment;
-import de.btcdev.eliteanimesapp.data.ConfigurationService;
 import de.btcdev.eliteanimesapp.data.Friend;
 import de.btcdev.eliteanimesapp.data.FriendRequest;
 import de.btcdev.eliteanimesapp.data.ListAnime;
@@ -38,8 +35,10 @@ import de.btcdev.eliteanimesapp.json.PrivateMessageSerializer;
 import de.btcdev.eliteanimesapp.json.ProfileDeserializer;
 import de.btcdev.eliteanimesapp.json.SearchUserDeserializer;
 import de.btcdev.eliteanimesapp.json.StatisticsDeserializer;
+import de.btcdev.eliteanimesapp.services.ConfigurationService;
 import de.btcdev.eliteanimesapp.services.ImageService;
 import de.btcdev.eliteanimesapp.services.LoginService;
+import de.btcdev.eliteanimesapp.services.ProfileService;
 
 @Module
 public class AppModule {
@@ -74,9 +73,13 @@ public class AppModule {
     }
 
     @Provides
-    @Singleton
     LoginService provideLoginService(NetworkService networkService, ConfigurationService configurationService) {
         return new LoginService(networkService, configurationService);
+    }
+
+    @Provides
+    ProfileService provideProfileService(NetworkService networkService, ConfigurationService configurationService, ImageService imageService) {
+        return new ProfileService(networkService, configurationService, imageService);
     }
 
     @Provides

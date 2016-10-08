@@ -61,7 +61,7 @@ public class AccountSettingsActivity extends ParentActivity implements
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		((EaApp) getApplication()).getEaComponent().inject(this);
+
 		setContentView(R.layout.activity_kontoeinstellungen);
 		actionBar = getSupportActionBar();
 		viewPager = (ViewPager) findViewById(R.id.konto_pager);

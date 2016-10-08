@@ -7,7 +7,6 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import com.google.gson.JsonParseException;
 import com.google.gson.JsonParser;
 import com.google.gson.JsonSyntaxException;
 import com.google.gson.reflect.TypeToken;
@@ -29,10 +28,8 @@ import de.btcdev.eliteanimesapp.json.CommentDeserializer;
 import de.btcdev.eliteanimesapp.json.FriendDeserializer;
 import de.btcdev.eliteanimesapp.json.FriendRequestDeserializer;
 import de.btcdev.eliteanimesapp.json.JsonError;
-import de.btcdev.eliteanimesapp.json.JsonErrorException;
 import de.btcdev.eliteanimesapp.json.ListAnimeDeserializer;
 import de.btcdev.eliteanimesapp.json.PrivateMessageDeserializer;
-import de.btcdev.eliteanimesapp.json.ProfileDeserializer;
 import de.btcdev.eliteanimesapp.json.SearchUserDeserializer;
 import de.btcdev.eliteanimesapp.json.StatisticsDeserializer;
 import de.btcdev.eliteanimesapp.services.ImageService;
@@ -51,34 +48,6 @@ public class EAParser {
      */
     public EAParser(Context context) {
         this.context = context;
-    }
-
-    /**
-     * Parst den übergebenen String nach den tabellarischen Profildaten.
-     *
-     * @param input HTML-Code der Profilseite
-     * @return neues Profile, das die geparsten Daten enthält
-     * @throws EAException
-     */
-    public Profile getProfile(String input) throws EAException,
-            JsonErrorException {
-        Profile profile = null;
-        if (input != null) {
-            Gson gson = new GsonBuilder().registerTypeAdapter(Profile.class,
-                    new ProfileDeserializer()).create();
-            try {
-                profile = gson.fromJson(input, Profile.class);
-                //TODO: real instantiation later in profile service
-                ImageService imageService = new ImageService(null, context);
-                profile.setAvatar(imageService.getBitmapFromUrl(profile.getAvatarURL(), ImageService.profileSize));
-            } catch (JsonParseException ex) {
-                JsonError error = gson.fromJson(input, JsonError.class);
-                throw new JsonErrorException(error.getError());
-            }
-            return profile;
-        } else {
-            return null;
-        }
     }
 
     /**

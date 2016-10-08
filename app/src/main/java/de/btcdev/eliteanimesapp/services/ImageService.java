@@ -24,6 +24,7 @@ import de.btcdev.eliteanimesapp.data.NetworkService;
 public class ImageService {
 
     public static final int commentSize = 60;
+    public static final int boardPostSize = 60;
     public static final int profileSize = 120;
 
     private NetworkService networkService;

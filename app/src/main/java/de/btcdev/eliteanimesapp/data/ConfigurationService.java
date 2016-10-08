@@ -39,11 +39,7 @@ public class ConfigurationService {
 
 	//TODO: save all values to sharedprefs before setting, load if not available
 	/* TODO: Remove ConfigurationService access from:
-	 	BoardPost, Comment, Profile -> Bitmap for avatar
-	 		should be managed by e.g. a BitmapService or ImageService
-	 		Bitmap and Link should be set by calling class, but maybe together in one setter for
-	 		consistency
-	 	InfoThread? AnimelistCacheThread? CommentCacheThread? PrivateMessageCacheThread?
+	 	InfoThread? AnimelistCacheThread? PrivateMessageCacheThread?
 	*/
 
 	@Inject

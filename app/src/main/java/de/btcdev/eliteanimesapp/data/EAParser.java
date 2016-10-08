@@ -1,15 +1,5 @@
 package de.btcdev.eliteanimesapp.data;
 
-import java.lang.reflect.Type;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.TreeMap;
-
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
-import org.jsoup.select.Elements;
-
 import android.content.Context;
 
 import com.google.gson.Gson;
@@ -22,16 +12,24 @@ import com.google.gson.JsonParser;
 import com.google.gson.JsonSyntaxException;
 import com.google.gson.reflect.TypeToken;
 
-import javax.inject.Inject;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
+
+import java.lang.reflect.Type;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.TreeMap;
 
 import de.btcdev.eliteanimesapp.json.BoardDeserializer;
 import de.btcdev.eliteanimesapp.json.BoardPostDeserializer;
 import de.btcdev.eliteanimesapp.json.BoardThreadDeserializer;
+import de.btcdev.eliteanimesapp.json.CommentDeserializer;
 import de.btcdev.eliteanimesapp.json.FriendDeserializer;
 import de.btcdev.eliteanimesapp.json.FriendRequestDeserializer;
 import de.btcdev.eliteanimesapp.json.JsonError;
 import de.btcdev.eliteanimesapp.json.JsonErrorException;
-import de.btcdev.eliteanimesapp.json.CommentDeserializer;
 import de.btcdev.eliteanimesapp.json.ListAnimeDeserializer;
 import de.btcdev.eliteanimesapp.json.PrivateMessageDeserializer;
 import de.btcdev.eliteanimesapp.json.ProfileDeserializer;
@@ -597,8 +595,12 @@ public class EAParser {
                 else
                     first.setSex("Nicht angegeben");
             }
-            if (obj.has("user_image"))
-                first.setAvatar(obj.get("user_image").getAsString());
+            ImageService imageService = new ImageService(null, context);
+            if (obj.has("user_image")) {
+                first.setAvatarURL(obj.get("user_image").getAsString());
+                //TODO call image service the right way
+                first.setAvatar(imageService.getBitmapFromUrl(first.getAvatarURL(), ImageService.boardPostSize));
+            }
             boardPosts.add(first);
             el = obj.get("posts");
             if (el == null)
@@ -609,6 +611,9 @@ public class EAParser {
             }.getType();
             boardPosts.addAll((Collection<BoardPost>) gson.fromJson(el,
                     collectionType));
+            for(BoardPost boardPost: boardPosts) {
+                boardPost.setAvatar(imageService.getBitmapFromUrl(boardPost.getAvatarURL(), ImageService.boardPostSize));
+            }
             return boardPosts;
         } catch (Exception e) {
             return null;

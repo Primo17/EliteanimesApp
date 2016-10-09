@@ -47,9 +47,13 @@ import de.btcdev.eliteanimesapp.data.EAParser;
 import de.btcdev.eliteanimesapp.data.FriendRequest;
 import de.btcdev.eliteanimesapp.data.NetworkService;
 import de.btcdev.eliteanimesapp.data.NewsThread;
+import de.btcdev.eliteanimesapp.services.FriendService;
 
 public class AccountSettingsActivity extends ParentActivity implements
 		OnItemClickListener {
+
+	@Inject
+	FriendService friendService;
 
 	private AccountPagerAdapter accountPagerAdapter;
 	private ViewPager viewPager;
@@ -214,8 +218,7 @@ public class AccountSettingsActivity extends ParentActivity implements
 				new Thread(new Runnable() {
 					public void run() {
 						try {
-							networkService
-									.declineFriendRequest(
+							friendService.declineFriendRequest(
 											Integer.toString(f.getId()));
 						} catch (Exception e) {
 
@@ -236,8 +239,7 @@ public class AccountSettingsActivity extends ParentActivity implements
 				new Thread(new Runnable() {
 					public void run() {
 						try {
-							networkService
-									.acceptFriendRequest(
+							friendService.acceptFriendRequest(
 											Integer.toString(f.getId()));
 						} catch (Exception e) {
 
@@ -295,7 +297,7 @@ public class AccountSettingsActivity extends ParentActivity implements
 				fragment.setArguments(bundle);
 				return fragment;
 			} else {
-				Fragment fragment = new BlockedUsersFragment();
+				Fragment fragment = new BlockedUsersFragment(networkService);
 				Bundle args = new Bundle();
 				args.putInt(BlockedUsersFragment.ARG_OBJECT, arg0 + 1);
 				args.putParcelableArrayList("liste", blockedList);
@@ -392,8 +394,18 @@ public class AccountSettingsActivity extends ParentActivity implements
 			OnItemClickListener {
 		public static final String ARG_OBJECT = "object";
 		ArrayList<FriendRequest> blocked;
+        private NetworkService networkService;
 
-		@Override
+        public BlockedUsersFragment() {
+
+        }
+
+        //TODO: not the correct way to handle fragments
+        public BlockedUsersFragment(NetworkService networkService) {
+            this.networkService = networkService;
+        }
+
+        @Override
 		public View onCreateView(LayoutInflater inflater, ViewGroup container,
 				Bundle savedInstanceState) {
 			// The last two arguments ensure LayoutParams are inflated
@@ -431,7 +443,7 @@ public class AccountSettingsActivity extends ParentActivity implements
 		@Override
 		public void onItemClick(AdapterView<?> arg0, View arg1, int arg2,
 				long arg3) {
-			DialogFragment dialog = new BlockedUsersDialog();
+			DialogFragment dialog = new BlockedUsersDialog(networkService);
 			Bundle bundle = new Bundle();
 			bundle.putParcelable("friendRequest", blocked.get(arg2));
 			dialog.setArguments(bundle);
@@ -443,11 +455,15 @@ public class AccountSettingsActivity extends ParentActivity implements
 	public static class BlockedUsersDialog extends DialogFragment {
 
 		FriendRequest friendRequest;
-		@Inject
-		NetworkService networkService;
+        private NetworkService networkService;
 
-		public BlockedUsersDialog() {
+        public BlockedUsersDialog(){
 
+        }
+
+        //TODO: this is not the correct way to handle fragments
+		public BlockedUsersDialog(NetworkService networkService) {
+            this.networkService = networkService;
 		}
 
 		public Dialog onCreateDialog(Bundle savedInstanceState) {
@@ -471,6 +487,7 @@ public class AccountSettingsActivity extends ParentActivity implements
 						new Thread(new Runnable() {
 							public void run() {
 								try {
+                                    //TODO: networkService should not be used here directly in a static way
 											networkService.unblockUser(
 													Integer.toString(friendRequest
 															.getId()));
@@ -502,9 +519,6 @@ public class AccountSettingsActivity extends ParentActivity implements
 	public class AccountTask extends
 			AsyncTask<String, String, ArrayList<FriendRequest>[]> {
 
-		@Inject
-		NetworkService networkService;
-
 		/**
 		 * Freundschaftsanfragen werden heruntergeladen und geparst
 		 */
@@ -517,25 +531,20 @@ public class AccountSettingsActivity extends ParentActivity implements
 			try {
 				if (this.isCancelled())
 					return null;
-				input = networkService.getFriendRequests();
 				NewsThread.getNews(networkService);
+				friendRequests = friendService.getFriendRequests();
 				if (this.isCancelled())
 					return null;
-				friendRequests = new EAParser(null).getFriendRequests(input);
-				if (this.isCancelled())
-					return null;
-				ArrayList<FriendRequest> list2;
-				if (this.isCancelled())
-					return null;
+				ArrayList<FriendRequest> blockedUsers;
 				input = networkService.getBlockedUsers();
 				if (this.isCancelled())
 					return null;
-				list2 = new EAParser(null).getBlockedUsers(input);
+				blockedUsers = new EAParser(null).getBlockedUsers(input);
 				if (this.isCancelled())
 					return null;
 				ArrayList[] gesamt = new ArrayList[2];
 				gesamt[0] = friendRequests;
-				gesamt[1] = list2;
+				gesamt[1] = blockedUsers;
 				return gesamt;
 			} catch (EAException e) {
 				publishProgress("Exception", e.getMessage());

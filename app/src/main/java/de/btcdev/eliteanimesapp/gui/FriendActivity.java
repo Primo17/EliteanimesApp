@@ -23,19 +23,24 @@ import android.widget.Toast;
 
 import java.util.ArrayList;
 
+import javax.inject.Inject;
+
 import de.btcdev.eliteanimesapp.EaApp;
 import de.btcdev.eliteanimesapp.R;
 import de.btcdev.eliteanimesapp.adapter.FriendAdapter;
 import de.btcdev.eliteanimesapp.data.EAException;
-import de.btcdev.eliteanimesapp.data.EAParser;
 import de.btcdev.eliteanimesapp.data.Friend;
 import de.btcdev.eliteanimesapp.data.NewsThread;
+import de.btcdev.eliteanimesapp.services.FriendService;
 
 /**
  * Activity-Klasse zur Anzeige einer Freundesliste
  */
 public class FriendActivity extends ParentActivity implements
 		OnItemClickListener {
+
+	@Inject
+	FriendService friendService;
 
 	private String currentUser;
 	private int userId = 0;
@@ -59,7 +64,6 @@ public class FriendActivity extends ParentActivity implements
 		((EaApp) getApplication()).getEaComponent().inject(this);
 		setContentView(R.layout.activity_freunde);
 		actionBar = getSupportActionBar();
-		eaParser = new EAParser(this);
 
 		if (savedInstanceState != null) {
 			friends = savedInstanceState
@@ -228,7 +232,7 @@ public class FriendActivity extends ParentActivity implements
 			new Thread(new Runnable() {
 				public void run() {
 					try {
-						networkService.deleteFriend(id);
+						friendService.deleteFriend(id);
 					} catch (Exception e) {
 
 					}
@@ -273,17 +277,11 @@ public class FriendActivity extends ParentActivity implements
 		 */
 		@Override
 		protected ArrayList<Friend> doInBackground(String... arg0) {
-			eaParser = new EAParser(null);
 			try {
 				if (isCancelled())
 					return null;
-				final String input = networkService.getFriendList(currentUser,
-						userId);
-				if (isCancelled())
-					return null;
                 NewsThread.getNews(networkService);
-				ArrayList<Friend> result = eaParser.getFriendList(input);
-				return result;
+				return friendService.getFriendList(userId);
 			} catch (EAException e) {
 				publishProgress("Exception", e.getMessage());
 			}

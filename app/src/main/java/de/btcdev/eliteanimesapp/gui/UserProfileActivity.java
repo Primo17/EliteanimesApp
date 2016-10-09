@@ -25,6 +25,7 @@ import de.btcdev.eliteanimesapp.data.NewsThread;
 import de.btcdev.eliteanimesapp.data.Profile;
 import de.btcdev.eliteanimesapp.data.ProfileCache;
 import de.btcdev.eliteanimesapp.json.JsonErrorException;
+import de.btcdev.eliteanimesapp.services.FriendService;
 import de.btcdev.eliteanimesapp.services.ProfileService;
 
 /**
@@ -35,6 +36,8 @@ public class UserProfileActivity extends ParentActivity implements
 
 	@Inject
 	ProfileService profileService;
+	@Inject
+	FriendService friendService;
 
 	private ProfileCache profileCache;
 	private ImageView avatarView;
@@ -155,7 +158,7 @@ public class UserProfileActivity extends ParentActivity implements
 				new Thread(new Runnable() {
 					public void run() {
 						try {
-							networkService.addFriend("" + currentUserId);
+							friendService.addFriend("" + currentUserId);
 						} catch (Exception e) {
 
 						}
@@ -172,7 +175,7 @@ public class UserProfileActivity extends ParentActivity implements
 			new Thread(new Runnable() {
 				public void run() {
 					try {
-						networkService.deleteFriend("" + currentUserId);
+						friendService.deleteFriend("" + currentUserId);
 					} catch (Exception e) {
 
 					}

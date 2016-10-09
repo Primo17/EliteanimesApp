@@ -23,7 +23,6 @@ import java.util.TreeMap;
 import de.btcdev.eliteanimesapp.json.BoardDeserializer;
 import de.btcdev.eliteanimesapp.json.BoardPostDeserializer;
 import de.btcdev.eliteanimesapp.json.BoardThreadDeserializer;
-import de.btcdev.eliteanimesapp.json.FriendDeserializer;
 import de.btcdev.eliteanimesapp.json.FriendRequestDeserializer;
 import de.btcdev.eliteanimesapp.json.ListAnimeDeserializer;
 import de.btcdev.eliteanimesapp.json.SearchUserDeserializer;
@@ -44,50 +43,6 @@ public class EAParser {
      */
     public EAParser(Context context) {
         this.context = context;
-    }
-
-    /**
-     * Parst den übergebenen JSON-String nach Freunden und gibt die
-     * Informationen in einer ArrayList aus Freunden zurück.
-     *
-     * @param input JSON mit Freunden
-     * @return ArrayList mit den erhaltenen Informationen
-     */
-    public ArrayList<Friend> getFriendList(String input) {
-        ArrayList<Friend> friendList = new ArrayList<Friend>();
-        try {
-            Gson gson = new GsonBuilder().registerTypeAdapter(Friend.class,
-                    new FriendDeserializer()).create();
-            Type collectionType = new TypeToken<ArrayList<Friend>>() {
-            }.getType();
-            friendList = gson.fromJson(input, collectionType);
-        } catch (Exception e) {
-            return friendList;
-        }
-        return friendList;
-    }
-
-    /**
-     * Parst den übergebenen String nach den Informationen von
-     * Freundschaftsanfragen und gibt diese als ArrayList der entsprechenden
-     * Klasse zurück.
-     *
-     * @param input Json-Code der Seite mit den Freundschaftsanfragen
-     * @return ArrayList mit Freundschaftsanfragen
-     */
-    public ArrayList<FriendRequest> getFriendRequests(String input) {
-        ArrayList<FriendRequest> friendRequests = new ArrayList<FriendRequest>();
-        try {
-            Gson gson = new GsonBuilder().registerTypeAdapter(
-                    FriendRequest.class,
-                    new FriendRequestDeserializer()).create();
-            Type collectionType = new TypeToken<ArrayList<FriendRequest>>() {
-            }.getType();
-            friendRequests = gson.fromJson(input, collectionType);
-            return friendRequests;
-        } catch (Exception e) {
-            return friendRequests;
-        }
     }
 
     /**

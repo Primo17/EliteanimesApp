@@ -37,6 +37,7 @@ import de.btcdev.eliteanimesapp.json.SearchUserDeserializer;
 import de.btcdev.eliteanimesapp.json.StatisticsDeserializer;
 import de.btcdev.eliteanimesapp.services.CommentService;
 import de.btcdev.eliteanimesapp.services.ConfigurationService;
+import de.btcdev.eliteanimesapp.services.FriendService;
 import de.btcdev.eliteanimesapp.services.ImageService;
 import de.btcdev.eliteanimesapp.services.LoginService;
 import de.btcdev.eliteanimesapp.services.PrivateMessageService;
@@ -92,6 +93,11 @@ public class AppModule {
     @Provides
     PrivateMessageService providePrivateMessageService(NetworkService networkService) {
         return new PrivateMessageService(networkService);
+    }
+
+    @Provides
+    FriendService provideFriendService(NetworkService networkService, ConfigurationService configurationService) {
+        return new FriendService(networkService, configurationService);
     }
 
     @Provides

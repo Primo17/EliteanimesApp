@@ -16,15 +16,21 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import javax.inject.Inject;
+
 import de.btcdev.eliteanimesapp.EaApp;
 import de.btcdev.eliteanimesapp.R;
 import de.btcdev.eliteanimesapp.data.EAException;
 import de.btcdev.eliteanimesapp.data.EAParser;
 import de.btcdev.eliteanimesapp.data.NewsThread;
 import de.btcdev.eliteanimesapp.data.PrivateMessage;
+import de.btcdev.eliteanimesapp.services.PrivateMessageService;
 
 public class NewPrivateMessageActivity extends ParentActivity implements
 		OnItemClickListener {
+
+	@Inject
+	PrivateMessageService privateMessageService;
 
 	private EditText privateMessageInputView;
 	private PrivateMessage privateMessage;
@@ -40,7 +46,6 @@ public class NewPrivateMessageActivity extends ParentActivity implements
 		setContentView(R.layout.activity_neue_pn);
 		actionBar = getSupportActionBar();
 		actionBar.setTitle("Neue Nachricht");
-		eaParser = new EAParser(null);
 		if (savedInstanceState != null) {
 			privateMessage = savedInstanceState.getParcelable("PrivateMessage");
 		} else {
@@ -52,7 +57,7 @@ public class NewPrivateMessageActivity extends ParentActivity implements
 				new Thread(new Runnable() {
 					public void run() {
 						try {
-							networkService.getPrivateMessage(
+							privateMessageService.getPrivateMessage(
 									privateMessage.getId());
 						} catch (Exception e) {
 
@@ -183,15 +188,13 @@ public class NewPrivateMessageActivity extends ParentActivity implements
 		@Override
 		protected String doInBackground(String... params) {
 			String input;
-			eaParser = new EAParser(null);
 			if (params[0].equals("")) {
 				// Alte Nachricht soll abgerufen werden
 				if (!sendMode) {
 					try {
-						input = networkService.getPrivateMessage(privateMessage.getId());
                         NewsThread.getNews(networkService);
-						eaParser = new EAParser(null);
-						privateMessage = eaParser.getPrivateMessage(privateMessage, input);
+						input = privateMessageService.getPrivateMessage(privateMessage.getId());
+						privateMessage = privateMessageService.getPrivateMessage(privateMessage, input);
 						return null;
 					} catch (EAException e) {
 						publishProgress("Exception", e.getMessage());
@@ -200,16 +203,15 @@ public class NewPrivateMessageActivity extends ParentActivity implements
 				// Neue Nachricht soll abgeschickt werden
 				else {
 					try {
-						String result = networkService.answerPrivateMessage(privateMessage.getId(), privateMessageInput);
-						eaParser = new EAParser(null);
-						return eaParser.checkPrivateMessage(result);
+						String result = privateMessageService.answerPrivateMessage(privateMessage.getId(), privateMessageInput);
+						return privateMessageService.checkPrivateMessage(result);
 					} catch (EAException e) {
 						publishProgress("Exception", e.getMessage());
 					}
 				}
 			} else if (params[0].equals("delete")) {
 				try {
-					networkService.deletePrivateMessage(Integer.toString(privateMessage.getId()));
+					privateMessageService.deletePrivateMessage(Integer.toString(privateMessage.getId()));
 					return "delete";
 				} catch (EAException e) {
 					publishProgress("Exception", e.getMessage());

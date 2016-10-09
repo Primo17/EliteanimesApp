@@ -39,6 +39,7 @@ import de.btcdev.eliteanimesapp.services.CommentService;
 import de.btcdev.eliteanimesapp.services.ConfigurationService;
 import de.btcdev.eliteanimesapp.services.ImageService;
 import de.btcdev.eliteanimesapp.services.LoginService;
+import de.btcdev.eliteanimesapp.services.PrivateMessageService;
 import de.btcdev.eliteanimesapp.services.ProfileService;
 
 @Module
@@ -86,6 +87,11 @@ public class AppModule {
     @Provides
     CommentService provideCommentService(NetworkService networkService, ImageService imageService, ConfigurationService configurationService) {
         return new CommentService(networkService, imageService, configurationService);
+    }
+
+    @Provides
+    PrivateMessageService providePrivateMessageService(NetworkService networkService) {
+        return new PrivateMessageService(networkService);
     }
 
     @Provides

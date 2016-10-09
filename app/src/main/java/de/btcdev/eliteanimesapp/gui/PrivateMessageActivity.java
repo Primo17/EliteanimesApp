@@ -30,17 +30,22 @@ import com.google.gson.reflect.TypeToken;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 
+import javax.inject.Inject;
+
 import de.btcdev.eliteanimesapp.EaApp;
 import de.btcdev.eliteanimesapp.R;
 import de.btcdev.eliteanimesapp.adapter.PrivateMessageAdapter;
 import de.btcdev.eliteanimesapp.cache.PrivateMessageCacheThread;
 import de.btcdev.eliteanimesapp.data.EAException;
-import de.btcdev.eliteanimesapp.data.EAParser;
 import de.btcdev.eliteanimesapp.data.NewsThread;
 import de.btcdev.eliteanimesapp.data.PrivateMessage;
 import de.btcdev.eliteanimesapp.json.PrivateMessageDeserializer;
+import de.btcdev.eliteanimesapp.services.PrivateMessageService;
 
 public class PrivateMessageActivity extends ParentActivity implements OnItemClickListener {
+
+	@Inject
+	PrivateMessageService privateMessageService;
 
 	private PrivateMessageTask privateMessageTask;
 	private int pageCount = 1;
@@ -55,7 +60,6 @@ public class PrivateMessageActivity extends ParentActivity implements OnItemClic
 		setContentView(R.layout.activity_pn);
 		actionBar = getSupportActionBar();
 		actionBar.setTitle("Meine Nachrichten");
-		eaParser = new EAParser(null);
 		if (savedInstanceState != null) {
 			privateMessages = savedInstanceState.getParcelableArrayList("PNs");
 			pageCount = savedInstanceState.getInt("Seitenzahl");
@@ -265,21 +269,20 @@ public class PrivateMessageActivity extends ParentActivity implements OnItemClic
 		@Override
 		protected ArrayList<PrivateMessage> doInBackground(String... params) {
 			String input;
-			eaParser = new EAParser(null);
             NewsThread.getNews(networkService);
 			try {
 				if (params[0].equals("no_cache")) {
 					if (isCancelled())
 						return null;
-					input = networkService.getPrivateMessagePage(1);
+					input = privateMessageService.getPrivateMessagePage(1);
 					if (isCancelled())
 						return null;
-					privateMessages = eaParser.getPrivateMessages(input);
+					privateMessages = privateMessageService.getPrivateMessages(input);
 					return privateMessages;
 				} else if (params[0].equals("delete")) {
 					PrivateMessage privateMessage = privateMessages.get(chosenPosition);
 					chosenPosition = -1;
-					networkService.deletePrivateMessage(Integer.toString(privateMessage.getId()));
+					privateMessageService.deletePrivateMessage(Integer.toString(privateMessage.getId()));
 					privateMessages.remove(privateMessage);
 					delete = true;
 					return privateMessages;
@@ -287,10 +290,10 @@ public class PrivateMessageActivity extends ParentActivity implements OnItemClic
 					more = true;
 					if (isCancelled())
 						return null;
-					input = networkService.getPrivateMessagePage(pageCount + 1);
+					input = privateMessageService.getPrivateMessagePage(pageCount + 1);
 					if (isCancelled())
 						return null;
-					privateMessages = eaParser.getMorePrivateMessages(input, privateMessages);
+					privateMessages = privateMessageService.getMorePrivateMessages(input, privateMessages);
 					pageCount++;
 					return privateMessages;
 				} else {
@@ -300,10 +303,10 @@ public class PrivateMessageActivity extends ParentActivity implements OnItemClic
 					} else {
 						if (isCancelled())
 							return null;
-						input = networkService.getPrivateMessagePage(1);
+						input = privateMessageService.getPrivateMessagePage(1);
 						if (isCancelled())
 							return null;
-						privateMessages = eaParser.getPrivateMessages(input);
+						privateMessages = privateMessageService.getPrivateMessages(input);
 						return privateMessages;
 					}
 				}

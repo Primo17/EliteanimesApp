@@ -50,9 +50,9 @@ import de.btcdev.eliteanimesapp.services.ConfigurationService;
 @Singleton
 public class NetworkService {
 
-    private static Context context = null;
-    private static NetworkService unique = null;
     public static final String eaURL = "http://www.eliteanimes.com";
+
+    private Context context;
     private DefaultHttpClient httpclient;
     private List<Cookie> cookies;
     private String apikey = "8HB3GcTOiKm973zW9c1ioWwJa4ThDPzV";
@@ -69,7 +69,7 @@ public class NetworkService {
      */
     @Inject
     public NetworkService(Context context, ConfigurationService configurationService) {
-        NetworkService.context = context;
+        this.context = context;
         this.configurationService = configurationService;
         httpclient = new DefaultHttpClient();
         ClientConnectionManager cmgr = httpclient.getConnectionManager();
@@ -80,14 +80,6 @@ public class NetworkService {
                 "Mozilla/5.0 (Windows NT 6.1; WOW64; rv:25.0) Gecko/20100101 Firefox/25.0");
         hasCookies = loadCookies();
     }
-
-    /*public static NetworkService instance(Context context) {
-        if (unique == null)
-            unique = new NetworkService(context, null);
-        if (NetworkService.context == null)
-            NetworkService.context = context;
-        return unique;
-    }*/
 
     /**
      * Ruft die übergebene Url als GET auf.
@@ -173,103 +165,6 @@ public class NetworkService {
         nvps.add(new BasicNameValuePair("id", Integer.toString(userId)));
         nvps.add(new BasicNameValuePair("apikey", getApikey()));
         return doPOST(eaURL + "/api/getFriendList", nvps);
-    }
-
-    /**
-     * Lädt die Postfachseite der angegebenen Seitenzahl des aktuellen Benutzers
-     * und gibt die PNs als JSON-String zurück.
-     *
-     * @param page Seitenzahl des Postfaches
-     * @return JSON der PNs
-     * @throws EAException bei allen Fehlern
-     */
-    public String getPrivateMessagePage(int page) throws EAException {
-        List<NameValuePair> nvps = new ArrayList<>();
-        nvps.add(new BasicNameValuePair("page", Integer
-                .toString(page)));
-        nvps.add(new BasicNameValuePair("bbcode", "false"));
-        nvps.add(new BasicNameValuePair("apikey", getApikey()));
-        return doPOST(eaURL + "/api/getInboxPMs", nvps);
-    }
-
-    /**
-     * Lädt den Inhalt einer ausgewählten PrivateMessage und gibt den HTML-Code dieser
-     * zurück.
-     *
-     * @param id ID der PrivateMessage
-     * @return JSON-Antwort der API
-     * @throws EAException bei allen Fehlern
-     */
-    public String getPrivateMessage(int id) throws EAException {
-        List<NameValuePair> nvps = new ArrayList<>();
-        nvps.add(new BasicNameValuePair("apikey", getApikey()));
-        nvps.add(new BasicNameValuePair("id", Integer.toString(id)));
-        nvps.add(new BasicNameValuePair("bbcode", Boolean.toString(false)));
-        return doPOST(eaURL + "/api/getPM", nvps);
-    }
-
-    /**
-     * Lädt den Input (BBCode) einer ausgewählten PrivateMessage.
-     *
-     * @param id ID der PrivateMessage
-     * @return JSON-Antwort der API
-     * @throws EAException bei allen Fehlern
-     */
-    public String getPrivateMessageInput(int id) throws EAException {
-        List<NameValuePair> nvps = new ArrayList<>();
-        nvps.add(new BasicNameValuePair("apikey", getApikey()));
-        nvps.add(new BasicNameValuePair("id", Integer.toString(id)));
-        nvps.add(new BasicNameValuePair("bbcode", Boolean.toString(true)));
-        return doPOST(eaURL + "/api/getPM", nvps);
-    }
-
-    /**
-     * Schickt eine PrivateMessage mit den übergebenen Werten ab und gibt den Rückgabestring
-     * der API zurück
-     *
-     * @param userId  ID des Empfängers
-     * @param message    Text der PrivateMessage
-     * @param subject Betreff der PrivateMessage
-     * @return Rückgabewert der API
-     * @throws EAException bei allen Fehlern
-     */
-    public String sendPrivateMessage(int userId, String message, String subject)
-            throws EAException {
-        List<NameValuePair> nvps = new ArrayList<>();
-        nvps.add(new BasicNameValuePair("subject", subject));
-        nvps.add(new BasicNameValuePair("uid", Integer.toString(userId)));
-        nvps.add(new BasicNameValuePair("apikey", getApikey()));
-        nvps.add(new BasicNameValuePair("text", message));
-        return doPOST(eaURL + "/api/sendPM", nvps);
-    }
-
-    /**
-     * Löscht die PrivateMessage mit der übergebenen ID.
-     *
-     * @param id ID der PrivateMessage
-     * @return Json-Antwort der API
-     * @throws EAException bei allen Fehlern
-     */
-    public String deletePrivateMessage(String id) throws EAException {
-        List<NameValuePair> nvps = new ArrayList<>();
-        nvps.add(new BasicNameValuePair("id", id));
-        nvps.add(new BasicNameValuePair("apikey", getApikey()));
-        return doPOST(eaURL + "/api/deletePM/", nvps);
-    }
-
-    /**
-     * Sendet eine Antwort der PrivateMessage mit der übergebenen Id.
-     *
-     * @param id   Id der PrivateMessage die beantwortet werden soll
-     * @param message Text der PrivateMessage
-     * @return JSON-Antwort der API
-     */
-    public String answerPrivateMessage(int id, String message) throws EAException {
-        List<NameValuePair> nvps = new ArrayList<>();
-        nvps.add(new BasicNameValuePair("id", Integer.toString(id)));
-        nvps.add(new BasicNameValuePair("text", message));
-        nvps.add(new BasicNameValuePair("apikey", getApikey()));
-        return doPOST(eaURL + "/api/answerPM", nvps);
     }
 
     /**

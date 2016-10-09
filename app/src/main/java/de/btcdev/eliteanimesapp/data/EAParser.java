@@ -24,7 +24,6 @@ import java.util.TreeMap;
 import de.btcdev.eliteanimesapp.json.BoardDeserializer;
 import de.btcdev.eliteanimesapp.json.BoardPostDeserializer;
 import de.btcdev.eliteanimesapp.json.BoardThreadDeserializer;
-import de.btcdev.eliteanimesapp.json.CommentDeserializer;
 import de.btcdev.eliteanimesapp.json.FriendDeserializer;
 import de.btcdev.eliteanimesapp.json.FriendRequestDeserializer;
 import de.btcdev.eliteanimesapp.json.JsonError;
@@ -51,24 +50,6 @@ public class EAParser {
     }
 
     /**
-     * Parst den übergebenen JSON-String nach der Userbeschreibung und gibt
-     * diese zurück.
-     *
-     * @param input JSON der Profilbeschreibung
-     * @return die Userbeschreibung als String
-     */
-    public String getProfileDescription(String input) {
-        String description = null;
-        JsonParser parser = new JsonParser();
-        JsonObject object = parser.parse(input).getAsJsonObject();
-        if (object.has("text")) {
-            description = "<html><head><meta name=\"viewport\" content=\"width=device-width\"/></head><body>"
-                    + object.get("text").getAsString() + "</body></html>";
-        }
-        return description;
-    }
-
-    /**
      * Parst den übergebenen JSON-String nach Freunden und gibt die
      * Informationen in einer ArrayList aus Freunden zurück.
      *
@@ -87,71 +68,6 @@ public class EAParser {
             return friendList;
         }
         return friendList;
-    }
-
-    /**
-     * Parst den übergeben JSON-String und gibt eine daraus resultierende
-     * ArrayList aus Kommentaren zurück.
-     *
-     * @param input JSON-Antwort der API
-     * @return eine ArrayList aus erhaltenen Kommentaren
-     */
-    public ArrayList<Comment> getComments(String input) {
-        ArrayList<Comment> comments = new ArrayList<Comment>();
-        try {
-            Gson gson = new GsonBuilder().registerTypeAdapter(Comment.class,
-                    new CommentDeserializer()).create();
-            Type collectionType = new TypeToken<ArrayList<Comment>>() {
-            }.getType();
-            comments = gson.fromJson(input, collectionType);
-            //TODO: call and instantiate image service the correct way
-            final ImageService imageService = new ImageService(null, context);
-            for (Comment comment: comments) {
-                comment.setAvatar(imageService.getBitmapFromUrl(comment.getAvatarURL(), ImageService.commentSize));
-            }
-            return comments;
-        } catch (Exception e) {
-            return comments;
-        }
-    }
-
-    /**
-     * Parst den übergebenen JSON-String nach den nächsten 5 Kommentaren und
-     * fügt sie in die übergebene ArrayList ein
-     *
-     * @param input       JSON-Code, der geparst werden soll
-     * @param comments ArrayList mit den schon vorhandenen Kommentaren
-     * @return ArrayList aus alten und neuen Kommentaren
-     */
-    @SuppressWarnings("unchecked")
-    public ArrayList<Comment> getMoreComments(String input,
-                                              ArrayList<Comment> comments) {
-        try {
-            Gson gson = new GsonBuilder().registerTypeAdapter(Comment.class,
-                    new CommentDeserializer()).create();
-            Type collectionType = new TypeToken<ArrayList<Comment>>() {
-            }.getType();
-            comments.addAll((Collection<Comment>) gson.fromJson(input,
-                    collectionType));
-        } catch (Exception e) {
-            return comments;
-        }
-        return comments;
-    }
-
-    /**
-     * überprüft im übergebenen HTML-Code, ob der Comment erfolgreich
-     * abgeschickt wurde.
-     *
-     * @param input HTML-Code der POST-Antwort
-     * @return Wahrheitswert ob Comment erfolgreich abgeschickt
-     */
-    public boolean checkComment(String input) {
-        Document doc = Jsoup.parse(input);
-        Elements response = doc.select("div.toolcol8");
-        if (response.isEmpty())
-            return false;
-        return (response.text().equals("Ihr Kommentar wurde hinzugefügt."));
     }
 
     /**

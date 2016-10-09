@@ -159,23 +159,6 @@ public class NetworkService {
     }
 
     /**
-     * Lädt die Profilbeschreibung mit der API-Funktion getProfilDescription und
-     * gibt das JSON-Ergebnis zurück.
-     *
-     * @param userName Name des Benutzers
-     * @param userId       Id des Benutzers
-     * @return JSON-Ergebnis
-     * @throws EAException bei allen Fehlern
-     */
-    public String getProfileDescription(String userName, int userId)
-            throws EAException {
-        List<NameValuePair> nvps = new ArrayList<>();
-        nvps.add(new BasicNameValuePair("id", Integer.toString(userId)));
-        nvps.add(new BasicNameValuePair("apikey", getApikey()));
-        return doPOST(eaURL + "/api/getProfilDescription", nvps);
-    }
-
-    /**
      * Lädt den HTML-Code der Freundesliste mit den übergebenen Daten und gibt
      * diesen als String zurück.
      *
@@ -190,91 +173,6 @@ public class NetworkService {
         nvps.add(new BasicNameValuePair("id", Integer.toString(userId)));
         nvps.add(new BasicNameValuePair("apikey", getApikey()));
         return doPOST(eaURL + "/api/getFriendList", nvps);
-    }
-
-    /**
-     * Lädt die gewünschte Kommentarseite und gibt die JSON-Antwort der API
-     * zurück.
-     *
-     * @param page   die Seitenzahl der gewünschten Kommentarseite
-     * @param userName der Benutzername des Profils, zu dem die Kommentarseite gehört
-     * @param userId       die UserID des Profils, zu dem die Kommentarseite gehört
-     * @return JSON-Antwort der API
-     * @throws EAException bei Verbindungs- und Streamfehlern jeglicher Art
-     */
-    public String getCommentPage(int page, String userName, int userId)
-            throws EAException {
-        List<NameValuePair> nvps = new ArrayList<>();
-        nvps.add(new BasicNameValuePair("apikey", getApikey()));
-        nvps.add(new BasicNameValuePair("id", Integer.toString(userId)));
-        nvps.add(new BasicNameValuePair("page", Integer
-                .toString(page)));
-        return doPOST(eaURL + "/api/getComments", nvps);
-    }
-
-    /**
-     * Schickt den übergebenen Comment per POST an den übergebenen User
-     * und überprüft, ob der Comment erfolgreich übermittelt wurde.
-     *
-     * @param comment Kommentartext
-     * @param userName    User, der den Comment erhalten soll
-     * @param userId  UserID des Users, der den Comment erhalten soll
-     * @return Wahrheitswert ob Senden erfolgreich
-     */
-    public boolean postComment(String comment, String userName, int userId)
-            throws EAException {
-        if (configurationService.getBoardToken() != null) {
-            List<NameValuePair> nvps = new ArrayList<>();
-            nvps.add(new BasicNameValuePair("comment", comment));
-            nvps.add(new BasicNameValuePair("forumtoken", configurationService
-                    .getBoardToken()));
-            nvps.add(new BasicNameValuePair("id", "" + userId));
-            nvps.add(new BasicNameValuePair("name", userName));
-            nvps.add(new BasicNameValuePair("submit", "Eintragen"));
-            String input = doPOST(eaURL + "/profil/" + userId
-                    + "/" + userName, nvps);
-            return new EAParser(context).checkComment(input);
-        }
-        return false;
-    }
-
-    /**
-     * Schickt den editierten Comment per POST an den übergebenen User.
-     *
-     * @param comment Kommentartext
-     * @param userName    User, der den Comment erhalten soll
-     * @param userId  UserID des Users, der den Comment erhalten soll
-     */
-    public void editComment(Comment comment, String userName, int userId)
-            throws EAException {
-        if (configurationService.getBoardToken() != null) {
-            List<NameValuePair> nvps = new ArrayList<>();
-            nvps.add(new BasicNameValuePair("commentedit", comment
-                    .getText()));
-            nvps.add(new BasicNameValuePair("commentid", Integer
-                    .toString(comment.getId())));
-            nvps.add(new BasicNameValuePair("editcomment", "Editieren"));
-            nvps.add(new BasicNameValuePair("forumtoken", configurationService
-                    .getBoardToken()));
-            nvps.add(new BasicNameValuePair("fromuser", ""
-                    + configurationService.getUserID(context)));
-            nvps.add(new BasicNameValuePair("touser", "" + userId));
-            doPOST(eaURL + "/profil/" + userId
-                    + "/" + userName, nvps);
-        }
-    }
-
-    /**
-     * Löscht den Comment mit der übergebenen Comment-ID, falls die
-     * Berechtigung dazu vorhanden ist
-     *
-     * @param commentId Comment-ID des zu löschenden Kommentars
-     */
-    public void deleteComment(String commentId) throws EAException {
-        if (configurationService.getBoardToken() != null) {
-            doGET(eaURL + "/commentdelete.php?id="
-                    + commentId + "&ft=" + configurationService.getBoardToken());
-        }
     }
 
     /**

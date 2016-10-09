@@ -21,6 +21,7 @@ public class Comment implements Parcelable {
 	private String text;
 	private String avatarURL;
 
+	//TODO remove this
 	@Inject
 	ConfigurationService configurationService;
 
@@ -135,7 +136,7 @@ public class Comment implements Parcelable {
 		try {
 			avatar = Bitmap.CREATOR.createFromParcel(in);
 		} catch (Exception e) {
-
+			System.out.println("Failure Parcel Comment caused by: "+ e);
 		}
 		if (avatar == null) {
 			avatar = BitmapFactory.decodeResource(configurationService.getContext()

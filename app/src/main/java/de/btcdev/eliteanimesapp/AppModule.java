@@ -35,6 +35,7 @@ import de.btcdev.eliteanimesapp.json.PrivateMessageSerializer;
 import de.btcdev.eliteanimesapp.json.ProfileDeserializer;
 import de.btcdev.eliteanimesapp.json.SearchUserDeserializer;
 import de.btcdev.eliteanimesapp.json.StatisticsDeserializer;
+import de.btcdev.eliteanimesapp.services.CommentService;
 import de.btcdev.eliteanimesapp.services.ConfigurationService;
 import de.btcdev.eliteanimesapp.services.ImageService;
 import de.btcdev.eliteanimesapp.services.LoginService;
@@ -78,8 +79,13 @@ public class AppModule {
     }
 
     @Provides
-    ProfileService provideProfileService(NetworkService networkService, ConfigurationService configurationService, ImageService imageService) {
-        return new ProfileService(networkService, configurationService, imageService);
+    ProfileService provideProfileService(NetworkService networkService, ImageService imageService, ConfigurationService configurationService) {
+        return new ProfileService(networkService, imageService, configurationService);
+    }
+
+    @Provides
+    CommentService provideCommentService(NetworkService networkService, ImageService imageService, ConfigurationService configurationService) {
+        return new CommentService(networkService, imageService, configurationService);
     }
 
     @Provides

@@ -30,18 +30,23 @@ import com.google.gson.reflect.TypeToken;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 
+import javax.inject.Inject;
+
 import de.btcdev.eliteanimesapp.EaApp;
 import de.btcdev.eliteanimesapp.R;
 import de.btcdev.eliteanimesapp.adapter.CommentAdapter;
 import de.btcdev.eliteanimesapp.cache.CommentCacheThread;
 import de.btcdev.eliteanimesapp.data.Comment;
 import de.btcdev.eliteanimesapp.data.EAException;
-import de.btcdev.eliteanimesapp.data.EAParser;
 import de.btcdev.eliteanimesapp.data.NewsThread;
 import de.btcdev.eliteanimesapp.json.CommentDeserializer;
+import de.btcdev.eliteanimesapp.services.CommentService;
 
 public class CommentActivity extends ParentActivity implements
 		OnItemClickListener {
+
+	@Inject
+	CommentService commentService;
 
 	private String currentUser;
 	private int userId;
@@ -63,8 +68,6 @@ public class CommentActivity extends ParentActivity implements
 		setContentView(R.layout.activity_kommentar);
 		actionBar = getSupportActionBar();
 		actionBar.setTitle("Kommentare");
-
-		eaParser = new EAParser(null);
 
 		if (savedInstanceState != null) {
 			currentUser = savedInstanceState.getString("User");
@@ -387,17 +390,15 @@ public class CommentActivity extends ParentActivity implements
 		@Override
 		protected ArrayList<Comment> doInBackground(String... params) {
 			String input;
-			eaParser = new EAParser(null);
             NewsThread.getNews(networkService);
 			if (params[0].equals("more")) {
 				try {
 					if (isCancelled())
 						return null;
-					input = networkService.getCommentPage(pageCount + 1,
-							currentUser, userId);
+					input = commentService.getCommentPage(pageCount + 1, userId);
 					if (isCancelled())
 						return null;
-					comments = eaParser.getMoreComments(input, comments);
+					comments = commentService.getMoreComments(input, comments);
 					pageCount++;
 					more = true;
 					return comments;
@@ -410,7 +411,7 @@ public class CommentActivity extends ParentActivity implements
 				try {
 					if (isCancelled())
 						return null;
-					networkService.deleteComment(Integer.toString(comment.getId()));
+					commentService.deleteComment(Integer.toString(comment.getId()));
 					comments.remove(comment);
 					delete = true;
 					return comments;
@@ -423,11 +424,10 @@ public class CommentActivity extends ParentActivity implements
 					if (params[0].equals("no_cache")) {
 						if (isCancelled())
 							return null;
-						input = networkService.getCommentPage(1, currentUser,
-								userId);
+						input = commentService.getCommentPage(1, userId);
 						if (isCancelled())
 							return null;
-						comments = eaParser.getComments(input);
+						comments = commentService.getComments(input);
 						return comments;
 					}
 					// teste ob Cache vorhanden und wähle dann daraus Quelle
@@ -437,11 +437,10 @@ public class CommentActivity extends ParentActivity implements
 						} else {
 							if (isCancelled())
 								return null;
-							input = networkService.getCommentPage(1, currentUser,
-									userId);
+							input = commentService.getCommentPage(1, userId);
 							if (isCancelled())
 								return null;
-							comments = eaParser.getComments(input);
+							comments = commentService.getComments(input);
 							return comments;
 						}
 					}

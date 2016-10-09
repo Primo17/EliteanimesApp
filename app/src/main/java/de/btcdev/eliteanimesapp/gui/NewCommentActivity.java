@@ -19,13 +19,19 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import javax.inject.Inject;
+
 import de.btcdev.eliteanimesapp.EaApp;
 import de.btcdev.eliteanimesapp.R;
 import de.btcdev.eliteanimesapp.data.Comment;
 import de.btcdev.eliteanimesapp.data.EAException;
+import de.btcdev.eliteanimesapp.services.CommentService;
 
 public class NewCommentActivity extends ParentActivity implements
 		OnItemClickListener {
+
+	@Inject
+	CommentService commentService;
 
 	private EditText commentInputView;
 	private String currentUser;
@@ -159,12 +165,12 @@ public class NewCommentActivity extends ParentActivity implements
 			try {
 				if (status.equals("Editieren")) {
 					editedComment.setText(commentInput);
-					networkService.editComment(editedComment, currentUser, userId);
+					commentService.editComment(editedComment, currentUser, userId);
 					send = true;
 				} else {
 					if (isCancelled())
 						return null;
-					send = networkService.postComment(commentInput, currentUser, userId);
+					send = commentService.postComment(commentInput, currentUser, userId);
 				}
 			} catch (EAException e) {
 				publishProgress("Exception", e.getMessage());

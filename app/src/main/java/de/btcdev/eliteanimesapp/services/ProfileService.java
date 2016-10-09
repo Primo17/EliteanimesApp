@@ -24,14 +24,14 @@ import de.btcdev.eliteanimesapp.json.ProfileDeserializer;
 public class ProfileService {
 
     private NetworkService networkService;
-    private ConfigurationService configurationService;
     private ImageService imageService;
+    private ConfigurationService configurationService;
 
     @Inject
-    public ProfileService(NetworkService networkService, ConfigurationService configurationService, ImageService imageService) {
+    public ProfileService(NetworkService networkService, ImageService imageService, ConfigurationService configurationService) {
         this.networkService = networkService;
-        this.configurationService = configurationService;
         this.imageService = imageService;
+        this.configurationService = configurationService;
     }
 
     /**

@@ -46,16 +46,18 @@ import de.btcdev.eliteanimesapp.adapter.ListAnimeAdapter;
 import de.btcdev.eliteanimesapp.adapter.OnAnimeRatedListener;
 import de.btcdev.eliteanimesapp.cache.AnimelistCacheThread;
 import de.btcdev.eliteanimesapp.data.EAException;
-import de.btcdev.eliteanimesapp.data.EAParser;
 import de.btcdev.eliteanimesapp.data.ListAnime;
 import de.btcdev.eliteanimesapp.data.ListAnimeAlphabetComparator;
 import de.btcdev.eliteanimesapp.data.ListAnimeRatingComparator;
-import de.btcdev.eliteanimesapp.data.NetworkService;
 import de.btcdev.eliteanimesapp.data.NewsThread;
 import de.btcdev.eliteanimesapp.json.ListAnimeDeserializer;
+import de.btcdev.eliteanimesapp.services.AnimeService;
 
 public class AnimeListActivity extends ParentActivity implements
 		OnItemClickListener, OnItemSelectedListener, OnAnimeRatedListener {
+
+	@Inject
+	AnimeService animeService;
 
 	private String currentUser;
 	private int userId;
@@ -85,7 +87,6 @@ public class AnimeListActivity extends ParentActivity implements
 
 		setContentView(R.layout.activity_anime_list);
 		ActionBar bar = getSupportActionBar();
-		eaParser = new EAParser(this);
 		if (savedInstanceState != null) {
 			currentUser = savedInstanceState.getString("User");
 			userId = savedInstanceState.getInt("UserID");
@@ -422,8 +423,7 @@ public class AnimeListActivity extends ParentActivity implements
 
 		@Override
 		protected String doInBackground(String... params) {
-			String input = null;
-			eaParser = new EAParser(null);
+			String input;
 			try {
 				// Cache explizit nicht gewünscht!
 				if (params[0].equals("no_cache") || !ownList) {
@@ -432,7 +432,7 @@ public class AnimeListActivity extends ParentActivity implements
 					NewsThread.getNews(networkService);
 					if (this.isCancelled())
 						return null;
-					input = networkService.getAnimeList(currentUser, userId);
+					input = animeService.getAnimeList(userId);
 					if (this.isCancelled())
 						return null;
 					completeAnime = new ArrayList<ListAnime>();
@@ -442,27 +442,27 @@ public class AnimeListActivity extends ParentActivity implements
 					plannedAnime = new ArrayList<ListAnime>();
 					if (this.isCancelled())
 						return null;
-					eaParser.getListAnime(input, completeAnime, watchingAnime,
-							stalledAnime, droppedAnime, plannedAnime, ownList);
+					animeService.getListAnime(input, completeAnime, watchingAnime,
+							stalledAnime, droppedAnime, plannedAnime);
 					if (ownList)
 						new AnimelistCacheThread(
-								AnimelistCacheThread.MODE_SAVE_CACHE, completeAnime,
+								currentUser, getApplicationContext(), completeAnime,
 								watchingAnime, stalledAnime, droppedAnime, plannedAnime);
 				}
 				// eigene Liste -> Cache kommt in Betracht
 				else {
 					// teste ob Cache
 					if (!loadCache()) {
-						input = networkService.getAnimeList(currentUser, userId);
+						input = animeService.getAnimeList(userId);
 						completeAnime = new ArrayList<ListAnime>();
 						watchingAnime = new ArrayList<ListAnime>();
 						stalledAnime = new ArrayList<ListAnime>();
 						droppedAnime = new ArrayList<ListAnime>();
 						plannedAnime = new ArrayList<ListAnime>();
-						eaParser.getListAnime(input, completeAnime, watchingAnime,
-								stalledAnime, droppedAnime, plannedAnime, ownList);
+						animeService.getListAnime(input, completeAnime, watchingAnime,
+								stalledAnime, droppedAnime, plannedAnime);
 						new AnimelistCacheThread(
-								AnimelistCacheThread.MODE_SAVE_CACHE, completeAnime,
+								currentUser, getApplicationContext(), completeAnime,
 								watchingAnime, stalledAnime, droppedAnime, plannedAnime);
 					}
 				}
@@ -618,10 +618,10 @@ public class AnimeListActivity extends ParentActivity implements
 		OnAnimeRatedListener onAnimeRatedListener;
 
 		@Inject
-		NetworkService networkService;
+		AnimeService animeService;
 
 		public AnimeRatingDialogFragment() {
-
+            ((EaApp) getActivity().getApplication()).getEaComponent().inject(this);
 		}
 
 		@Override
@@ -702,7 +702,7 @@ public class AnimeListActivity extends ParentActivity implements
 									new Thread(new Runnable() {
 										public void run() {
 											try {
-												networkService
+												animeService
 														.rateAnime(
 																anime.getId(),
 																score,
@@ -778,7 +778,7 @@ public class AnimeListActivity extends ParentActivity implements
 		}
 		sortLists();
 		listAnimeAdapter.notifyDataSetChanged();
-		new AnimelistCacheThread(AnimelistCacheThread.MODE_SAVE_CACHE,
+		new AnimelistCacheThread(currentUser, getApplicationContext(),
 				completeAnime, watchingAnime, stalledAnime, droppedAnime, plannedAnime);
 	}
 }

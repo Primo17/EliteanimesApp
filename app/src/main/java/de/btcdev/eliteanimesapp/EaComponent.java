@@ -49,4 +49,5 @@ public interface EaComponent {
 
     //TODO: not exactly the best way to inject it to a dialog...
     void inject(AccountSettingsActivity.BlockedUsersDialog dialog);
+    void inject(AnimeListActivity.AnimeRatingDialogFragment dialog);
 }

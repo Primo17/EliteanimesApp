@@ -8,54 +8,25 @@ import com.google.gson.GsonBuilder;
 
 import java.util.ArrayList;
 
-import javax.inject.Inject;
-
-import de.btcdev.eliteanimesapp.data.EAException;
-import de.btcdev.eliteanimesapp.data.EAParser;
 import de.btcdev.eliteanimesapp.data.ListAnime;
-import de.btcdev.eliteanimesapp.data.NetworkService;
 import de.btcdev.eliteanimesapp.json.ListAnimeSerializer;
-import de.btcdev.eliteanimesapp.services.ConfigurationService;
 
 public class AnimelistCacheThread extends Thread {
 
-	public static final int MODE_LOAD_CACHE = 1;
-	public static final int MODE_SAVE_CACHE = 2;
-	public static final int MODE_GET_ONLINE = 3;
-	private int mode;
 	private Context context;
+	private String userName;
 	private SharedPreferences prefs;
 	private ArrayList<ListAnime> complete, watching, stalled,
 			dropped, planned;
 
-	@Inject
-	ConfigurationService configurationService;
-	@Inject
-	NetworkService networkService;
-
-	/**
-	 * Lädt je nach Modus die Animeliste aus dem Speicher, speichert sie dorthin
-	 * oder lädt die Animeliste aus dem Internet neu und setzt sie in der
-	 * ConfigurationService.
-	 * 
-	 * @param mode
-	 *            einer der drei oben genannten Modi
-	 */
-	public AnimelistCacheThread(int mode) {
-		context = configurationService.getContext();
-		prefs = context.getSharedPreferences("cache", Context.MODE_PRIVATE);
-		this.mode = mode;
-		start();
-	}
-
 	@SuppressWarnings("unchecked")
-	public AnimelistCacheThread(int mode, ArrayList<ListAnime> complete,
+	public AnimelistCacheThread(String userName, Context context, ArrayList<ListAnime> complete,
 								ArrayList<ListAnime> watching,
 								ArrayList<ListAnime> stalled,
 								ArrayList<ListAnime> dropped, ArrayList<ListAnime> planned) {
-		context = configurationService.getContext();
+		this.context = context;
+		this.userName = userName;
 		prefs = context.getSharedPreferences("cache", Context.MODE_PRIVATE);
-		this.mode = mode;
 		this.complete = (ArrayList<ListAnime>) complete.clone();
 		this.watching = (ArrayList<ListAnime>) watching.clone();
 		this.stalled = (ArrayList<ListAnime>) stalled.clone();
@@ -68,17 +39,7 @@ public class AnimelistCacheThread extends Thread {
 	 * Der oben gesetzte Modus wird ausgeführt.
 	 */
 	public void run() {
-		switch (mode) {
-		case MODE_LOAD_CACHE:
-			//aktuell nicht mehr implementiert
-			break;
-		case MODE_SAVE_CACHE:
-			saveCache();
-			break;
-		case MODE_GET_ONLINE:
-			getOnline();
-			break;
-		}
+		saveCache();
 	}
 
 	/**
@@ -96,7 +57,7 @@ public class AnimelistCacheThread extends Thread {
 		String jsonPlanned = gson.toJson(planned);
 		// speicher JSON-Repräsentation und aktuellen User
 		SharedPreferences.Editor editor = prefs.edit();
-		editor.putString("lastUser", configurationService.getUserName(context));
+		editor.putString("lastUser", userName);
 		editor.putBoolean("AnimelistCache", true);
 		editor.putString("AnimelistCacheKomplett", jsonComplete);
 		editor.putString("AnimelistCacheAmSchauen", jsonWatching);
@@ -109,27 +70,5 @@ public class AnimelistCacheThread extends Thread {
 		stalled = null;
 		dropped = null;
 		planned = null;
-	}
-
-	/**
-	 * Lädt die Animeliste des angemeldeten Benutzers aus dem Internet und
-	 * speichert diese in der ConfigurationService.
-	 */
-	public void getOnline() {
-		try {
-			EAParser eaParser = new EAParser(context);
-			String input = networkService.getAnimeList(
-					configurationService.getUserName(context), configurationService.getUserID(context));
-			complete = new ArrayList<ListAnime>();
-			watching = new ArrayList<ListAnime>();
-			stalled = new ArrayList<ListAnime>();
-			dropped = new ArrayList<ListAnime>();
-			planned = new ArrayList<ListAnime>();
-			eaParser.getListAnime(input, complete, watching, stalled,
-					dropped, planned, true);
-			saveCache();
-		} catch (EAException e) {
-			System.out.println(e);
-		}
 	}
 }

@@ -151,51 +151,6 @@ public class NetworkService {
     }
 
     /**
-     * Lädt die Animeliste des übergebenen Benutzers und gibt den HTML-Code der
-     * Seite als String zurück.
-     *
-     * @param userName Name des Benutzers
-     * @param id   Id des Benutzers
-     * @return String der HTML-Seite
-     * @throws EAException bei allen Netzwerkfehlern
-     */
-    public String getAnimeList(String userName, int id) throws EAException {
-        List<NameValuePair> nvps = new ArrayList<>();
-        nvps.add(new BasicNameValuePair("id", Integer.toString(id)));
-        nvps.add(new BasicNameValuePair("apikey", getApikey()));
-        return doPOST(eaURL + "/api/getAnimelist", nvps);
-    }
-
-    /**
-     * Bewertet den übergebenen Anime. Status: 1: Am Schauen 2: Komplett 3: Kurz
-     * Aufgehürt 4: Abgebrochen 5: Geplant
-     *
-     * @param id          ID des Animes
-     * @param score       Punktzahl des Animes
-     * @param progress Fortschritt des Benutzers
-     * @param episodeCount  Gesamte Folgenzahl des Animes
-     * @param status      Status des Animes
-     * @throws EAException bei allen Fehlern
-     */
-    public void rateAnime(int id, double score, int progress,
-                          int episodeCount, int status) throws EAException {
-        if (configurationService.getBoardToken() != null) {
-            List<NameValuePair> nvps = new ArrayList<>();
-            nvps.add(new BasicNameValuePair("bewerten", "Bewerten"));
-            nvps.add(new BasicNameValuePair("forumtoken", configurationService
-                    .getBoardToken()));
-            nvps.add(new BasicNameValuePair("id", "" + id));
-            nvps.add(new BasicNameValuePair("score", "" + score));
-            nvps.add(new BasicNameValuePair("seen", "" + progress));
-            nvps.add(new BasicNameValuePair("status", "" + status));
-            nvps.add(new BasicNameValuePair("von", "" + episodeCount));
-            doPOST(eaURL + "/animelist/"
-                    + configurationService.getUserID(context) + "/"
-                    + configurationService.getUserName(context), nvps);
-        }
-    }
-
-    /**
      * Lädt die Forenübersicht
      *
      * @return Json-String der Forenübersicht

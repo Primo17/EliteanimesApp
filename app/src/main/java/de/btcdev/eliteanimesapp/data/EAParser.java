@@ -4,7 +4,6 @@ import android.content.Context;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
@@ -23,7 +22,6 @@ import java.util.TreeMap;
 import de.btcdev.eliteanimesapp.json.BoardDeserializer;
 import de.btcdev.eliteanimesapp.json.BoardPostDeserializer;
 import de.btcdev.eliteanimesapp.json.BoardThreadDeserializer;
-import de.btcdev.eliteanimesapp.json.ListAnimeDeserializer;
 import de.btcdev.eliteanimesapp.json.StatisticsDeserializer;
 import de.btcdev.eliteanimesapp.services.ImageService;
 
@@ -41,85 +39,6 @@ public class EAParser {
      */
     public EAParser(Context context) {
         this.context = context;
-    }
-
-    /**
-     * Parst den übergebenen String nach den Informationen einer Animeliste und
-     * speichert die Animes als ListAnime-Objekte in den übergebenen Listen.
-     *
-     * @param input          HTML-Code der Animeliste als String
-     * @param complete       ArrayList für komplett gesehene Animes
-     * @param watching      ArrayList für aktuell aktive Animes
-     * @param stalled ArrayList für pausierte Animes
-     * @param dropped    ArrayList für abgebrochene Animes
-     * @param planned        ArrayList für abgebrochene Animes
-     * @param ownList        Flag ob es die eigene Liste ist (tokenId sonst nicht
-     *                       vorhanden)
-     */
-    @SuppressWarnings("unchecked")
-    public void getListAnime(String input, ArrayList<ListAnime> complete,
-                             ArrayList<ListAnime> watching,
-                             ArrayList<ListAnime> stalled,
-                             ArrayList<ListAnime> dropped, ArrayList<ListAnime> planned,
-                             boolean ownList) {
-        try {
-            JsonParser parser = new JsonParser();
-            JsonObject object = parser.parse(input).getAsJsonObject();
-            JsonArray jsonComplete, jsonWatching, jsonStalled, jsonDropped, jsonPlanned;
-            Gson gson;
-            if (object.has("1")) {
-                jsonWatching = object.get("1").getAsJsonArray();
-                gson = new GsonBuilder().registerTypeAdapter(ListAnime.class,
-                        new ListAnimeDeserializer()).create();
-                Type collectionType = new TypeToken<ArrayList<ListAnime>>() {
-                }.getType();
-                watching.clear();
-                watching.addAll((Collection<ListAnime>) gson.fromJson(
-                        jsonWatching, collectionType));
-            }
-            if (object.has("2")) {
-                jsonComplete = object.get("2").getAsJsonArray();
-                gson = new GsonBuilder().registerTypeAdapter(ListAnime.class,
-                        new ListAnimeDeserializer()).create();
-                Type collectionType = new TypeToken<ArrayList<ListAnime>>() {
-                }.getType();
-                complete.clear();
-                complete.addAll((Collection<ListAnime>) gson.fromJson(
-                        jsonComplete, collectionType));
-            }
-            if (object.has("3")) {
-                jsonStalled = object.get("3").getAsJsonArray();
-                gson = new GsonBuilder().registerTypeAdapter(ListAnime.class,
-                        new ListAnimeDeserializer()).create();
-                Type collectionType = new TypeToken<ArrayList<ListAnime>>() {
-                }.getType();
-                stalled.clear();
-                stalled.addAll((Collection<ListAnime>) gson.fromJson(
-                        jsonStalled, collectionType));
-            }
-            if (object.has("4")) {
-                jsonDropped = object.get("4").getAsJsonArray();
-                gson = new GsonBuilder().registerTypeAdapter(ListAnime.class,
-                        new ListAnimeDeserializer()).create();
-                Type collectionType = new TypeToken<ArrayList<ListAnime>>() {
-                }.getType();
-                dropped.clear();
-                dropped.addAll((Collection<ListAnime>) gson.fromJson(
-                        jsonDropped, collectionType));
-            }
-            if (object.has("5")) {
-                jsonPlanned = object.get("5").getAsJsonArray();
-                gson = new GsonBuilder().registerTypeAdapter(ListAnime.class,
-                        new ListAnimeDeserializer()).create();
-                Type collectionType = new TypeToken<ArrayList<ListAnime>>() {
-                }.getType();
-                planned.clear();
-                planned.addAll((Collection<ListAnime>) gson.fromJson(
-                        jsonPlanned, collectionType));
-            }
-        } catch (Exception e) {
-
-        }
     }
 
     /**

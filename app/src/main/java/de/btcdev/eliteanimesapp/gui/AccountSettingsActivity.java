@@ -43,17 +43,18 @@ import de.btcdev.eliteanimesapp.R;
 import de.btcdev.eliteanimesapp.adapter.BlockedAdapter;
 import de.btcdev.eliteanimesapp.adapter.FriendRequestAdapter;
 import de.btcdev.eliteanimesapp.data.EAException;
-import de.btcdev.eliteanimesapp.data.EAParser;
 import de.btcdev.eliteanimesapp.data.FriendRequest;
-import de.btcdev.eliteanimesapp.data.NetworkService;
 import de.btcdev.eliteanimesapp.data.NewsThread;
 import de.btcdev.eliteanimesapp.services.FriendService;
+import de.btcdev.eliteanimesapp.services.UserService;
 
 public class AccountSettingsActivity extends ParentActivity implements
 		OnItemClickListener {
 
 	@Inject
 	FriendService friendService;
+    @Inject
+    UserService userService;
 
 	private AccountPagerAdapter accountPagerAdapter;
 	private ViewPager viewPager;
@@ -448,8 +449,10 @@ public class AccountSettingsActivity extends ParentActivity implements
 
 	public static class BlockedUsersDialog extends DialogFragment {
 
+        @Inject
+        UserService userService;
+
 		FriendRequest friendRequest;
-        private NetworkService networkService;
 
         public BlockedUsersDialog(){
 			((EaApp) getActivity().getApplication()).getEaComponent().inject(this);
@@ -476,8 +479,8 @@ public class AccountSettingsActivity extends ParentActivity implements
 						new Thread(new Runnable() {
 							public void run() {
 								try {
-                                    //TODO: networkService should not be used here directly, should it?
-											networkService.unblockUser(
+                                    //TODO: userService should probably not be used here directly, should it?
+											userService.unblockUser(
 													Integer.toString(friendRequest
 															.getId()));
 								} catch (EAException e) {
@@ -524,11 +527,7 @@ public class AccountSettingsActivity extends ParentActivity implements
 				friendRequests = friendService.getFriendRequests();
 				if (this.isCancelled())
 					return null;
-				ArrayList<FriendRequest> blockedUsers;
-				input = networkService.getBlockedUsers();
-				if (this.isCancelled())
-					return null;
-				blockedUsers = new EAParser(null).getBlockedUsers(input);
+                ArrayList<FriendRequest> blockedUsers = userService.getBlockedUsers();
 				if (this.isCancelled())
 					return null;
 				ArrayList[] gesamt = new ArrayList[2];

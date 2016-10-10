@@ -23,9 +23,7 @@ import java.util.TreeMap;
 import de.btcdev.eliteanimesapp.json.BoardDeserializer;
 import de.btcdev.eliteanimesapp.json.BoardPostDeserializer;
 import de.btcdev.eliteanimesapp.json.BoardThreadDeserializer;
-import de.btcdev.eliteanimesapp.json.FriendRequestDeserializer;
 import de.btcdev.eliteanimesapp.json.ListAnimeDeserializer;
-import de.btcdev.eliteanimesapp.json.SearchUserDeserializer;
 import de.btcdev.eliteanimesapp.json.StatisticsDeserializer;
 import de.btcdev.eliteanimesapp.services.ImageService;
 
@@ -43,50 +41,6 @@ public class EAParser {
      */
     public EAParser(Context context) {
         this.context = context;
-    }
-
-    /**
-     * Parst den übergebenen String nach den Informationen von Blockierten
-     * Benutzern und gibt diese als ArrayList der Klasse FriendRequest
-     * zurück.
-     *
-     * @param input Json-Code der Seite mit den blockierten Usern
-     * @return ArrayList mit Blockierten Usern
-     */
-    public ArrayList<FriendRequest> getBlockedUsers(String input) {
-        ArrayList<FriendRequest> blockedUsers = new ArrayList<FriendRequest>();
-        try {
-            Gson gson = new GsonBuilder().registerTypeAdapter(
-                    FriendRequest.class,
-                    new FriendRequestDeserializer()).create();
-            Type collectionType = new TypeToken<ArrayList<FriendRequest>>() {
-            }.getType();
-            blockedUsers = gson.fromJson(input, collectionType);
-            return blockedUsers;
-        } catch (Exception e) {
-            return blockedUsers;
-        }
-    }
-
-    /**
-     * Parst den übergebenen String nach den Nutzerinformationen der Suche und
-     * gibt eine ArrayList mit den gewünschten Informationen zurück.
-     *
-     * @param input HTJSON-Code der Suche
-     * @return ArrayList mit gefundenen Benutzern
-     */
-    public ArrayList<User> getSearchedUsers(String input) {
-        ArrayList<User> result = new ArrayList<User>();
-        try {
-            Gson gson = new GsonBuilder().registerTypeAdapter(User.class,
-                    new SearchUserDeserializer()).create();
-            Type collectionType = new TypeToken<ArrayList<User>>() {
-            }.getType();
-            result = gson.fromJson(input, collectionType);
-            return result;
-        } catch (Exception e) {
-            return result;
-        }
     }
 
     /**

@@ -42,6 +42,7 @@ import de.btcdev.eliteanimesapp.services.ImageService;
 import de.btcdev.eliteanimesapp.services.LoginService;
 import de.btcdev.eliteanimesapp.services.PrivateMessageService;
 import de.btcdev.eliteanimesapp.services.ProfileService;
+import de.btcdev.eliteanimesapp.services.UserService;
 
 @Module
 public class AppModule {
@@ -98,6 +99,11 @@ public class AppModule {
     @Provides
     FriendService provideFriendService(NetworkService networkService, ConfigurationService configurationService) {
         return new FriendService(networkService, configurationService);
+    }
+
+    @Provides
+    UserService provideUserService(NetworkService networkService, ConfigurationService configurationService) {
+        return new UserService(networkService, configurationService);
     }
 
     @Provides

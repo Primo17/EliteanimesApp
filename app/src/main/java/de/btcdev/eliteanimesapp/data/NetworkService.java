@@ -151,45 +151,6 @@ public class NetworkService {
     }
 
     /**
-     * Gibt den JSON-Code der Übersicht der blockierten User zurück
-     *
-     * @return JSON-Code der Tabelle
-     * @throws EAException bei allen Fehlern
-     */
-    public String getBlockedUsers() throws EAException {
-        List<NameValuePair> nvps = new ArrayList<>();
-        nvps.add(new BasicNameValuePair("apikey", getApikey()));
-        return doPOST(eaURL + "/api/getBlockedUser", nvps);
-    }
-
-    /**
-     * Hebt die Blockierung der übergebenen Benutzers auf.
-     *
-     * @param id ID des blockierten Benutzers
-     * @throws EAException bei allen Fehlern
-     */
-    public void unblockUser(String id) throws EAException {
-        if (configurationService.getBoardToken() != null) {
-            doGET(eaURL + "/blockuser.php?id=" + id
-                    + "&ft=" + configurationService.getBoardToken() + "&unblock");
-        }
-    }
-
-    /**
-     * Sucht nach Benutzern mit dem übergebenen Namen.
-     *
-     * @param userName Name, nach dem gesucht werden soll
-     * @return JSON-Code der gefundenen User
-     * @throws EAException bei allen Fehlern
-     */
-    public String searchUser(String userName) throws EAException {
-        List<NameValuePair> nvps = new ArrayList<>();
-        nvps.add(new BasicNameValuePair("name", userName));
-        nvps.add(new BasicNameValuePair("apikey", getApikey()));
-        return doPOST(eaURL + "/api/searchUser", nvps);
-    }
-
-    /**
      * Lädt die Animeliste des übergebenen Benutzers und gibt den HTML-Code der
      * Seite als String zurück.
      *

@@ -25,15 +25,20 @@ import android.widget.Toast;
 
 import java.util.ArrayList;
 
+import javax.inject.Inject;
+
 import de.btcdev.eliteanimesapp.EaApp;
 import de.btcdev.eliteanimesapp.R;
 import de.btcdev.eliteanimesapp.data.EAException;
-import de.btcdev.eliteanimesapp.data.EAParser;
 import de.btcdev.eliteanimesapp.data.NewsThread;
 import de.btcdev.eliteanimesapp.data.User;
+import de.btcdev.eliteanimesapp.services.UserService;
 
 public class SearchActivity extends ParentActivity implements
 		OnItemClickListener, OnClickListener {
+
+	@Inject
+	UserService userService;
 
 	private EditText eingabe;
 	private Button searchButton;
@@ -46,7 +51,6 @@ public class SearchActivity extends ParentActivity implements
 
 		setContentView(R.layout.activity_search);
 		actionBar = getSupportActionBar();
-		eaParser = new EAParser(null);
 		eingabe = (EditText) findViewById(R.id.search_eingabe);
 		searchButton = (Button) findViewById(R.id.search_button);
 		searchButton.setOnClickListener(this);
@@ -180,17 +184,12 @@ public class SearchActivity extends ParentActivity implements
 
 		@Override
 		protected ArrayList<User> doInBackground(String... params) {
-			String input;
-			eaParser = new EAParser(null);
             NewsThread.getNews(networkService);
 			ArrayList<User> result;
 			try {
 				if (isCancelled())
 					return null;
-				input = networkService.searchUser(name);
-				if (isCancelled())
-					return null;
-				result = eaParser.getSearchedUsers(input);
+				result = userService.searchUser(name);
 				if (isCancelled())
 					return null;
 				return result;

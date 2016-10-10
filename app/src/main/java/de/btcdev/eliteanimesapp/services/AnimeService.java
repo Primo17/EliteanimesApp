@@ -52,18 +52,19 @@ public class AnimeService {
      * Parst den übergebenen String nach den Informationen einer Animeliste und
      * speichert die Animes als ListAnime-Objekte in den übergebenen Listen.
      *
-     * @param input          HTML-Code der Animeliste als String
-     * @param complete       ArrayList für komplett gesehene Animes
-     * @param watching      ArrayList für aktuell aktive Animes
-     * @param stalled ArrayList für pausierte Animes
-     * @param dropped    ArrayList für abgebrochene Animes
-     * @param planned        ArrayList für abgebrochene Animes
+     * @param input    HTML-Code der Animeliste als String
+     * @param complete ArrayList für komplett gesehene Animes
+     * @param watching ArrayList für aktuell aktive Animes
+     * @param stalled  ArrayList für pausierte Animes
+     * @param dropped  ArrayList für abgebrochene Animes
+     * @param planned  ArrayList für abgebrochene Animes
      */
     @SuppressWarnings("unchecked")
     public void getListAnime(String input, ArrayList<ListAnime> complete,
                              ArrayList<ListAnime> watching,
                              ArrayList<ListAnime> stalled,
                              ArrayList<ListAnime> dropped, ArrayList<ListAnime> planned) {
+
         try {
             JsonParser parser = new JsonParser();
             JsonObject object = parser.parse(input).getAsJsonObject();

@@ -20,17 +20,22 @@ import android.widget.Toast;
 
 import java.util.ArrayList;
 
+import javax.inject.Inject;
+
 import de.btcdev.eliteanimesapp.EaApp;
 import de.btcdev.eliteanimesapp.R;
 import de.btcdev.eliteanimesapp.adapter.BoardThreadAdapter;
 import de.btcdev.eliteanimesapp.data.Board;
 import de.btcdev.eliteanimesapp.data.BoardThread;
 import de.btcdev.eliteanimesapp.data.EAException;
-import de.btcdev.eliteanimesapp.data.EAParser;
 import de.btcdev.eliteanimesapp.data.Subboard;
+import de.btcdev.eliteanimesapp.services.BoardService;
 
 public class ThreadActivity extends ParentActivity implements
 		OnItemSelectedListener {
+
+	@Inject
+	BoardService boardService;
 
 	private ListView listView;
 	private BoardThreadAdapter boardThreadAdapter;
@@ -229,17 +234,16 @@ public class ThreadActivity extends ParentActivity implements
 		@Override
 		protected String doInBackground(String... params) {
 			String input;
-			eaParser = new EAParser(getApplicationContext());
 			try {
 				if (isCancelled())
 					return null;
-				input = networkService.getThreads(board.getId(), page);
+				input = boardService.getThreads(board.getId(), page);
 				if (isCancelled())
 					return null;
-				pageCount = eaParser.getBoardThreadPageCount(input);
+				pageCount = boardService.getBoardThreadPageCount(input);
 				if (isCancelled())
 					return null;
-				boardThreads = eaParser.getBoardThreads(input);
+				boardThreads = boardService.getBoardThreads(input);
 				return "success";
 			} catch (EAException e) {
 				publishProgress("Exception", e.getMessage());

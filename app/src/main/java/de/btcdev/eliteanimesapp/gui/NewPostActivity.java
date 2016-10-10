@@ -13,14 +13,19 @@ import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import javax.inject.Inject;
+
 import de.btcdev.eliteanimesapp.EaApp;
 import de.btcdev.eliteanimesapp.R;
 import de.btcdev.eliteanimesapp.data.BoardPost;
 import de.btcdev.eliteanimesapp.data.BoardThread;
 import de.btcdev.eliteanimesapp.data.EAException;
-import de.btcdev.eliteanimesapp.data.EAParser;
+import de.btcdev.eliteanimesapp.services.BoardService;
 
 public class NewPostActivity extends ParentActivity {
+
+	@Inject
+	BoardService boardService;
 
 	private BoardThread boardThread;
 	private boolean editMode;
@@ -147,18 +152,16 @@ public class NewPostActivity extends ParentActivity {
 			boolean send = false;
 			try {
 				if (edit) {
-					send = networkService.editPost(postInput, editPost.getId());
+					send = boardService.editPost(postInput, editPost.getId());
 				} else if (editGet) {
-					String result = networkService.getPost(editPost.getId(), true);
-					result = new EAParser(getApplicationContext())
-							.getPost(result);
+					String result = boardService.getPost(editPost.getId(), true);
 					if (!isNullOrEmpty(result))
 						editPost.setText(result);
 					send = true;
 				} else {
 					if (isCancelled())
 						return null;
-					send = networkService.addPost(postInput, boardThread.getId());
+					send = boardService.addPost(postInput, boardThread.getId());
 				}
 			} catch (EAException e) {
 				publishProgress("Exception", e.getMessage());

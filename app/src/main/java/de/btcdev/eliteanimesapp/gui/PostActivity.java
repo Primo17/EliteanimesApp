@@ -23,16 +23,21 @@ import android.widget.Toast;
 
 import java.util.ArrayList;
 
+import javax.inject.Inject;
+
 import de.btcdev.eliteanimesapp.EaApp;
 import de.btcdev.eliteanimesapp.R;
 import de.btcdev.eliteanimesapp.adapter.BoardPostAdapter;
 import de.btcdev.eliteanimesapp.data.BoardPost;
 import de.btcdev.eliteanimesapp.data.BoardThread;
 import de.btcdev.eliteanimesapp.data.EAException;
-import de.btcdev.eliteanimesapp.data.EAParser;
+import de.btcdev.eliteanimesapp.services.BoardService;
 
 public class PostActivity extends ParentActivity implements
 		OnItemSelectedListener {
+
+	@Inject
+	BoardService boardService;
 
 	private BoardThread boardThread;
 	private ArrayList<BoardPost> postList;
@@ -331,25 +336,24 @@ public class PostActivity extends ParentActivity implements
 		protected String doInBackground(String... params) {
 			String input;
 			try {
-				eaParser = new EAParser(getApplicationContext());
 				if (params[0].equals("delete")) {
 					delete = true;
 					p = postList.get(chosenPosition);
-					boolean temp = networkService.deletePost(p.getId());
+					boolean temp = boardService.deletePost(p.getId());
 					if (temp)
 						return "success";
 				} else {
 					if (isCancelled())
 						return null;
-					input = networkService.getPosts(boardThread.getId(), page);
+					input = boardService.getPosts(boardThread.getId(), page);
 					if (isCancelled())
 						return null;
-					pageCount = eaParser.getForumPostsPageCount(input);
+					pageCount = boardService.getForumPostsPageCount(input);
 					if(pageCount == 0)
 						pageCount++;
 					if (isCancelled())
 						return null;
-					postList = eaParser.getBoardPosts(input);
+					postList = boardService.getBoardPosts(input);
 					return "success";
 				}
 			} catch (EAException e) {

@@ -36,6 +36,7 @@ import de.btcdev.eliteanimesapp.json.ProfileDeserializer;
 import de.btcdev.eliteanimesapp.json.SearchUserDeserializer;
 import de.btcdev.eliteanimesapp.json.StatisticsDeserializer;
 import de.btcdev.eliteanimesapp.services.AnimeService;
+import de.btcdev.eliteanimesapp.services.BoardService;
 import de.btcdev.eliteanimesapp.services.CommentService;
 import de.btcdev.eliteanimesapp.services.ConfigurationService;
 import de.btcdev.eliteanimesapp.services.FriendService;
@@ -110,6 +111,11 @@ public class AppModule {
     @Provides
     AnimeService provideAnimeService(NetworkService networkService, ConfigurationService configurationService) {
         return new AnimeService(networkService, configurationService);
+    }
+
+    @Provides
+    BoardService provideBoardService(NetworkService networkService, ImageService imageService, ConfigurationService configurationService){
+        return new BoardService(networkService, imageService, configurationService);
     }
 
     @Provides

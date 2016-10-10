@@ -20,16 +20,21 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.TreeMap;
 
+import javax.inject.Inject;
+
 import de.btcdev.eliteanimesapp.EaApp;
 import de.btcdev.eliteanimesapp.R;
 import de.btcdev.eliteanimesapp.adapter.BoardAdapter;
 import de.btcdev.eliteanimesapp.data.Board;
 import de.btcdev.eliteanimesapp.data.EAException;
-import de.btcdev.eliteanimesapp.data.EAParser;
 import de.btcdev.eliteanimesapp.data.Statistics;
+import de.btcdev.eliteanimesapp.services.BoardService;
 
 public class BoardActivity extends ParentActivity implements
 		OnItemClickListener, OnChildClickListener {
+
+	@Inject
+	BoardService boardService;
 
 	private ExpandableListView listView;
 	private BoardAdapter boardAdapter;
@@ -173,21 +178,14 @@ public class BoardActivity extends ParentActivity implements
 
 		@Override
 		protected String doInBackground(String... params) {
-			String input = null;
-			eaParser = new EAParser(getApplicationContext());
+			String input;
 			try {
 				if (isCancelled())
 					return "";
-				input = networkService.getBoards();
+				boardMap = boardService.getBoards();
 				if (isCancelled())
 					return "";
-				boardMap = eaParser.getBoards(input);
-				if (isCancelled())
-					return "";
-				input = networkService.getBoardStatistics();
-				if (isCancelled())
-					return "";
-				statistics = eaParser.getBoardStatistics(input);
+				statistics = boardService.getBoardStatistics();
 				return "success";
 			} catch (EAException e) {
 				error = true;

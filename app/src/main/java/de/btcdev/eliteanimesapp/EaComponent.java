@@ -13,7 +13,6 @@ import de.btcdev.eliteanimesapp.gui.LoginActivity;
 import de.btcdev.eliteanimesapp.gui.NewCommentActivity;
 import de.btcdev.eliteanimesapp.gui.NewPostActivity;
 import de.btcdev.eliteanimesapp.gui.NewPrivateMessageActivity;
-import de.btcdev.eliteanimesapp.gui.ParentActivity;
 import de.btcdev.eliteanimesapp.gui.PostActivity;
 import de.btcdev.eliteanimesapp.gui.PrivateMessageActivity;
 import de.btcdev.eliteanimesapp.gui.ProfileActivity;
@@ -36,7 +35,6 @@ public interface EaComponent {
     void inject(NewCommentActivity activity);
     void inject(NewPostActivity activity);
     void inject(NewPrivateMessageActivity activity);
-    void inject(ParentActivity activity);
     void inject(PostActivity activity);
     void inject(PrivateMessageActivity activity);
     void inject(ProfileActivity activity);
@@ -46,6 +44,9 @@ public interface EaComponent {
     void inject(ThreadActivity activity);
     void inject(UserProfileActivity activity);
     void inject(EaApp app);
+
+    //TODO: check if ParentActivity really does not need the injection itself
+    //void inject(ParentActivity activity);
 
     //TODO: not exactly the best way to inject it to a dialog...
     void inject(AccountSettingsActivity.BlockedUsersDialog dialog);

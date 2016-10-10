@@ -297,7 +297,7 @@ public class AccountSettingsActivity extends ParentActivity implements
 				fragment.setArguments(bundle);
 				return fragment;
 			} else {
-				Fragment fragment = new BlockedUsersFragment(networkService);
+				Fragment fragment = new BlockedUsersFragment();
 				Bundle args = new Bundle();
 				args.putInt(BlockedUsersFragment.ARG_OBJECT, arg0 + 1);
 				args.putParcelableArrayList("liste", blockedList);
@@ -394,15 +394,9 @@ public class AccountSettingsActivity extends ParentActivity implements
 			OnItemClickListener {
 		public static final String ARG_OBJECT = "object";
 		ArrayList<FriendRequest> blocked;
-        private NetworkService networkService;
 
         public BlockedUsersFragment() {
 
-        }
-
-        //TODO: not the correct way to handle fragments
-        public BlockedUsersFragment(NetworkService networkService) {
-            this.networkService = networkService;
         }
 
         @Override
@@ -443,7 +437,7 @@ public class AccountSettingsActivity extends ParentActivity implements
 		@Override
 		public void onItemClick(AdapterView<?> arg0, View arg1, int arg2,
 				long arg3) {
-			DialogFragment dialog = new BlockedUsersDialog(networkService);
+			DialogFragment dialog = new BlockedUsersDialog();
 			Bundle bundle = new Bundle();
 			bundle.putParcelable("friendRequest", blocked.get(arg2));
 			dialog.setArguments(bundle);
@@ -458,13 +452,8 @@ public class AccountSettingsActivity extends ParentActivity implements
         private NetworkService networkService;
 
         public BlockedUsersDialog(){
-
+			((EaApp) getActivity().getApplication()).getEaComponent().inject(this);
         }
-
-        //TODO: this is not the correct way to handle fragments
-		public BlockedUsersDialog(NetworkService networkService) {
-            this.networkService = networkService;
-		}
 
 		public Dialog onCreateDialog(Bundle savedInstanceState) {
 			Bundle bundle = getArguments();
@@ -487,7 +476,7 @@ public class AccountSettingsActivity extends ParentActivity implements
 						new Thread(new Runnable() {
 							public void run() {
 								try {
-                                    //TODO: networkService should not be used here directly in a static way
+                                    //TODO: networkService should not be used here directly, should it?
 											networkService.unblockUser(
 													Integer.toString(friendRequest
 															.getId()));

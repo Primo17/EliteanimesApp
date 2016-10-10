@@ -1,11 +1,5 @@
 package de.btcdev.eliteanimesapp;
 
-import android.app.Activity;
-import android.app.Application;
-import android.os.AsyncTask;
-
-import com.google.gson.Gson;
-
 import javax.inject.Singleton;
 
 import dagger.Component;
@@ -52,4 +46,7 @@ public interface EaComponent {
     void inject(ThreadActivity activity);
     void inject(UserProfileActivity activity);
     void inject(EaApp app);
+
+    //TODO: not exactly the best way to inject it to a dialog...
+    void inject(AccountSettingsActivity.BlockedUsersDialog dialog);
 }

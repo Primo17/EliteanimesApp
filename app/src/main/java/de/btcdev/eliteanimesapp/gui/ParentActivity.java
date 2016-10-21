@@ -313,10 +313,6 @@ public abstract class ParentActivity extends ActionBarActivity implements
 		}
 	}
 
-	public boolean isNullOrEmpty(String input) {
-		return input == null || input.isEmpty();
-	}
-
     protected void getNotifications() {
         NewsThread.getNews(notificationService);
     }

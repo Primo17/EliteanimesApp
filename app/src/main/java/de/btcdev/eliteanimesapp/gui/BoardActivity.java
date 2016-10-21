@@ -16,6 +16,8 @@ import android.widget.ExpandableListView;
 import android.widget.ExpandableListView.OnChildClickListener;
 import android.widget.Toast;
 
+import org.apache.commons.lang3.StringUtils;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.TreeMap;
@@ -218,7 +220,7 @@ public class BoardActivity extends ParentActivity implements
 		protected void onPostExecute(String result) {
 			getWindow().clearFlags(
 					WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-			if (!error && !isNullOrEmpty(result))
+			if (!error && StringUtils.isNotEmpty(result))
 				fillViews();
 			try {
 				dismissDialog(load_dialog);

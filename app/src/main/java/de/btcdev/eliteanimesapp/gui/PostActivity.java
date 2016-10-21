@@ -21,6 +21,8 @@ import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.Toast;
 
+import org.apache.commons.lang3.StringUtils;
+
 import java.util.ArrayList;
 
 import javax.inject.Inject;
@@ -385,7 +387,7 @@ public class PostActivity extends ParentActivity implements
 		protected void onPostExecute(String result) {
 			getWindow().clearFlags(
 					WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-			if (!isNullOrEmpty(result))
+			if (StringUtils.isNotEmpty(result))
 				if (delete) {
 					postList.remove(p);
 					chosenPosition = -1;

@@ -13,6 +13,8 @@ import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import org.apache.commons.lang3.StringUtils;
+
 import javax.inject.Inject;
 
 import de.btcdev.eliteanimesapp.EaApp;
@@ -97,7 +99,7 @@ public class NewPostActivity extends ParentActivity {
 			return true;
 		switch (item.getItemId()) {
 		case R.id.new_post_send:
-			if (!isNullOrEmpty(postInputView.getText().toString())) {
+			if (StringUtils.isNotEmpty(postInputView.getText().toString())) {
 				postInput = postInputView.getText().toString();
 				newPostTask = new NewPostTask(editMode, false);
 				newPostTask.execute("");
@@ -155,7 +157,7 @@ public class NewPostActivity extends ParentActivity {
 					send = boardService.editPost(postInput, editPost.getId());
 				} else if (editGet) {
 					String result = boardService.getPost(editPost.getId(), true);
-					if (!isNullOrEmpty(result))
+					if (StringUtils.isNotEmpty(result))
 						editPost.setText(result);
 					send = true;
 				} else {

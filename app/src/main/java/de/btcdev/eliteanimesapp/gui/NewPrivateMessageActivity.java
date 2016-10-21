@@ -22,7 +22,6 @@ import de.btcdev.eliteanimesapp.EaApp;
 import de.btcdev.eliteanimesapp.R;
 import de.btcdev.eliteanimesapp.data.EAException;
 import de.btcdev.eliteanimesapp.data.EAParser;
-import de.btcdev.eliteanimesapp.data.NewsThread;
 import de.btcdev.eliteanimesapp.data.PrivateMessage;
 import de.btcdev.eliteanimesapp.services.PrivateMessageService;
 
@@ -192,7 +191,7 @@ public class NewPrivateMessageActivity extends ParentActivity implements
 				// Alte Nachricht soll abgerufen werden
 				if (!sendMode) {
 					try {
-                        NewsThread.getNews(networkService);
+                        getNotifications();
 						input = privateMessageService.getPrivateMessage(privateMessage.getId());
 						privateMessage = privateMessageService.getPrivateMessage(privateMessage, input);
 						return null;

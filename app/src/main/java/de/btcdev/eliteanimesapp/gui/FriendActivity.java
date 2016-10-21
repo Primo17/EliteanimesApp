@@ -30,7 +30,6 @@ import de.btcdev.eliteanimesapp.R;
 import de.btcdev.eliteanimesapp.adapter.FriendAdapter;
 import de.btcdev.eliteanimesapp.data.EAException;
 import de.btcdev.eliteanimesapp.data.Friend;
-import de.btcdev.eliteanimesapp.data.NewsThread;
 import de.btcdev.eliteanimesapp.services.FriendService;
 
 /**
@@ -280,7 +279,7 @@ public class FriendActivity extends ParentActivity implements
 			try {
 				if (isCancelled())
 					return null;
-                NewsThread.getNews(networkService);
+                getNotifications();
 				return friendService.getFriendList(userId);
 			} catch (EAException e) {
 				publishProgress("Exception", e.getMessage());

@@ -44,7 +44,6 @@ import de.btcdev.eliteanimesapp.adapter.BlockedAdapter;
 import de.btcdev.eliteanimesapp.adapter.FriendRequestAdapter;
 import de.btcdev.eliteanimesapp.data.EAException;
 import de.btcdev.eliteanimesapp.data.FriendRequest;
-import de.btcdev.eliteanimesapp.data.NewsThread;
 import de.btcdev.eliteanimesapp.services.FriendService;
 import de.btcdev.eliteanimesapp.services.UserService;
 
@@ -523,7 +522,7 @@ public class AccountSettingsActivity extends ParentActivity implements
 			try {
 				if (this.isCancelled())
 					return null;
-				NewsThread.getNews(networkService);
+				getNotifications();
 				friendRequests = friendService.getFriendRequests();
 				if (this.isCancelled())
 					return null;

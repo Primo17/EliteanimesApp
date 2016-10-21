@@ -22,7 +22,6 @@ import javax.inject.Inject;
 import de.btcdev.eliteanimesapp.EaApp;
 import de.btcdev.eliteanimesapp.R;
 import de.btcdev.eliteanimesapp.data.EAException;
-import de.btcdev.eliteanimesapp.data.NewsThread;
 import de.btcdev.eliteanimesapp.data.Profile;
 import de.btcdev.eliteanimesapp.data.ProfileCache;
 import de.btcdev.eliteanimesapp.json.JsonErrorException;
@@ -279,7 +278,7 @@ public class ProfileActivity extends ParentActivity implements
 					});
 					t.start();
 				}
-                NewsThread.getNews(networkService);
+                getNotifications();
 				try {
                     profile = profileService.getProfile();
 				} catch (JsonErrorException ex) {

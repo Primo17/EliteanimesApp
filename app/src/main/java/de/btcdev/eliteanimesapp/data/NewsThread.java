@@ -1,28 +1,24 @@
 package de.btcdev.eliteanimesapp.data;
 
-import android.content.Context;
-
-import javax.inject.Inject;
+import de.btcdev.eliteanimesapp.services.NotificationService;
 
 public class NewsThread extends Thread {
 
-	private EAParser eaParser;
-	private NetworkService networkService;
+	private NotificationService notificationService;
 
-	public static void getNews(NetworkService networkService) {
-		new NewsThread(networkService).start();
+	public static void getNews(NotificationService notificationService) {
+		new NewsThread(notificationService).start();
 	}
 
-	private NewsThread(NetworkService networkService) {
-		this.networkService = networkService;
-		eaParser = new EAParser(null);
+	private NewsThread(NotificationService notificationService) {
+		this.notificationService = notificationService;
 	}
 
 	public void run() {
 		try {
-			eaParser.getNotifications(networkService.getNews());
+			notificationService.getNotifications();
 		} catch (Exception e) {
-			System.out.println(e);
+			e.printStackTrace();
 		}
 	}
 }

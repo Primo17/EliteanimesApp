@@ -30,7 +30,6 @@ import javax.inject.Inject;
 import de.btcdev.eliteanimesapp.EaApp;
 import de.btcdev.eliteanimesapp.R;
 import de.btcdev.eliteanimesapp.data.EAException;
-import de.btcdev.eliteanimesapp.data.NewsThread;
 import de.btcdev.eliteanimesapp.data.User;
 import de.btcdev.eliteanimesapp.services.UserService;
 
@@ -184,7 +183,7 @@ public class SearchActivity extends ParentActivity implements
 
 		@Override
 		protected ArrayList<User> doInBackground(String... params) {
-            NewsThread.getNews(networkService);
+            getNotifications();
 			ArrayList<User> result;
 			try {
 				if (isCancelled())

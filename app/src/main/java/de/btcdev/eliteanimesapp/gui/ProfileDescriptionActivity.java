@@ -23,7 +23,6 @@ import de.btcdev.eliteanimesapp.EaApp;
 import de.btcdev.eliteanimesapp.R;
 import de.btcdev.eliteanimesapp.data.EAException;
 import de.btcdev.eliteanimesapp.data.EAParser;
-import de.btcdev.eliteanimesapp.data.NewsThread;
 import de.btcdev.eliteanimesapp.services.ProfileService;
 
 /**
@@ -190,7 +189,7 @@ public class ProfileDescriptionActivity extends ParentActivity implements
 			try {
 				if (isCancelled())
 					return null;
-                NewsThread.getNews(networkService);
+                getNotifications();
                 return profileService.getProfileDescription(userId);
 			} catch (EAException e) {
 				publishProgress("Exception", e.getMessage());

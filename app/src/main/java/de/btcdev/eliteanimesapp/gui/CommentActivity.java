@@ -38,7 +38,6 @@ import de.btcdev.eliteanimesapp.adapter.CommentAdapter;
 import de.btcdev.eliteanimesapp.cache.CommentCacheThread;
 import de.btcdev.eliteanimesapp.data.Comment;
 import de.btcdev.eliteanimesapp.data.EAException;
-import de.btcdev.eliteanimesapp.data.NewsThread;
 import de.btcdev.eliteanimesapp.json.CommentDeserializer;
 import de.btcdev.eliteanimesapp.services.CommentService;
 
@@ -390,7 +389,7 @@ public class CommentActivity extends ParentActivity implements
 		@Override
 		protected ArrayList<Comment> doInBackground(String... params) {
 			String input;
-            NewsThread.getNews(networkService);
+            getNotifications();
 			if (params[0].equals("more")) {
 				try {
 					if (isCancelled())

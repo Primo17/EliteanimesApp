@@ -18,7 +18,6 @@ import org.apache.http.cookie.Cookie;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.impl.conn.tsccm.ThreadSafeClientConnManager;
 import org.apache.http.impl.cookie.BasicClientCookie;
-import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.params.CoreProtocolPNames;
 import org.apache.http.params.HttpParams;
 import org.apache.http.protocol.HTTP;
@@ -31,12 +30,9 @@ import java.io.Reader;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.lang.reflect.Type;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.NoSuchElementException;
 import java.util.Properties;
-import java.util.Scanner;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -135,40 +131,6 @@ public class NetworkService {
             }
         }
         return apikey;
-    }
-
-    /**
-     * Lädt die Anzahl neuer Kommentare und Privater Nachrichten und gibt diese
-     * als JSON zurück.
-     *
-     * @return JSON mit den News
-     * @throws EAException bei allen Fehlern
-     */
-    public String getNews() throws EAException {
-        List<NameValuePair> nvps = new ArrayList<>();
-        nvps.add(new BasicNameValuePair("apikey", getApikey()));
-        return doPOST(eaURL + "/api/getUserUpdates", nvps);
-    }
-
-    /**
-     * Konvertiert einen InputStream mithilfe eines Scanners zu einem String und
-     * gibt diesen zurück
-     *
-     * @param is InputStream, der konvertiert werden soll
-     * @return eine String-Repr�sentation des InputStreams
-     * @throws IllegalStateException  wenn der zum konvertieren verwendete Scanner schon
-     *                                geschlossen wurde
-     * @throws NoSuchElementException wenn auf ein nicht vorhandenes Element des Scanners
-     *                                zugegriffen wurde
-     */
-    @SuppressWarnings("resource")
-    public String convertStreamToString2(InputStream is)
-            throws IllegalStateException, NoSuchElementException {
-        if (is == null) {
-            return "";
-        }
-        Scanner s = new Scanner(is).useDelimiter("\\A");
-        return s.hasNext() ? s.next() : "";
     }
 
     /**

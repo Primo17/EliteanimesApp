@@ -42,6 +42,7 @@ import de.btcdev.eliteanimesapp.services.ConfigurationService;
 import de.btcdev.eliteanimesapp.services.FriendService;
 import de.btcdev.eliteanimesapp.services.ImageService;
 import de.btcdev.eliteanimesapp.services.LoginService;
+import de.btcdev.eliteanimesapp.services.NotificationService;
 import de.btcdev.eliteanimesapp.services.PrivateMessageService;
 import de.btcdev.eliteanimesapp.services.ProfileService;
 import de.btcdev.eliteanimesapp.services.UserService;
@@ -121,6 +122,11 @@ public class AppModule {
     @Provides
     ImageService provideImageService(NetworkService networkService, Context context) {
         return new ImageService(networkService, context);
+    }
+
+    @Provides
+    NotificationService provideNotificationService(NetworkService networkService, ConfigurationService configurationService) {
+        return new NotificationService(networkService, configurationService);
     }
 
     @Provides

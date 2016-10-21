@@ -29,8 +29,10 @@ import de.btcdev.eliteanimesapp.data.EAException;
 import de.btcdev.eliteanimesapp.data.EAParser;
 import de.btcdev.eliteanimesapp.data.NavDrawerItem;
 import de.btcdev.eliteanimesapp.data.NetworkService;
+import de.btcdev.eliteanimesapp.data.NewsThread;
 import de.btcdev.eliteanimesapp.services.ConfigurationService;
 import de.btcdev.eliteanimesapp.services.LoginService;
+import de.btcdev.eliteanimesapp.services.NotificationService;
 
 public abstract class ParentActivity extends ActionBarActivity implements
 		OnItemClickListener {
@@ -42,6 +44,8 @@ public abstract class ParentActivity extends ActionBarActivity implements
 	NetworkService networkService;
 	@Inject
 	LoginService loginService;
+	@Inject
+	NotificationService notificationService;
 
 	protected DrawerLayout mDrawerLayout;
 	protected ListView mDrawerList;
@@ -312,4 +316,8 @@ public abstract class ParentActivity extends ActionBarActivity implements
 	public boolean isNullOrEmpty(String input) {
 		return input == null || input.isEmpty();
 	}
+
+    protected void getNotifications() {
+        NewsThread.getNews(notificationService);
+    }
 }

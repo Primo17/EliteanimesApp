@@ -49,7 +49,6 @@ import de.btcdev.eliteanimesapp.data.EAException;
 import de.btcdev.eliteanimesapp.data.ListAnime;
 import de.btcdev.eliteanimesapp.data.ListAnimeAlphabetComparator;
 import de.btcdev.eliteanimesapp.data.ListAnimeRatingComparator;
-import de.btcdev.eliteanimesapp.data.NewsThread;
 import de.btcdev.eliteanimesapp.json.ListAnimeDeserializer;
 import de.btcdev.eliteanimesapp.services.AnimeService;
 
@@ -429,7 +428,7 @@ public class AnimeListActivity extends ParentActivity implements
 				if (params[0].equals("no_cache") || !ownList) {
 					if (this.isCancelled())
 						return null;
-					NewsThread.getNews(networkService);
+					getNotifications();
 					if (this.isCancelled())
 						return null;
 					input = animeService.getAnimeList(userId);

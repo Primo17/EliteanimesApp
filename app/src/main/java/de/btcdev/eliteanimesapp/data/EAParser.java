@@ -28,32 +28,6 @@ public class EAParser {
     }
 
     /**
-     * Parst den übergebenen String nach den Neuigkeiten (Neue Nachrichten und
-     * Kommentare) und setzt die erhaltenen Werte in der configurationService.
-     *
-     * @param input JSON der die News enthält
-     */
-    public void getNotifications(String input) {
-        try {
-            JsonParser parser = new JsonParser();
-            JsonObject object = parser.parse(input).getAsJsonObject();
-            int commentcount = 0;
-            int pncount = 0;
-            if (object.has("pm")) {
-                pncount = object.get("pm").getAsInt();
-            }
-            if (object.has("comment")) {
-                commentcount = object.get("comment").getAsInt();
-            }
-            //TODO: the news should be set in the configurationService !
-            //configurationService.setNewCommentCount(commentcount, context);
-            //configurationService.setNewMessageCount(pncount, context);
-        } catch (Exception e) {
-
-        }
-    }
-
-    /**
      * Durchsucht den Text nach Spoiler-Tags und verändert ihn je nach
      * Anzeigeart.
      *

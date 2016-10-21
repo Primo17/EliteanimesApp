@@ -37,7 +37,6 @@ import de.btcdev.eliteanimesapp.R;
 import de.btcdev.eliteanimesapp.adapter.PrivateMessageAdapter;
 import de.btcdev.eliteanimesapp.cache.PrivateMessageCacheThread;
 import de.btcdev.eliteanimesapp.data.EAException;
-import de.btcdev.eliteanimesapp.data.NewsThread;
 import de.btcdev.eliteanimesapp.data.PrivateMessage;
 import de.btcdev.eliteanimesapp.json.PrivateMessageDeserializer;
 import de.btcdev.eliteanimesapp.services.PrivateMessageService;
@@ -269,7 +268,7 @@ public class PrivateMessageActivity extends ParentActivity implements OnItemClic
 		@Override
 		protected ArrayList<PrivateMessage> doInBackground(String... params) {
 			String input;
-            NewsThread.getNews(networkService);
+            getNotifications();
 			try {
 				if (params[0].equals("no_cache")) {
 					if (isCancelled())

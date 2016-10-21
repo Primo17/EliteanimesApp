@@ -13,6 +13,7 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+import de.btcdev.eliteanimesapp.ApiPath;
 import de.btcdev.eliteanimesapp.data.EAException;
 import de.btcdev.eliteanimesapp.data.FriendRequest;
 import de.btcdev.eliteanimesapp.data.NetworkService;
@@ -39,8 +40,7 @@ public class UserService {
      */
     public ArrayList<FriendRequest> getBlockedUsers() throws EAException {
         List<NameValuePair> nvps = new ArrayList<>();
-        nvps.add(new BasicNameValuePair("apikey", networkService.getApikey()));
-        String result = networkService.doPOST(NetworkService.eaURL + "/api/getBlockedUser", nvps);
+        String result = networkService.doPOST(ApiPath.USERS_BLOCKED, nvps);
         return getBlockedUsersFromJson(result);
     }
 
@@ -75,7 +75,7 @@ public class UserService {
      */
     public void unblockUser(String id) throws EAException {
         if (configurationService.getBoardToken() != null) {
-            networkService.doGET(NetworkService.eaURL + "/blockuser.php?id=" + id
+            networkService.doGET(ApiPath.USER_BLOCK + "?id=" + id
                     + "&ft=" + configurationService.getBoardToken() + "&unblock");
         }
     }
@@ -90,8 +90,7 @@ public class UserService {
     public ArrayList<User> searchUser(String userName) throws EAException {
         List<NameValuePair> nvps = new ArrayList<>();
         nvps.add(new BasicNameValuePair("name", userName));
-        nvps.add(new BasicNameValuePair("apikey", networkService.getApikey()));
-        String result = networkService.doPOST(NetworkService.eaURL + "/api/searchUser", nvps);
+        String result = networkService.doPOST(ApiPath.USER_SEARCH, nvps);
         return getSearchedUsersFromJson(result);
     }
 

@@ -14,6 +14,7 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+import de.btcdev.eliteanimesapp.ApiPath;
 import de.btcdev.eliteanimesapp.data.EAException;
 import de.btcdev.eliteanimesapp.data.NetworkService;
 import de.btcdev.eliteanimesapp.data.Profile;
@@ -55,8 +56,7 @@ public class ProfileService {
     public Profile getProfile(int userId) throws EAException, JsonErrorException {
         List<NameValuePair> nvps = new ArrayList<>();
         nvps.add(new BasicNameValuePair("id", Integer.toString(userId)));
-        nvps.add(new BasicNameValuePair("apikey", networkService.getApikey()));
-        String result = networkService.doPOST(NetworkService.eaURL + "/api/getProfil", nvps);
+        String result = networkService.doPOST(ApiPath.PROFILE, nvps);
         return getProfile(result);
     }
 
@@ -97,8 +97,7 @@ public class ProfileService {
     public String getProfileDescription(int userId) throws EAException {
         List<NameValuePair> nvps = new ArrayList<>();
         nvps.add(new BasicNameValuePair("id", Integer.toString(userId)));
-        nvps.add(new BasicNameValuePair("apikey", networkService.getApikey()));
-        String result = networkService.doPOST(NetworkService.eaURL + "/api/getProfilDescription", nvps);
+        String result = networkService.doPOST(ApiPath.PROFILE_DESCRIPTION, nvps);
         return getProfileDescription(result);
     }
 

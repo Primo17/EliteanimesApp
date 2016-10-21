@@ -13,6 +13,7 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+import de.btcdev.eliteanimesapp.ApiPath;
 import de.btcdev.eliteanimesapp.data.EAException;
 import de.btcdev.eliteanimesapp.data.NetworkService;
 
@@ -43,8 +44,7 @@ public class LoginService {
             List<NameValuePair> nvps = new ArrayList<>();
             nvps.add(new BasicNameValuePair("name", userName));
             nvps.add(new BasicNameValuePair("password", password));
-            nvps.add(new BasicNameValuePair("apikey", networkService.getApikey()));
-            String input = networkService.doPOST(NetworkService.eaURL + "/api/login", nvps);
+            String input = networkService.doPOST(ApiPath.LOGIN, nvps);
             int userId = networkService.getIdByCookie();
             networkService.saveCookies();
             if (userId != 0)
@@ -67,8 +67,7 @@ public class LoginService {
                 public void run() {
                     try {
                         List<NameValuePair> nvps = new ArrayList<>();
-                        nvps.add(new BasicNameValuePair("apikey", networkService.getApikey()));
-                        networkService.doPOST(NetworkService.eaURL + "/api/logout", nvps);
+                        networkService.doPOST(ApiPath.LOGOUT, nvps);
                     } catch (Exception e) {
                         System.out.println(e);
                     }
@@ -118,8 +117,7 @@ public class LoginService {
      */
     public void getToken() throws EAException {
         List<NameValuePair> nvps = new ArrayList<>();
-        nvps.add(new BasicNameValuePair("apikey", networkService.getApikey()));
-        String input = networkService.doPOST(NetworkService.eaURL + "/api/getToken", nvps);
+        String input = networkService.doPOST(ApiPath.BOARD_TOKEN, nvps);
 
         JsonParser parser = new JsonParser();
         JsonObject object = parser.parse(input).getAsJsonObject();

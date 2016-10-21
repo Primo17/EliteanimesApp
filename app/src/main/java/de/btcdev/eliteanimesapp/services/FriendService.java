@@ -13,6 +13,7 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+import de.btcdev.eliteanimesapp.ApiPath;
 import de.btcdev.eliteanimesapp.data.EAException;
 import de.btcdev.eliteanimesapp.data.Friend;
 import de.btcdev.eliteanimesapp.data.FriendRequest;
@@ -43,8 +44,7 @@ public class FriendService {
             throws EAException {
         List<NameValuePair> nvps = new ArrayList<>();
         nvps.add(new BasicNameValuePair("id", Integer.toString(userId)));
-        nvps.add(new BasicNameValuePair("apikey", networkService.getApikey()));
-        String result = networkService.doPOST(NetworkService.eaURL + "/api/getFriendListFromJson", nvps);
+        String result = networkService.doPOST(ApiPath.FRIENDS, nvps);
         return getFriendListFromJson(result);
     }
 
@@ -77,7 +77,7 @@ public class FriendService {
      */
     public void addFriend(String id) throws EAException {
         if (configurationService.getBoardToken() != null) {
-            networkService.doGET(NetworkService.eaURL + "/friend/add/" + id + "/"
+            networkService.doGET(ApiPath.FRIEND_ADD + id + "/"
                     + configurationService.getBoardToken());
         }
     }
@@ -90,7 +90,7 @@ public class FriendService {
      */
     public void deleteFriend(String id) throws EAException {
         if (configurationService.getBoardToken() != null) {
-            networkService.doGET(NetworkService.eaURL + "/friend/delete/" + id
+            networkService.doGET(ApiPath.FRIEND_DELETE + id
                     + "/" + configurationService.getBoardToken());
         }
     }
@@ -103,8 +103,7 @@ public class FriendService {
      */
     public ArrayList<FriendRequest> getFriendRequests() throws EAException {
         List<NameValuePair> nvps = new ArrayList<>();
-        nvps.add(new BasicNameValuePair("apikey", networkService.getApikey()));
-        String result = networkService.doPOST(NetworkService.eaURL + "/api/getFriendRequests", nvps);
+        String result = networkService.doPOST(ApiPath.FRIEND_REQUESTS, nvps);
         return getFriendRequestsFromJson(result);
     }
 
@@ -140,7 +139,7 @@ public class FriendService {
      */
     public void acceptFriendRequest(String id) throws EAException {
         if (configurationService.getBoardToken() != null) {
-            networkService.doGET(NetworkService.eaURL + "/friend/accept/" + id
+            networkService.doGET(ApiPath.FRIEND_REQUEST_ACCEPT + id
                     + "/" + configurationService.getBoardToken());
         }
     }
@@ -153,7 +152,7 @@ public class FriendService {
      */
     public void declineFriendRequest(String id) throws EAException {
         if (configurationService.getBoardToken() != null) {
-            networkService.doGET(NetworkService.eaURL + "/friend/decline/" + id
+            networkService.doGET(ApiPath.FRIEND_REQUEST_DECLINE + id
                     + "/" + configurationService.getBoardToken());
         }
     }

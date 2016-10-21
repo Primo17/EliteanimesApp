@@ -17,6 +17,7 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+import de.btcdev.eliteanimesapp.ApiPath;
 import de.btcdev.eliteanimesapp.data.EAException;
 import de.btcdev.eliteanimesapp.data.ListAnime;
 import de.btcdev.eliteanimesapp.data.NetworkService;
@@ -44,8 +45,7 @@ public class AnimeService {
     public String getAnimeList(int id) throws EAException {
         List<NameValuePair> nvps = new ArrayList<>();
         nvps.add(new BasicNameValuePair("id", Integer.toString(id)));
-        nvps.add(new BasicNameValuePair("apikey", networkService.getApikey()));
-        return networkService.doPOST(NetworkService.eaURL + "/api/getAnimelist", nvps);
+        return networkService.doPOST(ApiPath.ANIME_LIST, nvps);
     }
 
     /**
@@ -148,7 +148,8 @@ public class AnimeService {
             nvps.add(new BasicNameValuePair("seen", "" + progress));
             nvps.add(new BasicNameValuePair("status", "" + status));
             nvps.add(new BasicNameValuePair("von", "" + episodeCount));
-            networkService.doPOST(NetworkService.eaURL + "/animelist/"
+            //TODO: check if the operation fails when the apikey is send too, before it was not
+            networkService.doPOST(ApiPath.ANIME_RATE
                     + configurationService.getUserID(null) + "/"
                     + configurationService.getUserName(null), nvps);
         }

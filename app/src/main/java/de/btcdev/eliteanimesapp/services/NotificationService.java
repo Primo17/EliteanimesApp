@@ -4,13 +4,13 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
 import org.apache.http.NameValuePair;
-import org.apache.http.message.BasicNameValuePair;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.inject.Inject;
 
+import de.btcdev.eliteanimesapp.ApiPath;
 import de.btcdev.eliteanimesapp.data.EAException;
 import de.btcdev.eliteanimesapp.data.NetworkService;
 
@@ -30,8 +30,7 @@ public class NotificationService {
      */
     public void getNotifications() throws EAException {
         List<NameValuePair> nvps = new ArrayList<>();
-        nvps.add(new BasicNameValuePair("apikey", networkService.getApikey()));
-        String result = networkService.doPOST(NetworkService.eaURL + "/api/getUserUpdates", nvps);
+        String result = networkService.doPOST(ApiPath.NEWS, nvps);
         try {
             JsonParser parser = new JsonParser();
             JsonObject object = parser.parse(result).getAsJsonObject();

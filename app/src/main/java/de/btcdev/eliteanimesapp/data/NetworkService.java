@@ -6,6 +6,8 @@ import android.content.SharedPreferences;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
@@ -18,17 +20,14 @@ import org.apache.http.cookie.Cookie;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.impl.conn.tsccm.ThreadSafeClientConnManager;
 import org.apache.http.impl.cookie.BasicClientCookie;
+import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.params.CoreProtocolPNames;
 import org.apache.http.params.HttpParams;
 import org.apache.http.protocol.HTTP;
 
-import java.io.BufferedReader;
 import java.io.FileInputStream;
+import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.Reader;
-import java.io.StringWriter;
-import java.io.Writer;
 import java.lang.reflect.Type;
 import java.util.Collection;
 import java.util.List;
@@ -37,6 +36,7 @@ import java.util.Properties;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
+import de.btcdev.eliteanimesapp.ApiPath;
 import de.btcdev.eliteanimesapp.services.ConfigurationService;
 
 /**
@@ -45,8 +45,6 @@ import de.btcdev.eliteanimesapp.services.ConfigurationService;
  */
 @Singleton
 public class NetworkService {
-
-    public static final String eaURL = "http://www.eliteanimes.com";
 
     private Context context;
     private DefaultHttpClient httpclient;
@@ -84,8 +82,9 @@ public class NetworkService {
      * @throws EAException Bei allen Verbindungsfehlern
      */
     public void doGET(String url) throws EAException {
+        String toCall = ApiPath.BASE_URL + url;
         try {
-            HttpGet httpget = new HttpGet(url);
+            HttpGet httpget = new HttpGet(toCall);
             HttpResponse response = httpclient.execute(httpget);
             HttpEntity entity = response.getEntity();
             if (entity != null)
@@ -104,9 +103,11 @@ public class NetworkService {
      * @throws EAException Bei allen Verbindungsfehlern
      */
     public String doPOST(String url, List<NameValuePair> args) throws EAException {
+        String toCall = ApiPath.BASE_URL + url;
         String input;
+        args.add(new BasicNameValuePair("apikey", getApikey()));
         try {
-            HttpPost httpost = new HttpPost(url);
+            HttpPost httpost = new HttpPost(toCall);
             httpost.setEntity(new UrlEncodedFormEntity(args, HTTP.UTF_8));
             HttpResponse response = httpclient.execute(httpost);
             HttpEntity entity = response.getEntity();
@@ -120,7 +121,7 @@ public class NetworkService {
     }
 
     public String getApikey() {
-        if (apikey == null || apikey.equals("")) {
+        if (StringUtils.isEmpty(apikey)) {
             try {
                 Properties prop = new Properties();
                 InputStream is = new FileInputStream("api.properties");
@@ -140,27 +141,8 @@ public class NetworkService {
      * @param is Zu konvertierender InputStream
      * @return String-Repräsentation des Streams
      */
-    public String convertStreamToString(InputStream is) {
-        char[] buff = new char[1024];
-        Writer stringWriter = new StringWriter();
-        try {
-            Reader bReader = new BufferedReader(new InputStreamReader(is,
-                    "UTF-8"));
-            int n;
-            while ((n = bReader.read(buff)) != -1) {
-                stringWriter.write(buff, 0, n);
-            }
-        } catch (Exception e) {
-            System.out.println(e);
-        } finally {
-            try {
-                stringWriter.close();
-                is.close();
-            } catch (Exception e) {
-                System.out.println(e);
-            }
-        }
-        return stringWriter.toString();
+    private String convertStreamToString(InputStream is) throws IOException {
+        return IOUtils.toString(is, com.google.common.base.Charsets.UTF_8);
     }
 
     /**

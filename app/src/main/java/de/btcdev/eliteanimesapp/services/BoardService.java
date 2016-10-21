@@ -18,6 +18,7 @@ import java.util.TreeMap;
 
 import javax.inject.Inject;
 
+import de.btcdev.eliteanimesapp.ApiPath;
 import de.btcdev.eliteanimesapp.data.Board;
 import de.btcdev.eliteanimesapp.data.BoardPost;
 import de.btcdev.eliteanimesapp.data.BoardThread;
@@ -50,8 +51,7 @@ public class BoardService {
      */
     public TreeMap<Integer, ArrayList<Board>> getBoards() throws EAException {
         List<NameValuePair> nvps = new ArrayList<>();
-        nvps.add(new BasicNameValuePair("apikey", networkService.getApikey()));
-        String result = networkService.doPOST(NetworkService.eaURL + "/api/getForums", nvps);
+        String result = networkService.doPOST(ApiPath.BOARDS, nvps);
         return getBoardsFromJson(result);
     }
 
@@ -93,8 +93,7 @@ public class BoardService {
      */
     public Statistics getBoardStatistics() throws EAException {
         List<NameValuePair> nvps = new ArrayList<>();
-        nvps.add(new BasicNameValuePair("apikey", networkService.getApikey()));
-        String result = networkService.doPOST(NetworkService.eaURL + "/api/getStatistics", nvps);
+        String result = networkService.doPOST(ApiPath.BOARD_STATISTICS, nvps);
         return getBoardStatisticsFromJson(result);
     }
 
@@ -129,8 +128,7 @@ public class BoardService {
         List<NameValuePair> nvps = new ArrayList<>();
         nvps.add(new BasicNameValuePair("id", Integer.toString(id)));
         nvps.add(new BasicNameValuePair("page", Integer.toString(page)));
-        nvps.add(new BasicNameValuePair("apikey", networkService.getApikey()));
-        return networkService.doPOST(NetworkService.eaURL + "/api/getForum", nvps);
+        return networkService.doPOST(ApiPath.BOARD, nvps);
     }
 
     /**
@@ -192,8 +190,7 @@ public class BoardService {
         List<NameValuePair> nvps = new ArrayList<>();
         nvps.add(new BasicNameValuePair("id", Integer.toString(id)));
         nvps.add(new BasicNameValuePair("page", Integer.toString(page)));
-        nvps.add(new BasicNameValuePair("apikey", networkService.getApikey()));
-        return networkService.doPOST(NetworkService.eaURL + "/api/getForumThread", nvps);
+        return networkService.doPOST(ApiPath.BOARD_POSTS, nvps);
     }
 
     /**
@@ -208,8 +205,7 @@ public class BoardService {
         List<NameValuePair> nvps = new ArrayList<>();
         nvps.add(new BasicNameValuePair("id", Integer.toString(threadId)));
         nvps.add(new BasicNameValuePair("text", text));
-        nvps.add(new BasicNameValuePair("apikey", networkService.getApikey()));
-        String input = networkService.doPOST(NetworkService.eaURL + "/api/addForumPost", nvps);
+        String input = networkService.doPOST(ApiPath.BOARD_POST_ADD, nvps);
         return input.contains("status");
     }
 
@@ -225,8 +221,7 @@ public class BoardService {
         List<NameValuePair> nvps = new ArrayList<>();
         nvps.add(new BasicNameValuePair("id", Integer.toString(postId)));
         nvps.add(new BasicNameValuePair("text", text));
-        nvps.add(new BasicNameValuePair("apikey", networkService.getApikey()));
-        String input = networkService.doPOST(NetworkService.eaURL + "/api/editForumPost", nvps);
+        String input = networkService.doPOST(ApiPath.BOARD_POST_EDIT, nvps);
         return input.contains("status");
     }
 
@@ -239,8 +234,7 @@ public class BoardService {
     public boolean deletePost(int postId) throws EAException {
         List<NameValuePair> nvps = new ArrayList<>();
         nvps.add(new BasicNameValuePair("id", Integer.toString(postId)));
-        nvps.add(new BasicNameValuePair("apikey", networkService.getApikey()));
-        String input = networkService.doPOST(NetworkService.eaURL + "/api/deleteForumPost", nvps);
+        String input = networkService.doPOST(ApiPath.BOARD_POST_DELETE, nvps);
         return input.contains("status");
     }
 
@@ -256,8 +250,7 @@ public class BoardService {
         List<NameValuePair> nvps = new ArrayList<>();
         nvps.add(new BasicNameValuePair("id", Integer.toString(id)));
         nvps.add(new BasicNameValuePair("bbcode", Boolean.toString(bbcode)));
-        nvps.add(new BasicNameValuePair("apikey", networkService.getApikey()));
-        String result = networkService.doPOST(NetworkService.eaURL + "/api/getForumPost", nvps);
+        String result = networkService.doPOST(ApiPath.BOARD_POST, nvps);
         return getPostFromJson(result);
     }
 

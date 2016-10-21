@@ -17,6 +17,7 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+import de.btcdev.eliteanimesapp.ApiPath;
 import de.btcdev.eliteanimesapp.data.EAException;
 import de.btcdev.eliteanimesapp.data.NetworkService;
 import de.btcdev.eliteanimesapp.data.PrivateMessage;
@@ -46,8 +47,7 @@ public class PrivateMessageService {
         nvps.add(new BasicNameValuePair("page", Integer
                 .toString(page)));
         nvps.add(new BasicNameValuePair("bbcode", "false"));
-        nvps.add(new BasicNameValuePair("apikey", networkService.getApikey()));
-        return networkService.doPOST(NetworkService.eaURL + "/api/getInboxPMs", nvps);
+        return networkService.doPOST(ApiPath.PMS, nvps);
     }
 
     /**
@@ -60,10 +60,9 @@ public class PrivateMessageService {
      */
     public String getPrivateMessage(int id) throws EAException {
         List<NameValuePair> nvps = new ArrayList<>();
-        nvps.add(new BasicNameValuePair("apikey", networkService.getApikey()));
         nvps.add(new BasicNameValuePair("id", Integer.toString(id)));
         nvps.add(new BasicNameValuePair("bbcode", Boolean.toString(false)));
-        return networkService.doPOST(NetworkService.eaURL + "/api/getPM", nvps);
+        return networkService.doPOST(ApiPath.PM, nvps);
     }
 
     /**
@@ -97,22 +96,6 @@ public class PrivateMessageService {
     }
 
     /**
-     * Lädt den Input (BBCode) einer ausgewählten PrivateMessage.
-     *
-     * @param id ID der PrivateMessage
-     * @return JSON-Antwort der API
-     * @throws EAException bei allen Fehlern
-     */
-    //TODO: is this method needed?
-    public String getPrivateMessageInput(int id) throws EAException {
-        List<NameValuePair> nvps = new ArrayList<>();
-        nvps.add(new BasicNameValuePair("apikey", networkService.getApikey()));
-        nvps.add(new BasicNameValuePair("id", Integer.toString(id)));
-        nvps.add(new BasicNameValuePair("bbcode", Boolean.toString(true)));
-        return networkService.doPOST(NetworkService.eaURL + "/api/getPM", nvps);
-    }
-
-    /**
      * Schickt eine PrivateMessage mit den übergebenen Werten ab und gibt den Rückgabestring
      * der API zurück
      *
@@ -128,9 +111,8 @@ public class PrivateMessageService {
         List<NameValuePair> nvps = new ArrayList<>();
         nvps.add(new BasicNameValuePair("subject", subject));
         nvps.add(new BasicNameValuePair("uid", Integer.toString(userId)));
-        nvps.add(new BasicNameValuePair("apikey", networkService.getApikey()));
         nvps.add(new BasicNameValuePair("text", message));
-        return networkService.doPOST(NetworkService.eaURL + "/api/sendPM", nvps);
+        return networkService.doPOST(ApiPath.PM_SEND, nvps);
     }
 
     /**
@@ -143,8 +125,7 @@ public class PrivateMessageService {
     public String deletePrivateMessage(String id) throws EAException {
         List<NameValuePair> nvps = new ArrayList<>();
         nvps.add(new BasicNameValuePair("id", id));
-        nvps.add(new BasicNameValuePair("apikey", networkService.getApikey()));
-        return networkService.doPOST(NetworkService.eaURL + "/api/deletePM/", nvps);
+        return networkService.doPOST(ApiPath.PM_DELETE, nvps);
     }
 
     /**
@@ -158,8 +139,7 @@ public class PrivateMessageService {
         List<NameValuePair> nvps = new ArrayList<>();
         nvps.add(new BasicNameValuePair("id", Integer.toString(id)));
         nvps.add(new BasicNameValuePair("text", message));
-        nvps.add(new BasicNameValuePair("apikey", networkService.getApikey()));
-        return networkService.doPOST(NetworkService.eaURL + "/api/answerPM", nvps);
+        return networkService.doPOST(ApiPath.PM_ANSWER, nvps);
     }
 
     /**

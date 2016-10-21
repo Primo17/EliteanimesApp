@@ -17,6 +17,7 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+import de.btcdev.eliteanimesapp.ApiPath;
 import de.btcdev.eliteanimesapp.data.Comment;
 import de.btcdev.eliteanimesapp.data.EAException;
 import de.btcdev.eliteanimesapp.data.NetworkService;
@@ -47,11 +48,10 @@ public class CommentService {
     public String getCommentPage(int page, int userId)
             throws EAException {
         List<NameValuePair> nvps = new ArrayList<>();
-        nvps.add(new BasicNameValuePair("apikey", networkService.getApikey()));
         nvps.add(new BasicNameValuePair("id", Integer.toString(userId)));
         nvps.add(new BasicNameValuePair("page", Integer
                 .toString(page)));
-        return networkService.doPOST(NetworkService.eaURL + "/api/getComments", nvps);
+        return networkService.doPOST(ApiPath.COMMENTS, nvps);
     }
 
     /**
@@ -124,7 +124,8 @@ public class CommentService {
             nvps.add(new BasicNameValuePair("id", "" + userId));
             nvps.add(new BasicNameValuePair("name", userName));
             nvps.add(new BasicNameValuePair("submit", "Eintragen"));
-            String input = networkService.doPOST(NetworkService.eaURL + "/profil/" + userId
+            //TODO: check if sending the apikey breaks this
+            String input = networkService.doPOST(ApiPath.COMMENT_ADD + userId
                     + "/" + userName, nvps);
             return checkComment(input);
         }
@@ -152,7 +153,8 @@ public class CommentService {
             nvps.add(new BasicNameValuePair("fromuser", ""
                     + configurationService.getUserID(null)));
             nvps.add(new BasicNameValuePair("touser", "" + userId));
-            networkService.doPOST(NetworkService.eaURL + "/profil/" + userId
+            //TODO: check if sending the apikey breaks this
+            networkService.doPOST(ApiPath.COMMENT_EDIT + userId
                     + "/" + userName, nvps);
         }
     }
@@ -165,7 +167,7 @@ public class CommentService {
      */
     public void deleteComment(String commentId) throws EAException {
         if (configurationService.getBoardToken() != null) {
-            networkService.doGET(NetworkService.eaURL + "/commentdelete.php?id="
+            networkService.doGET(ApiPath.COMMENT_DELETE + "?id="
                     + commentId + "&ft=" + configurationService.getBoardToken());
         }
     }

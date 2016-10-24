@@ -2,6 +2,8 @@ package de.btcdev.eliteanimesapp.data;
 
 import java.util.Comparator;
 
+import de.btcdev.eliteanimesapp.data.models.ListAnime;
+
 public class ListAnimeRatingComparator implements Comparator<ListAnime> {
 
 	/**

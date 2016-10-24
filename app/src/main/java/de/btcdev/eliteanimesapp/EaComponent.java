@@ -3,24 +3,24 @@ package de.btcdev.eliteanimesapp;
 import javax.inject.Singleton;
 
 import dagger.Component;
-import de.btcdev.eliteanimesapp.gui.AccountSettingsActivity;
-import de.btcdev.eliteanimesapp.gui.AnimeListActivity;
-import de.btcdev.eliteanimesapp.gui.BoardActivity;
-import de.btcdev.eliteanimesapp.gui.CommentActivity;
-import de.btcdev.eliteanimesapp.gui.FriendActivity;
-import de.btcdev.eliteanimesapp.gui.InfoActivity;
-import de.btcdev.eliteanimesapp.gui.LoginActivity;
-import de.btcdev.eliteanimesapp.gui.NewCommentActivity;
-import de.btcdev.eliteanimesapp.gui.NewPostActivity;
-import de.btcdev.eliteanimesapp.gui.NewPrivateMessageActivity;
-import de.btcdev.eliteanimesapp.gui.PostActivity;
-import de.btcdev.eliteanimesapp.gui.PrivateMessageActivity;
-import de.btcdev.eliteanimesapp.gui.ProfileActivity;
-import de.btcdev.eliteanimesapp.gui.ProfileDescriptionActivity;
-import de.btcdev.eliteanimesapp.gui.SearchActivity;
-import de.btcdev.eliteanimesapp.gui.SettingsActivity;
-import de.btcdev.eliteanimesapp.gui.ThreadActivity;
-import de.btcdev.eliteanimesapp.gui.UserProfileActivity;
+import de.btcdev.eliteanimesapp.ui.activities.AccountSettingsActivity;
+import de.btcdev.eliteanimesapp.ui.activities.AnimeListActivity;
+import de.btcdev.eliteanimesapp.ui.activities.BoardActivity;
+import de.btcdev.eliteanimesapp.ui.activities.CommentActivity;
+import de.btcdev.eliteanimesapp.ui.activities.FriendActivity;
+import de.btcdev.eliteanimesapp.ui.activities.InfoActivity;
+import de.btcdev.eliteanimesapp.ui.activities.LoginActivity;
+import de.btcdev.eliteanimesapp.ui.activities.NewCommentActivity;
+import de.btcdev.eliteanimesapp.ui.activities.NewPostActivity;
+import de.btcdev.eliteanimesapp.ui.activities.NewPrivateMessageActivity;
+import de.btcdev.eliteanimesapp.ui.activities.PostActivity;
+import de.btcdev.eliteanimesapp.ui.activities.PrivateMessageActivity;
+import de.btcdev.eliteanimesapp.ui.activities.ProfileActivity;
+import de.btcdev.eliteanimesapp.ui.activities.ProfileDescriptionActivity;
+import de.btcdev.eliteanimesapp.ui.activities.SearchActivity;
+import de.btcdev.eliteanimesapp.ui.activities.SettingsActivity;
+import de.btcdev.eliteanimesapp.ui.activities.ThreadActivity;
+import de.btcdev.eliteanimesapp.ui.activities.UserProfileActivity;
 
 @Singleton
 @Component(modules = {AppModule.class})

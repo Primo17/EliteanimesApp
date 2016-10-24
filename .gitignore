@@ -40,5 +40,5 @@ captures/
 
 app/src/main/assets/api.properties
 /api.properties
-/keystore.properties
+gradle.properties
 /projectFilesBackup/

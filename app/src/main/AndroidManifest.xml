@@ -14,7 +14,7 @@
         android:label="@string/app_name"
         android:theme="@style/CustomActionBarTheme" >
         <activity
-            android:name="de.btcdev.eliteanimesapp.gui.LoginActivity"
+            android:name="de.btcdev.eliteanimesapp.ui.activities.LoginActivity"
             android:label="@string/app_name"
             android:theme="@style/CustomActionBarTheme" >
             <intent-filter>
@@ -24,74 +24,74 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".gui.ProfileActivity"
+            android:name=".ui.activities.ProfileActivity"
             android:label="@string/title_activity_profil" >
         </activity>
         <activity
-            android:name=".gui.ProfileDescriptionActivity"
+            android:name=".ui.activities.ProfileDescriptionActivity"
             android:label="@string/title_activity_profil_beschreibung" >
         </activity>
         <activity
-            android:name=".gui.FriendActivity"
+            android:name=".ui.activities.FriendActivity"
             android:label="@string/title_activity_freunde" >
         </activity>
         <activity
-            android:name=".gui.UserProfileActivity"
+            android:name=".ui.activities.UserProfileActivity"
             android:label="@string/title_activity_fremdes_profil" >
         </activity>
         <activity
-            android:name=".gui.CommentActivity"
+            android:name=".ui.activities.CommentActivity"
             android:label="@string/title_activity_kommentar" >
         </activity>
         <activity
-            android:name=".gui.NewCommentActivity"
+            android:name=".ui.activities.NewCommentActivity"
             android:label="@string/title_activity_neuer_kommentar"
             android:noHistory="true" >
         </activity>
         <activity
-            android:name="de.btcdev.eliteanimesapp.gui.InfoActivity"
+            android:name="de.btcdev.eliteanimesapp.ui.activities.InfoActivity"
             android:label="@string/title_activity_info"
             android:noHistory="true" >
         </activity>
         <activity
-            android:name="de.btcdev.eliteanimesapp.gui.SettingsActivity"
+            android:name="de.btcdev.eliteanimesapp.ui.activities.SettingsActivity"
             android:label="@string/title_activity_settings" >
         </activity>
         <activity
-            android:name=".gui.PrivateMessageActivity"
+            android:name=".ui.activities.PrivateMessageActivity"
             android:label="@string/title_activity_pn" >
         </activity>
         <activity
-            android:name=".gui.NewPrivateMessageActivity"
+            android:name=".ui.activities.NewPrivateMessageActivity"
             android:label="@string/title_activity_neue_pn"
             android:noHistory="true" >
         </activity>
         <activity
-            android:name=".gui.AccountSettingsActivity"
+            android:name=".ui.activities.AccountSettingsActivity"
             android:label="@string/title_activity_kontoeinstellungen" >
         </activity>
         <activity
-            android:name="de.btcdev.eliteanimesapp.gui.SearchActivity"
+            android:name="de.btcdev.eliteanimesapp.ui.activities.SearchActivity"
             android:label="@string/title_activity_search" >
         </activity>
         <activity
-            android:name="de.btcdev.eliteanimesapp.gui.AnimeListActivity"
+            android:name="de.btcdev.eliteanimesapp.ui.activities.AnimeListActivity"
             android:label="@string/title_activity_anime_list" >
         </activity>
         <activity
-            android:name=".gui.BoardActivity"
+            android:name=".ui.activities.BoardActivity"
             android:label="@string/title_activity_foren" >
         </activity>
         <activity
-            android:name="de.btcdev.eliteanimesapp.gui.ThreadActivity"
+            android:name="de.btcdev.eliteanimesapp.ui.activities.ThreadActivity"
             android:label="@string/title_activity_threads" >
         </activity>
         <activity
-            android:name="de.btcdev.eliteanimesapp.gui.PostActivity"
+            android:name="de.btcdev.eliteanimesapp.ui.activities.PostActivity"
             android:label="@string/title_activity_posts" >
         </activity>
         <activity
-            android:name="de.btcdev.eliteanimesapp.gui.NewPostActivity"
+            android:name="de.btcdev.eliteanimesapp.ui.activities.NewPostActivity"
             android:label="@string/title_activity_new_post" >
 </activity>
     </application>

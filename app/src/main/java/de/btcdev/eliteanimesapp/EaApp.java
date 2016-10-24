@@ -1,10 +1,6 @@
 package de.btcdev.eliteanimesapp;
 
-import android.app.Activity;
 import android.app.Application;
-import android.os.AsyncTask;
-
-import de.btcdev.eliteanimesapp.gui.LoginActivity;
 
 public class EaApp extends Application {
 

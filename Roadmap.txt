@@ -1,14 +1,18 @@
 TODO:
-Extract all functionality from NetworkService and EAParser, except:
-    NetworkService:
-        real network stuff, like do post/get
-        apikey and baseUrl
-    EAParser:
-        ? nothing?
-        maybe a similar class will be used in the future for JSON functionality or anything else
-        showSpoiler ?
-
-Refactor each extracted Service
+Refactor and test each extracted Service
+    NetworkService
+    AnimeService
+    BoardService
+    CommentService
+    ConfigurationService
+    FriendService
+    ImageService
+    LoginService
+    NetworkService
+    NotificationService
+    PrivateMessageService
+    ProfileService
+    UserService
 
 Refactor the other logic classes
 
@@ -19,3 +23,5 @@ Write Tests for Logic
 Write Tests for Activities (?)
 
 Improve image handling, Bitmap is not compatible to e.g. GIFs
+
+Check if EAParser is still useful for the tasks it has

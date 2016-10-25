@@ -12,12 +12,12 @@ android {
         }
     }
 
-    compileSdkVersion 24
+    compileSdkVersion 25
     buildToolsVersion "24.0.1"
     defaultConfig {
         applicationId "de.btcdev.eliteanimesapp"
         minSdkVersion 9
-        targetSdkVersion 24
+        targetSdkVersion 25
 
         jackOptions {
             // jack currently breaks mockito? also no streams below API level 24
@@ -48,12 +48,15 @@ android {
 
 dependencies {
     compile 'com.google.code.gson:gson:2.4'
-    compile 'com.android.support:appcompat-v7:24.2.1'
+    compile 'com.android.support:appcompat-v7:25.0.0'
     compile 'org.jsoup:jsoup:1.9.1'
     compile 'com.google.guava:guava:19.0'
     compile 'org.apache.commons:commons-lang3:3.4'
     compile 'commons-io:commons-io:2.5'
     compile 'net.sourceforge.streamsupport:streamsupport:1.5.2' //java-8 stream support
+    compile 'com.squareup.okhttp3:okhttp:3.4.1'
+    compile 'joda-time:joda-time:2.9.4'
+
 
     compile 'com.google.dagger:dagger:2.7'
     apt "com.google.dagger:dagger-compiler:2.7"
@@ -62,7 +65,8 @@ dependencies {
 
     testCompile 'junit:junit:4.12'
     testCompile 'org.mockito:mockito-core:2.1.0'
-    androidTestCompile 'com.android.support:support-annotations:24.2.1'
+    testCompile "org.robolectric:robolectric:3.1.2"
+    androidTestCompile 'com.android.support:support-annotations:25.0.0'
     androidTestCompile 'com.android.support.test:runner:0.5'
 
 
